@@ -1,10 +1,13 @@
 package wwBot;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -30,8 +33,7 @@ public class Main {
         // speichert den Prefix in einer Variable
         var prefix = "&";
 
-        DiscordClient client = DiscordClientBuilder
-                .create("NzA3NjUzNTk1NjQxOTM4MDMx.XrL8Cw.SRxT4UisfP6doLQoc-ZdgI5CtYY").build();
+        DiscordClient client = DiscordClientBuilder.create("NzA3NjUzNTk1NjQxOTM4MDMx.XrL8Cw.SRxT4UisfP6doLQoc-ZdgI5CtYY").build();
 
         // looks at every message
         client.getEventDispatcher().on(MessageCreateEvent.class)
@@ -114,6 +116,25 @@ public class Main {
     
     }
 
+    //
+    public static List<String> readJsonStringList (String filename) throws Exception{
+
+        //reads filename.json into a JSONArray
+        var jsonParser = new JSONParser();
+        var listReader = new FileReader(filename);
+        Object obj = jsonParser.parse(listReader);
+        JSONArray jsonArray = (JSONArray) obj;
+        System.out.println(jsonArray);
+        
+
+        //transforms the JSOArray into a List for easier handeling
+        var list = new LinkedList<String>();
+        for (var i = 0; i < jsonArray.size(); i++) {
+            list.add(jsonArray.get(i).toString());
+        }
+
+        return list;
+    }
 
     
     } 

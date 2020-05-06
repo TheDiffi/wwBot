@@ -2,16 +2,30 @@
 TO DO!
 This file seves the purpose to have a clear overlook on what things need to be done
 
+
+Struktur:
+    Main: beinhaltet MessageCreateEvent und inizialisiert "Game"
+
+    Klasse Game: beinhaltet den GameState und eine liste der Player
+        Klasse LobbyPhase : Commands der Lobby-Phase
+        Klasse GamePhase : Ruft Tag und Nacht auf 
+            (Klasse Tag:)
+            (Klasse Nacht:)
+        Klasse EndGamePhase
+
+    Player: Username, Karte, TodesStatus,
+
+    Karte: Kartenname, Wert, Einmaligkeit, 
+
 Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
         
-
     Starte ein neues Spiel:
-    Resettet den Bot soweit wie nötig und Startet ein neues Spiel
+    Inizialisiert neue Instanz von der Klasse "Game". Falls bereits ein Game mit serselben Variable existiert wirt diese Variable (nach bestätigung des Users) zerstört und neu inizialisiert
     User können nun dem Spiel Joinen und werden zu Player mit ihrem Username in listPlayer gespeichert
     Ein Player kann das Spiel wieder verlassen.
-        TODO: erstelle variable boolean gameLobbyPhase welche aus true gesetzt wird sobald das spiel gestartet wird
-        TODO: gruppiere Commands nach LobbyPhase, GamePhase, GameEndPhase und lagere dies in funktion aus
-        Oder: füge bedingung zu &(join,leave,addCard,removeCard,startgame) hinzu, welche gameLobbyPhase überprüft
+        
+        TODO: gruppiere Commands nach LobbyPhase, GamePhase, EndGamePhase und lagere dies in funktion aus
+        
 
     Verfügbaren Karten:
     Die verfügbaren Karten werden in einer .json Datei gespeichert mit den Parametern: Kartenname, Wert, Einmaligkeit(z.b. Seher = true; Dorfbewohner = false).
