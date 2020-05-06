@@ -1,0 +1,62 @@
+
+TO DO!
+This file seves the purpose to have a clear overlook on what things need to be done
+
+Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
+        
+
+    Starte ein neues Spiel:
+    Resettet den Bot soweit wie nötig und Startet ein neues Spiel
+    User können nun dem Spiel Joinen und werden zu Player mit ihrem Username in listPlayer gespeichert
+    Ein Player kann das Spiel wieder verlassen.
+        TODO: erstelle variable boolean gameLobbyPhase welche aus true gesetzt wird sobald das spiel gestartet wird
+        TODO: gruppiere Commands nach LobbyPhase, GamePhase, GameEndPhase und lagere dies in funktion aus
+        Oder: füge bedingung zu &(join,leave,addCard,removeCard,startgame) hinzu, welche gameLobbyPhase überprüft
+
+    Verfügbaren Karten:
+    Die verfügbaren Karten werden in einer .json Datei gespeichert mit den Parametern: Kartenname, Wert, Einmaligkeit(z.b. Seher = true; Dorfbewohner = false).
+    Diese Datei wird gelesen und jede Karte als Objekt gespeichert welches (Kartenname, Wert, Einmaligkeit) beinhaltet.
+    Die Objekte werden in einer liste gespeichert um von addCard und Deckbuilder(algorithmus) aufgerufen werden zu können.
+        TODO: implementiere JSONReader (aus discordLoungeBot)
+        TODO: implementiere funktionen "StringToJson" und "JsonToString" 
+        TODO: erstelle Objekt für verfügbare Karten mit den Parametern (Name des Objektes sollte Kartenname sein)
+        TODO: erstelle eine Datei welche alle verfügbaren Karten beinhaltet und lade diese in eine Liste
+        TODO: lade die Karten aus der Datei als Objekte in eine Liste (Name des Objektes sollte Kartenname sein)
+
+    Deckbuilder:
+    Der Deckbuilder sollte als einzelne Funktion aufrufbar sein, welche die anzahl der Player als parameter nimmt und eine Liste aus Karten Objekten zurückgibt (listDeckbuilder)
+        TODO: mache algorithmus lol
+
+    CustomDeck:
+    Das Custom Deck lässt Player selbst ein Deck erstellen, indem es den Player Karten hinzufügen und entfernen lässt.
+    Diese Karten werden in listCustomDeck gespeichert als Karten Objekte gespeichert.
+
+    DistribuiteCards:
+    Nachdem der User sich zwischen dem CustomDeck oder dem Deckbuilder entschieden hat, müssen die Karten zufällig auf die Player verteilt werden
+    Es wird in einem Objekt oder Liste der Player und das Karten Objekt gespeichert
+    Anschließend werden alle Player über ihre Rolle privat informiert
+
+    gamestart:
+    Der AutoModerator übernimmt alle Player mit ihrer Karte und beginnt den Tag/Nacht Zyklus
+
+
+
+
+
+
+
+
+
+Part 2. AutoModerator - Tag/Nacht Zyklus Bis Gameover
+NIGHT:
+
+
+
+
+DAY:
+
+
+Part 3. Post-Game Infos?
+
+
+Part 4. Music and Everything Else

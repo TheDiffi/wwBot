@@ -16,7 +16,10 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-       
+        //TODO: implementiere JSONReader (aus discordLoungeBot) ask David wenn du Sochen in an eigenen Datei permanent speichern willsch
+        //TODO: erstelle eine Datei welche alle verfügbaren Karten beinhaltet und lade diese in eine Liste 
+
+
 
 
 
@@ -46,6 +49,9 @@ public class Main {
                         var user = event.getMessage().getAuthor().get().getUsername();
 
                         // Liste der Commands, content und sonstige parameter werden überprüft
+                        //TODO: gruppiere Commands nach LobbyPhase, GamePhase, GameEndPhase und lagere dies in funktion aus
+                        //TODO: füge bedingung für jede Gruppe hinzu
+
                         // TODO: prefix aus parameter entfetnen sonst wird 2-mal prefix überprüft =
                         // schlampig
 
@@ -54,6 +60,9 @@ public class Main {
                             event.getMessage().getChannel().block().createMessage("Pong!").block();
                         }
 
+
+
+                        //Commands der Lobby Phase
                         // join füght den user zu listPlayers hinzu
                         if (command.get(0).equalsIgnoreCase(prefix + "join")) {
 
@@ -78,18 +87,18 @@ public class Main {
 
 
                     //TODO: füge command startgame hinzu
-                    /*startgame nimmt die .size der listPlayers und started damit den Teambuilder algorithmus
-                    startgame überprüft ob listCustomTeam gleich lang wie listPlayer ist; aka ob jeder Player genau eine Karte hat
+                    /*startgame nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
+                    startgame überprüft ob listCustomDeck gleich lang wie listPlayer ist; aka ob jeder Player genau eine Karte hat
                      */
 
                     //TODO: füge command addCard hinzu
                     
-                    /* addCard lässt jeden Player eine Karte aus den verfügbaren Karten eine Karte zur listCustomTeam hinzufügen
-                    addCard überprüft bei jedem Aufruf ob listCustomTeam nicht größer als listPlayers ist
+                    /* addCard lässt jeden Player eine Karte aus den verfügbaren Karten eine Karte zur listCustomDeck hinzufügen
+                    addCard überprüft bei jedem Aufruf ob listCustomDeck nicht größer als listPlayers ist
                     */
 
                     //TODO: füge command removeCard hinzu
-                    //removeCard entfernt die Karte aus listCustomTeam
+                    //removeCard entfernt die Karte aus listCustomDeck
 
                 
 
