@@ -1,8 +1,8 @@
 package wwBot;
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,9 +13,10 @@ public class ReadJSONCard {
     
 
     @SuppressWarnings("unchecked")
-    public static List<Card> readAvailableCards() throws Exception {
+    public static Map<String,Card> readAvailableCards() throws Exception {
 
-        List<Card> listAvailableCards = new ArrayList<Card>();
+        
+        var mapAvailableCards = new HashMap<String, Card>();
 
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
@@ -27,11 +28,12 @@ public class ReadJSONCard {
             
         //Iterate over card array
         JSONCardList.forEach( card -> {
-            listAvailableCards.add( parseCardObject((JSONObject) card) );
+            var parsedCard = parseCardObject((JSONObject) card); 
             System.out.println();
+            mapAvailableCards.put(parsedCard.name, parsedCard);
         });
 
-        return listAvailableCards;
+        return mapAvailableCards;
     }
  
      

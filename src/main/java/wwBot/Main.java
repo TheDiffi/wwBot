@@ -22,7 +22,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Globals.loadGlobals();
-        var listAvailableCards = Globals.listAvailableCards;
+        var mapAvailableCards = Globals.mapAvailableCards;
 
         // speichert den Prefix in einer Variable
         var prefix = "&";
@@ -38,7 +38,7 @@ public class Main {
                     // messageContent speichert den Inhalt der Message in einer Variable
                     // command teilt diesen Inhalt bei einem Leerzeichen und speicher dies in einer
                     // Liste
-                    
+
                     String messageContent = event.getMessage().getContent().orElse("");
                     List<String> command = Arrays.asList(messageContent.split(" "));
 
@@ -103,8 +103,7 @@ public class Main {
                             String cardName = command.get(1);
                             // Card requestedCard = new Card();
 
-                            var requestedCard = listAvailableCards.stream().filter(c -> c.name.equals(cardName))
-                                    .findFirst().orElse(null);
+                            var requestedCard = mapAvailableCards.get(cardName);
                             if (requestedCard != null) {
                                 String message = "Wert: " + Integer.toString(requestedCard.value) + "\n"
                                         + "Beschreibung: " + requestedCard.description;
