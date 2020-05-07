@@ -7,10 +7,14 @@ public class Card {
     public int priority;
     public int minPlayers;
     public boolean unique;
+    public String description;
+    public boolean friendly; 
 
     Card() {
 
     }
+
+
 
     /* public String getName() {
         return name;
