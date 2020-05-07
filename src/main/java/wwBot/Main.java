@@ -23,8 +23,17 @@ public class Main {
 
         Globals.loadGlobals();
         var mapAvailableCards = Globals.mapAvailableCards;
-
-        Deckbuilder.create(15);
+        listPlayers.add("1");
+        listPlayers.add("12");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+        listPlayers.add("123");
+  
 
         // speichert den Prefix in einer Variable
         var prefix = "&";
@@ -92,10 +101,23 @@ public class Main {
                         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
                         // übertprüft ob .size größer als 4 und kleiner als 50 ist
                         if (command.get(0).equalsIgnoreCase(prefix + "buildDeck")) {
-                            if (listPlayers.size() > 4 || listPlayers.size() < 50) {
-                                /* listCustomDeck = Deckbuilder.create(listPlayers.size()); */
-                            } else {
-                                channel.createMessage("noch nicht gemügend spieler wurden registriert").block();
+                            System.out.println(listPlayers.size() + "AAAAAAAAA");
+                            if (listPlayers.size() > 4 || listPlayers.size() < 35) {
+                                listCustomDeck = Deckbuilder.create(listPlayers.size());
+                                if(listCustomDeck != null){
+                                    channel.createMessage("------ success! ------- \n This might take a moment to load").block();
+
+                                    for (int i = 0; i < listCustomDeck.size(); i++) {
+                                        channel.createMessage("**Karte " + (i+1) + ":** " + 
+                                        listCustomDeck.get(i).name + " ----- **Value:** " + listCustomDeck.get(i).value + "\n" ).block();    
+                                    }
+                                    channel.createMessage("**Total Value**: " + Deckbuilder.totalCardValue(listCustomDeck)).block();
+                                }else{
+                                    channel.createMessage("something went wrong").block();
+                                }
+
+                            } else if(listPlayers.size() < 5) {
+                                channel.createMessage("noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu machen").block();
                             }
 
                         }
@@ -114,7 +136,7 @@ public class Main {
                                 channel.createEmbed(spec -> {
                                     spec.setColor(color).setTitle(cardName).setDescription(message);
 
-                                });
+                                }).block();
 
                             } else {
                                 channel.createMessage("card not found");

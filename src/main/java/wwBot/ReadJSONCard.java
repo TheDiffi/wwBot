@@ -44,31 +44,25 @@ public class ReadJSONCard {
          
         //Get card name as String
         String name = (String) cardJSONObject.get("name");    
-        System.out.println(name);
          
         //Get value as an int
         int value = Integer.parseInt((String) cardJSONObject.get("value"));  
-        System.out.println(value);
 
         //Get priority as int
         int priority = Integer.parseInt((String) cardJSONObject.get("priority"));  
-        System.out.println(priority);
 
         //Get minPlayers as int
         int minPlayers = Integer.parseInt((String) cardJSONObject.get("minPlayers"));  
-        System.out.println(minPlayers);
          
         //Get unique as a Boolean
         boolean unique = Boolean.parseBoolean((String)cardJSONObject.get("unique"));    
-        System.out.println(unique);
 
         //Get friendly as a Boolean
         boolean friendly = Boolean.parseBoolean((String)cardJSONObject.get("friendly"));    
-        System.out.println(friendly);
 
         //Get description as a String
         String description = (String) cardJSONObject.get("description");    
-        System.out.println(description);
+        
 
 
         Card cardObj = new Card();

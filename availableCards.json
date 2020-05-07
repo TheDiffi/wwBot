@@ -46,7 +46,7 @@
     {
         "Card": { 
             "name": "Amor",
-            "value": "–3",
+            "value": "-3",
             "friendly": "true",
             "unique": "true",
             "priority": "70",
@@ -134,7 +134,7 @@
     {
         "Card": { 
             "name": "Lykanthrophin",
-            "value": "–1",
+            "value": "-1",
             "friendly": "true",
             "unique": "true",
             "priority": "35",
@@ -167,7 +167,7 @@
     {
         "Card": { 
             "name": "Pazifistin",
-            "value": "–2",
+            "value": "-2",
             "friendly": "true",
             "unique": "true",
             "priority": "20",
@@ -234,7 +234,7 @@
         "Card": { 
             "name": "Günstling",
             "value": "-6",
-            "friendly": "true",
+            "friendly": "false",
             "unique": "true",
             "priority": "20",
             "minPlayers": "0",
@@ -245,7 +245,7 @@
         "Card": { 
             "name": "Zaubermeisterin",
             "value": "-3",
-            "friendly": "true",
+            "friendly": "false",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -275,7 +275,52 @@
             "minPlayers": "0",
             "description": "Der Säufer wählt am Anfang jeder Nacht eine Person aus, bei der er die Nacht verbringen will. Wenn ihn die Werwölfe Nachts umbringen wollen, überlebt er, da er nicht zu Hause ist. Sollten die Werwölfe allerdings die Person umbringen bei der er die Nacht verbringt, stirbt er ebenfalls. Der Säufer kann nicht zwei Nächte hintereinander bei der gleichen Person trinken gehen.   "
         }
+    },
+    {
+        "Card": { 
+            "name": "Wolfsjunges",
+            "value": "-8",
+            "friendly": "false",
+            "unique": "true",
+            "priority": "5",
+            "minPlayers": "0",
+            "description": "Das Wolfsjunge gehört zu den Werwölfen und wacht in der Nacht zusammen mit diesen auf. Wenn das Wolfsjunge getötet wird, dürfen die Werwölfe in der kommenden Nacht zwei Opfer auswählen. Die Werwölfe dürfen sich zusammen mit dem Wolfsjungen darauf einigen, das Wolfsjunge zu opfern (alle Werwölfe und das Wolfsjunge müssen dabei zustimmen). Als Ausgleich für dieses Opfer dürfen die Werwölfe in der gleichen Nacht sofort nach der Opferung des Wolfsjungen noch zwei weitere Dorfbewohner  auswählen, die ebenfalls sterben."
+        }
+    },
+    {
+        "Card": { 
+            "name": "Alte Vettel",
+            "value": "1",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": "Jede Nacht belegt die Alte Vettel einen Spieler mit einem Fluch. Der verfluchte Spieler muss zu Beginn des folgenden Tags für diesen einen Tag aus dem Kreis heraustreten und darf nicht an der Diskussion und den Abstimmungen teilnehmen (er darf auch nicht das Opfer der Abstimmung sein). Die Alte Vettel darf den Fluch nicht auf sich selber sprechen. Alternative: Nachdem das erste Opfer zurückgekehrt ist, darf es in der folgenden Nacht das nächste Ziel aussuchen etc. Sollte das Ziel des Fluchs in der Nacht sterben, spricht die Alte Vettel in der kommenden Nacht einen neuen Fluch auf einen Spieler.  "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Alter Mann",
+            "value": "0",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": "Der Alte Mann stirbt in der x. Nacht, wobei x die Anzahl der lebenden Werwölfe plus 1 ist. Das heißt, wenn ein Werwolf während der ersten Tage durch Lynchen (etc.) getötet wird, stirbt der Alte Mann früher, als er anfangs gedacht hat. (Nehmen beispielsweise fünf Werwölfe am Spiel teil, stirbt der Alte Mann in der sechsten Nacht. Wird aber ein Werwolf während der ersten vier Tage getötet, stirbt der Alte Mann schon in der fünften Nacht.) Der Tod des Alten Manns geschieht zusätzlich zu allen anderen Todesfällen (durch Werwölfe etc.). Wenn den Dorfbewohnern die genaue Anzahl Werwölfe nicht bekannt ist, muss der Moderator darauf achten, den Tod des Alten Manns bekannt zu geben. "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Aussätzige",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": "Wenn die Werwölfe die Aussätzige töten, dürfen sie in der folgenden Nacht kein neues Opfer wählen, da sie vorübergehend selbst krank werden. Wenn das Spiel ohne Bekanntgabe der verstorbenen Charaktere gespielt wird, wählen die Werwölfe auch in der nächsten Nacht ein Opfer, das aber nicht stirbt. Wenn der Charakter aufgedeckt wird, wählen die Werwölfe kein Opfer aus."
+        }
     }
+
 
 
 

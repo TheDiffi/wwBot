@@ -11,8 +11,12 @@ public class Deckbuilder {
         var totalValue = 0;
         var listDeck = new ArrayList<Card>();
 
+        if(playerAmount < 5 || playerAmount > 35){
+            return null;
+        }
+
         // add Seher
-        int numbSeher = playerAmount > 17 ? 2 : 1;
+        int numbSeher = playerAmount > 18 ? 2 : 1;
         addMultiple(numbSeher, availableCards.get("Seher"), listDeck);
         availableCards.get("Seher").unique = false;
 
@@ -26,7 +30,7 @@ public class Deckbuilder {
 
         // add Spezialkarten
         int numbSpezialkarten = playerAmount - (numbDorfbewohner + numbWerwölfe + numbSeher);
-        int numbAdjustCards = (int) Math.ceil(numbSpezialkarten/3);
+        int numbAdjustCards = numbSpezialkarten != 0 ? (int) (numbSpezialkarten/3)+1 : 0;
 
         // add random specialcards außer so viele wie "Ajustierende Karten" sind und setzt den unique Wert der hinzugefügten Karte auf false
        
@@ -38,12 +42,13 @@ public class Deckbuilder {
        
         
         // add last special-card, with considering card value of all cards
-        for (var card : listDeck) {
-            totalValue += card.value;
-        }
+        
 
         //wird so oft ausgeführt wie "Ajustierende Karten" sind
         for (int i = 0; i < numbAdjustCards; i++) {
+             // add last special-card, with considering card value of all cards
+            totalValue = totalCardValue(listDeck);
+
             //kalkuliert die summe jeder Karte. Falls die Summe der Karte kleiner ist als die Summe der bisherigen wird sie in mallestDifferenceCard gespeichert. 
             Card smallestDifferenceCard = null;
             for (var card : availableCards.values()) {
@@ -60,9 +65,9 @@ public class Deckbuilder {
             //nachdem alle Karten überprüft wurden wird die Karte, welche Total Value am nächsten zu 0 bringt, zum Deck hinzugefügt
             listDeck.add(smallestDifferenceCard);
             availableCards.get(smallestDifferenceCard.name).unique = false;
-    }
+        }
 
-        
+        totalValue = totalCardValue(listDeck);
 
         return listDeck;
     }
@@ -95,6 +100,15 @@ public class Deckbuilder {
         System.out.println("oops, no place for spezialkarten");
 
         return null;
+    }
+
+    //summiert die Values aller karten in der liste
+    public static int totalCardValue(List<Card> list){
+        int totalValue = 0;
+        for (var card : list) {
+            totalValue += card.value;
+        }
+        return totalValue;
     }
 
 }
