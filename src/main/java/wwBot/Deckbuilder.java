@@ -5,15 +5,20 @@ import java.util.List;
 
 public class Deckbuilder {
 
-    List availableCards;
-    int totalCardValue;
-    List<Cards> deck = new ArrayList<>();
+    
 
-
-
-    public static List <Cards> create (int playerAmount) {
-
+    public static List<Card> create(int playerAmount) {
+        var availableCards = globals;
+        int totalCardValue;
+        var deckList = new ArrayList<Card>();
         
+
+        // add 1 Seher pro deck
+        deckList.add();
+
+        // add werwölfe
+        int numbWerwölfe = (playerAmount - 2) / 3;
+
 
 
     return deck; 
