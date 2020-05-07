@@ -17,7 +17,7 @@ public class ReadJSONCard {
 
         
         var mapAvailableCards = new HashMap<String, Card>();
-
+        
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
         FileReader reader = new FileReader("availableCards.json");

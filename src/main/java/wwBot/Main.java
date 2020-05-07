@@ -106,7 +106,7 @@ public class Main {
                             var requestedCard = mapAvailableCards.get(cardName);
                             if (requestedCard != null) {
                                 String message = "Wert: " + Integer.toString(requestedCard.value) + "\n"
-                                        + "Beschreibung: " + requestedCard.description;
+                                        + "Beschreibung: " + requestedCard.description;    
                                 var color = requestedCard.friendly ? Color.GREEN : Color.RED;
 
                                 channel.createEmbed(spec -> {
