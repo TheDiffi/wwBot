@@ -39,7 +39,7 @@ public class Main {
         client.getEventDispatcher().on(MessageCreateEvent.class)
                 .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false))
                 .subscribe(event -> {
-                    // messageContent speichert den Inhalt der message in einer Variable
+                    // messageContent speichert den Inhalt der Message in einer Variable
                     // command teilt diesen Inhalt bei einem Leerzeichen und speicher dies in einer
                     // Liste
                     String messageContent = event.getMessage().getContent().orElse("");
@@ -62,7 +62,8 @@ public class Main {
                             event.getMessage().getChannel().block().createMessage("Pong!").block();
                         }
 
-
+                        //TODO: erstelle help
+                        //TODO: erstelle tutorial
 
                         //Commands der Lobby Phase
                         // join füght den user zu listPlayers hinzu

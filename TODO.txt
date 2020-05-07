@@ -28,22 +28,26 @@ Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
         
 
     Verfügbaren Karten:
-    Die verfügbaren Karten werden in einer .json Datei gespeichert mit den Parametern: Kartenname, Wert, Einmaligkeit(z.b. Seher = true; Dorfbewohner = false).
+    Die verfügbaren Karten werden in einer .json Datei gespeichert mit den Parametern: Kartenname, Wert, Einmaligkeit, (z.b. Seher = true; Dorfbewohner = false).
     Diese Datei wird gelesen und jede Karte als Objekt gespeichert welches (Kartenname, Wert, Einmaligkeit) beinhaltet.
     Die Objekte werden in einer liste gespeichert um von addCard und Deckbuilder(algorithmus) aufgerufen werden zu können.
         TODO: implementiere JSONReader (aus discordLoungeBot)
-        TODO: implementiere funktionen "StringToJson" und "JsonToString" 
         TODO: erstelle Objekt für verfügbare Karten mit den Parametern (Name des Objektes sollte Kartenname sein)
         TODO: erstelle eine Datei welche alle verfügbaren Karten beinhaltet und lade diese in eine Liste
         TODO: lade die Karten aus der Datei als Objekte in eine Liste (Name des Objektes sollte Kartenname sein)
 
     Deckbuilder:
-    Der Deckbuilder sollte als einzelne Funktion aufrufbar sein, welche die anzahl der Player als parameter nimmt und eine Liste aus Karten Objekten zurückgibt (listDeckbuilder)
+    Der Deckbuilder sollte als einzelne Funktion aufrufbar sein, welche die anzahl der Player als parameter nimmt und eine Liste aus Karten Objekten zurückgibt 
+    (listDeckbuilder)
         TODO: mache algorithmus lol
 
     CustomDeck:
     Das Custom Deck lässt Player selbst ein Deck erstellen, indem es den Player Karten hinzufügen und entfernen lässt.
     Diese Karten werden in listCustomDeck gespeichert als Karten Objekte gespeichert.
+        TODO: erstelle addCard
+        TODO: erstelle removeCard
+        TODO: showCaddCard
+        TODO: calculateCardValue
 
     DistribuiteCards:
     Nachdem der User sich zwischen dem CustomDeck oder dem Deckbuilder entschieden hat, müssen die Karten zufällig auf die Player verteilt werden
