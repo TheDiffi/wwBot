@@ -22,8 +22,8 @@
         }
     },
     {
-        "Card": {
-            "unique": "true",
+        "Card": { 
+            "unique": "false",
             "name": "Seher",
             "priority": "80",
             "value": "7",
@@ -31,5 +31,256 @@
             "friendly": "true",
             "description": "Jede Nacht deutet die Seherin auf einen Spieler, und der Moderator zeigt ihr den „Daumen hoch“, wenn es sich um einen Dorfbewohner handelt, oder „Daumen runter“, wenn es ein Werwolf ist. Es gibt zwei Karten der Seherin: Eine weibliche und eine männliche. In großen Partien kann man beide Karten gleichzeitig verwenden, indem man die Seherin und den Seher getrennt aufruft und so beiden erlaubt, Informationen zu einem Spieler zu erhalten. In dieser Anleitung ist oft nur von der Seherin die Rede. Gemeint sind aber immer beide Charaktere."
         }
+    },
+    {
+        "Card": { 
+            "name": "Verfluchter",
+            "value": "-3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "100",
+            "minPlayers": "0",
+            "description": "Der Verfluchte beginnt das Spiel zuerst auf der Seite der Dorfbewohner (und wird von der Seherin vorerst als Dorfbewohner gesehen). Wenn der Verfluchte von den Werwölfen angegriffen wird, stirbt er nicht, sondern wird in der kommenden Nacht ebenfalls ein Werwolf (und wird von nun an von der Seherin als Werwolf gesehen). Der Moderator ruft in jeder Nacht den Verfluchten gesondert auf (auch nachdem er ein Werwolf geworden ist, so dass die anderen Spieler im Unklaren darüber bleiben, ob und wer bereits gewählt wurde) und zeigt ihm den „Daumen hoch“, wenn er noch Dorfbewohner ist, und „Daumen runter“, wenn er zum Werwolf wurde. Sobald der Verfluchte ein Werwolf ist, öffnet er zusammen mit den anderen Werwölfen die Augen.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Amor",
+            "value": "–3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "70",
+            "minPlayers": "0",
+            "description": "Amor erwacht nur während der ersten Nacht und zeigt auf zwei beliebige Spieler (das Geschlecht ist dabei unerheblich). Diese Spieler werden ein Liebespaar und sehen, wer der andere ist (siehe „Liebespaar“ im Abschnitt Wechselnde Gruppen). Wenn einer der beiden getötet wird, stirbt auch der andere sofort aufgrund seines gebrochenen Herzens. Alternative: Fügen Sie Amor als zusätzliche Karte hinzu, wenn Sie die Charaktere verteilen. Nachdem Amor das Liebespaar bestimmt hat, erhält er die übrig gebliebene Charakterkarte und spielt diese im weiteren Spiel.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Aura-Seherin",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": " Die Aura-Seherin sucht nach Spielern mit speziellen Fähigkeiten, die nicht nur einfache Dorfbewohner oder Werwölfe sind. Der Moderator sollte vor Spielbeginn festlegen, was spezielle Fähigkeiten sind. Beim nächtlichen Aufruf der Aura-Seherin deutet diese auf einen der Mitspieler und erhält von Moderator den „Daumen hoch“ für eine spezielle Fähigkeit und „Daumen runter“ für einen normalen Dorfbewohner. Je mehr spezielle Charaktere im Spiel sind, desto mächtiger ist diese Seherin. Stellen Sie sicher, dass wenigstens ein „böser“ spezieller Charakter am Spiel teilnimmt, so dass die Aura-Seherin nicht nur Dorfbewohner aufsp  "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Alte Vettel",
+            "value": "1",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "50",
+            "minPlayers": "0",
+            "description": " Jede Nacht belegt die Alte Vettel einen Spieler mit einem Fluch. Der verfluchte Spieler muss zu Beginn des folgenden Tags für diesen einen Tag aus dem Kreis heraustreten und darf nicht an der Diskussion und den Abstimmungen teilnehmen (er darf auch nicht das Opfer der Abstimmung sein). Die Alte Vettel darf den Fluch nicht auf sich selber sprechen. Alternative: Nachdem das erste Opfer zurückgekehrt ist, darf es in der folgenden Nacht das nächste Ziel aussuchen etc. Sollte das Ziel des Fluchs in der Nacht sterben, spricht die Alte Vettel in der kommenden Nacht einen neuen Fluch auf einen Spieler.  "
+        }
+    },
+    {
+        "Card": { 
+            "name": " Harter Bursche",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "20",
+            "minPlayers": "0",
+            "description": "Wenn der Harte Bursche von den Werwölfen ausgewählt wird, stirbt er erst in der folgenden Nacht und nicht bereits in derselben   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Jäger",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "60",
+            "minPlayers": "0",
+            "description": "Wenn der Jäger getötet wird (unabhängig von Tag oder Nacht), feuert er sofort seine Waffe auf ein Ziel ab (oder in die Luft), indem er auf einen Spieler zeigt. Es findet keine Diskussion statt, bevor der Jäger schießt. Schießt er in die Luft, wird kein anderer Spieler getötet.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Leibwächter",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "55",
+            "minPlayers": "0",
+            "description": "Der Leibwächter wählt jede Nacht einen Mitspieler, den er beschützt (aber niemals zweimal hintereinander denselben Spieler). Dieser Spieler kann nachts nicht getötet werden. Alternative: Der Leibwächter darf keinen Spieler zweimal im gesamten Spiel beschützen. 2. Alternative: Der geschützte Spieler kann während des Tages nicht getötet werden (durch Lynchen oder andere Methoden).   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Hexe",
+            "value": "4",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "85",
+            "minPlayers": "0",
+            "description": "Die Hexe kann ihre Künste in der Nacht einmalig pro Spiel zum Heilen einsetzen, um einen Spieler vor dem sicheren Tod zu retten. Sie kann ihre Künste zusätzlich einmal pro Spiel zum Töten einsetzen, um einen Spieler ihrer Wahl zu töten. Der Moderator sollte die Hexe jede Nacht aufrufen und sie fragen, ob sie ihre beiden Fähigkeiten nutzen möchte, auch wenn sie bereits eine oder beide verwendet hat. Beide Fähigkeiten dürfen in derselben Nacht angewendet werden. Der Magier besitzt die gleichen Fähigkeiten wie die Hexe. Alternative: Die Hexe darf nur eine ihrer beiden Fähigkeiten im Spiel nutzen, darf aber bestimmen, welche dies ist.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Idiot",
+            "value": "2",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "15",
+            "minPlayers": "0",
+            "description": "Der Idiot stimmt immer für den Tod eines Spielers.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Lykanthrophin",
+            "value": "–1",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "35",
+            "minPlayers": "0",
+            "description": "Die Lykanthrophin besitzt ein unterdrücktes Werwolf-Gen und sieht für die Seherin wie ein Werwolf aus, auch wenn sie dies natürlich nicht ist.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Paranormaler Ermittler",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": " Einmal pro Spiel darf der Paranormale Ermittler in der Nacht auf einen Spieler zeigen und bekommt die Information, ob wenigstens einer der beiden Nachbarn des Ausgewählten oder der Ausgewählte selbst ein Werwolf ist.  "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Magier",
+            "value": "4",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "65",
+            "minPlayers": "0",
+            "description": "Der Magier kann seine Künste einmal pro Spiel in einer Nacht zum Heilen einsetzen, um einen Spieler vor dem sicheren Tod zu retten. Er kann seine Künste zusätzlich einmal pro Spiel zum Töten einsetzen, um einen Spieler seiner Wahl zu töten. Der Moderator sollte den Magier jede Nacht aufrufen und ihn fragen, ob er seine beiden Fähigkeiten nutzen möchte, auch wenn er sie bereits verwendet hat. Beide Fähigkeiten dürfen in derselben Nacht angewendet werden. Die Hexe besitzt die gleichen Fähigkeiten wie der Magier. Alternative: Der Magier kann im gesamtem Spiel seine Fähigkeiten zweimal beliebig nutzen: um entweder zweimal zu heilen, je einmal zu heilen und zu töten oder um zweimal zu töten. Er kann beide Aktionen in der gleichen Nacht ausführen."
+        }
+    },
+    {
+        "Card": { 
+            "name": "Pazifistin",
+            "value": "–2",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "20",
+            "minPlayers": "0",
+            "description": "Die Pazifistin stimmt immer dafür, dass ein Spieler überlebt. Die Pazifistin ist eine gute Hilfe für die Werwölfe, da sie eine Stimme mehr für das Überleben der Spieler am Tag sichert und so die Werwölfe davor bewahren kann, getötet oder gelyncht zu werden. Dieser Charakter wird zusammen mit dem Idioten zufällig in den Kartenstapel gemischt. Die Spieler sollten zu Spielbeginn nicht wissen, ob einer oder beide der Charaktere teilnehmen. Alternative: Die Pazifistin darf weder eine Nominierung durchführen noch eine Nominierung bestätigen und muss zusätzlich immer gegen den Tod eines Spielers stimmen.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Märtyrerin",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "30",
+            "minPlayers": "0",
+            "description": "Die Märtyrerin kann sich anstelle jedes Spielers opfern, der gelyncht werden soll. Diese Entscheidung muss sie direkt nach der Abstimmung treffen, bevor der Charakter des Opfers aufgedeckt wird. Der Moderator sollte fragen: „Ihr habt euch entschieden, diesen Spieler zu lynchen. Möchte sich die Märtyrerin anstelle dieses Spielers opfern?“ Alternative: Die Märtyrerin wird jede Nacht aufgerufen, nachdem die Werwölfe ein Opfer ausgesucht haben, um sich anstelle des Gewählten töten zu lassen. Das eigentliche Opfer überlebt, und die Märtyrerin stirbt an dessen Stelle.    "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Priester",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": "Einmal während des Spiels darf der Priester in der Nacht einen Spieler bestimmen, der durch die Heilige Macht geschützt ist. Der nächste Versuch, diesen Spieler zu töten, scheitert auf jeden Fall. Alternative: Einmal pro Spiel darf der Priester den Charakter eines verstorbenen Spielers kennen lernen. Diese Fähigkeit wird nur in Spielen angewendet, in denen die verstorbenen Charaktere nicht bekannt gegeben werden und taucht somit eigentlich nur in der Variante „Keine Informationen“ auf.  "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Prinz",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "35",
+            "minPlayers": "0",
+            "description": "Nachdem die Spieler diesen Charakter zum Lynchen bestimmt haben, wird bekannt gegeben, dass er der Prinz ist und somit an diesem Tag nicht gelyncht wird. Das Dorf fällt trotzdem sofort in tiefen Schlaf, obwohl das Lynchen 19 gescheitert ist. An einem folgenden Tag kann der Prinz wie jeder andere Spieler ganz normal gelyncht werden.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Unruhestifterin",
+            "value": "-2",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "20",
+            "minPlayers": "0",
+            "description": "Einmal während des Spiels darf die Unruhestifterin in der Nacht dem Moderator anzeigen, dass es am nächsten Tag zwei Hinrichtungen geben wird. Jede Nacht sollte der Moderator die Unruhestifterin aufrufen: „Möchte die Unruhestifterin das Dorf ein wenig aufmischen?“ Wenn die Unruhestif­terin das wirklich möchte, sollte der Moderator das Dorf nach der ersten Hinrichtung dazu auffordern, einen weiteren Spieler zu lynchen   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Seher-Lehrling",
+            "value": "4",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "20",
+            "minPlayers": "0",
+            "description": "Der Seher-Lehrling übernimmt das Amt der Seherin, wenn diese getötet wird. Bis die Seherin getötet worden ist, hält der SeherLehrling seine Augen geschlossen, wenn nachts die Seherin aufgerufen wird. Erst in der Nacht nach dem Tod der alten Seherin übernimmt der Seher-Lehrling das Amt der Seherin und öffnet die Augen, sobald die Seherin aufgerufen wird. Wenn dem Seher-Lehrling zu diesem Zeitpunkt nicht bekannt sein sollte, dass die Seherin verstorben ist, muss der Moderator dem Spieler beim Aufrufen auf die Schulter klopfen. Alternative: Zusätzlich zur Amtsübernahme nach dem Tod der Seherin zeigt der Seher-Lehrling auch schon vorher jede Nacht auf einen Mitspieler. Er erfährt aber vorerst nur dann, ob dieser ein Werwolf ist oder nicht, wenn er in einer weiteren Nacht ein zweites Mal auf denselben Spieler zeigt. Der Moderator muss ihn dafür zwar jede Nacht getrennt von der Seherin aufrufen und zusätzliche Notizen machen, es ermöglicht dem SeherLehrling aber, etwas zum Spiel beizutragen, ohne dass die Seherin dafür sterben muss.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Günstling",
+            "value": "-6",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "20",
+            "minPlayers": "0",
+            "description": "Für die normale Verwendung dieses Charakters benötigen Sie keine Karte. In der ersten Nacht bestimmen die Werwölfe einen Spieler, der zum Günstling der Werwölfe ernannt wird und auf die Seite der Werwölfe wechselt. Nachdem der Moderator dem gewählten Spieler auf die Schulter geklopft hat, öffnet dieser die Augen und sieht, wer die Werwölfe sind. In den folgenden Nächten wacht er aber nicht zusammen mit den Werwölfen auf. Die Seherin sieht den Günstling als Dorfbewohner. Wenn der Günstling einen anderen speziellen Charakter hat, bleibt dieser Charakter erhalten (somit ist es beispielsweise möglich, eine Seherin als Günstling zu haben, was aber sehr schlecht für die Dorfbewohner wäre). Wenn Sie sowohl mit Werwölfen als auch mit Vampiren spielen, erhält jedes Team einen Günstling. Alternative: Verteilen Sie diese Karte als regulären Charakter und zeigen Sie sowohl dem Günstling, wer die Werwölfe sind. als auch den Werwölfen, wer der Günstling ist. Die Verwendung der Karte verhindert, dass der Günstling einen doppelten Charakter bekommt. In beiden Versionen ist der Günstling ein starker Charakter auf Seiten der Werwölfe. Er funktioniert am besten in einer Umgebung, in der der Moderator hinter den Spielern herumlaufen kann, um ihnen unbemerkt auf die Schulter klopfen zu können.   "
+        }
+    },
+    {
+        "Card": { 
+            "name": "Zaubermeisterin",
+            "value": "-3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "25",
+            "minPlayers": "0",
+            "description": "Die Zaubermeisterin sucht jede Nacht die Seherin (der Moderator zeigt ihr „Daumen hoch“, wenn sie auf die Seherin zeigt). Die Werwölfe wissen nicht, wer die Zaubermeisterin ist, und auch die Zaubermeisterin weiß nichts über die Werwölfe. Die Seherin sieht die Zaubermeisterin als Dorf­bewohner. Alternative: Der Moderator zeigt der Zaubermeisterin in der ersten Nacht, wer die Werwölfe sind. Dies ist ein großer Vorteil für die Gruppe der Werwölfe.   "
+        }
     }
+    ,
+    {
+        "Card": {  
+            "name": "Doppelgängerin",
+            "value": "-2",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "30",
+            "minPlayers": "0",
+            "description": "Die Doppelgängerin wählt in der ersten Nacht einen Mitspieler aus. Wenn dieser in einer der folgenden Nächte getötet wird, übernimmt sie heimlich dessen Charakter. Bis das Ziel nachts getötet wurde und die Doppelgängerin eventuell einen „bösen“ Charakter erhält, befindet sich die Doppelgängerin auf der Seite der Dorfbewohner. Stirbt der gewählte Spieler am Tag, erhält die Doppelgängerin den entsprechenden neuen Charakter nicht! Der Moderator muss der Doppelgängerin genau zeigen, welchen neuen Charakter sie spielt. Die Doppelgängerin ist für die Seherin eine Dorfbewohnerin, bis sie eventuell zu einem Werwolf wird. Alternative: Die Doppelgängerin wählt in der ersten Nacht einen Mitspieler und erhält sofort dessen Charakter (der eigentliche Spieler behält ebenfalls seinen zugelosten Charakter). Die Doppelgängerin muss jede Nacht gesondert aufgerufen werden, um dann ihre erhaltene Fähigkeit nutzen zu können (wenn sie keinen speziellen Charakter erhalten hat, sollte sie trotzdem vom Moderator aufgerufen werden, um die anderen Spieler im Unklaren zu lassen, wen die Doppelgängerin kopiert). Während diese Alternative sehr viel Spaß machen kann, kommt es gelegentlich zu sich sehr hinterhältig veränderten Spielbalancen, je nachdem, welchen Charakter die Doppelgängerin erhält.   "
+        }
+    }
+    ,
+    {
+        "Card": { 
+            "name": "Säufer",
+            "value": "3",
+            "friendly": "true",
+            "unique": "true",
+            "priority": "35",
+            "minPlayers": "0",
+            "description": "Der Säufer wählt am Anfang jeder Nacht eine Person aus, bei der er die Nacht verbringen will. Wenn ihn die Werwölfe Nachts umbringen wollen, überlebt er, da er nicht zu Hause ist. Sollten die Werwölfe allerdings die Person umbringen bei der er die Nacht verbringt, stirbt er ebenfalls. Der Säufer kann nicht zwei Nächte hintereinander bei der gleichen Person trinken gehen.   "
+        }
+    }
+
+
+
+
+
+
+
 ]
