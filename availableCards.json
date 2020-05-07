@@ -1,0 +1,29 @@
+[
+    {
+        "Card": {
+            "unique": "false",
+            "name": "Werwolf",
+            "priority": "100",
+            "value": "-6",
+            "minPlayers": "3"
+        }
+    },
+    {
+        "Card": {
+            "unique": "false",
+            "name": "Dorfbewohner",
+            "priority": "100",
+            "value": "1",
+            "minPlayers": "3"
+        }
+    },
+    {
+        "Card": {
+            "unique": "true",
+            "name": "Seher",
+            "priority": "80",
+            "value": "7",
+            "minPlayers": "3"
+        }
+    }
+]

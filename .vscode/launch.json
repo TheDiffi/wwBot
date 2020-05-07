@@ -10,7 +10,7 @@
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
-        }
+        },
         {
             "type": "java",
             "name": "Debug (Launch)-Main<wwBot>",

@@ -17,15 +17,13 @@ public class Main {
 
     public static List<String> listPlayers = new ArrayList<>();
 
+
     public static void main(String[] args) throws Exception {
+
+        ReadJSONCard.readAvailableCards();
 
         //TODO: implementiere JSONReader (aus discordLoungeBot) ask David wenn du Sochen in an eigenen Datei permanent speichern willsch
         //TODO: erstelle eine Datei welche alle verfügbaren Karten beinhaltet und lade diese in eine Liste 
-
-
-
-
-
 
 
 
@@ -105,8 +103,7 @@ public class Main {
                 
 
                     //TODO: 
-                    
-
+                  
                 }
                 
         }); 
@@ -115,6 +112,8 @@ public class Main {
         client.login().block();
     
     }
+
+  
 
     //
     public static List<String> readJsonStringList (String filename) throws Exception{
