@@ -60,12 +60,23 @@ public class ReadJSONCard {
         boolean unique = Boolean.parseBoolean((String)cardJSONObject.get("unique"));    
         System.out.println(unique);
 
+        //Get friendly as a Boolean
+        boolean friendly = Boolean.parseBoolean((String)cardJSONObject.get("friendly"));    
+        System.out.println(friendly);
+
+        //Get description as a String
+        String description = (String) cardJSONObject.get("description");    
+        System.out.println(description);
+
+
         Card cardObj = new Card();
         cardObj.name = name;
         cardObj.value = value;
         cardObj.priority = priority;
         cardObj.minPlayers = minPlayers;
         cardObj.unique = unique;
+        cardObj.description = description;
+        cardObj.friendly = friendly;
 
         return cardObj;
 

@@ -5,7 +5,9 @@
             "name": "Werwolf",
             "priority": "100",
             "value": "-6",
-            "minPlayers": "3"
+            "minPlayers": "0",
+            "friendly": "false",
+            "description": "Während der ersten Nacht lernen die Werwölfe die Identität der anderen Werwölfe kennen. In jeder folgenden Nacht müssen sich die Werwölfe gemeinsam auf ein Opfer einigen, das daraufhin getötet wird. Wenn sich die Werwölfe binnen einer Minute nicht auf ein Opfer einigen können, dürfen sie in dieser Nacht keinen Spieler töten. Die Werwölfe dürfen während der Nacht keinen anderen Werwolf als Opfer auswählen. Werwölfe versuchen während des Tages ihren wahren Charakter zu verheimlichen."
         }
     },
     {
@@ -14,7 +16,9 @@
             "name": "Dorfbewohner",
             "priority": "100",
             "value": "1",
-            "minPlayers": "3"
+            "minPlayers": "0",
+            "friendly": "true",
+            "description": "Die Aufgabe der Dorfbewohner ist es, die Werwölfe zu finden und tagsüber zu lynchen."
         }
     },
     {
@@ -23,7 +27,9 @@
             "name": "Seher",
             "priority": "80",
             "value": "7",
-            "minPlayers": "3"
+            "minPlayers": "0",
+            "friendly": "true",
+            "description": "Jede Nacht deutet die Seherin auf einen Spieler, und der Moderator zeigt ihr den „Daumen hoch“, wenn es sich um einen Dorfbewohner handelt, oder „Daumen runter“, wenn es ein Werwolf ist. Es gibt zwei Karten der Seherin: Eine weibliche und eine männliche. In großen Partien kann man beide Karten gleichzeitig verwenden, indem man die Seherin und den Seher getrennt aufruft und so beiden erlaubt, Informationen zu einem Spieler zu erhalten. In dieser Anleitung ist oft nur von der Seherin die Rede. Gemeint sind aber immer beide Charaktere."
         }
     }
 ]
