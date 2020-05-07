@@ -24,6 +24,8 @@ public class Main {
         Globals.loadGlobals();
         var mapAvailableCards = Globals.mapAvailableCards;
 
+        Deckbuilder.create(15);
+
         // speichert den Prefix in einer Variable
         var prefix = "&";
 
