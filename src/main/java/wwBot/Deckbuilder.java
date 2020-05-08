@@ -6,8 +6,12 @@ import java.util.Map;
 
 public class Deckbuilder {
 
-    public static List<Card> create(int playerAmount) {
-        var availableCards = Globals.mapAvailableCards;
+    public static List<Card> create(int playerAmount) throws Exception {
+
+        //Create a deep copy of available cards
+        
+        var availableCardsDeckbuilder =  ReadJSONCard.readAvailableCards();
+        
         var totalValue = 0;
         var listDeck = new ArrayList<Card>();
 
@@ -17,16 +21,16 @@ public class Deckbuilder {
 
         // add Seher
         int numbSeher = playerAmount > 18 ? 2 : 1;
-        addMultiple(numbSeher, availableCards.get("Seher"), listDeck);
-        availableCards.get("Seher").unique = false;
+        addMultiple(numbSeher, availableCardsDeckbuilder.get("Seher"), listDeck);
+        availableCardsDeckbuilder.get("Seher").unique = false;
 
         // add Werwölfe
-        int numbWerwölfe = (int) Math.pow(((playerAmount - 2) / 3), 0.85);
-        addMultiple(numbWerwölfe, availableCards.get("Werwolf"), listDeck);
+        int numbWerwölfe = (int) Math.pow(((playerAmount - 2) / 3d), 0.85);
+        addMultiple(numbWerwölfe, availableCardsDeckbuilder.get("Werwolf"), listDeck);
 
         // add Dorfbewohner
         int numbDorfbewohner = (int) Math.pow(playerAmount * 1.3, 0.65);
-        addMultiple(numbDorfbewohner, availableCards.get("Dorfbewohner"), listDeck);
+        addMultiple(numbDorfbewohner, availableCardsDeckbuilder.get("Dorfbewohner"), listDeck);
 
         // add Spezialkarten
         int numbSpezialkarten = playerAmount - (numbDorfbewohner + numbWerwölfe + numbSeher);
@@ -35,9 +39,9 @@ public class Deckbuilder {
         // add random specialcards außer so viele wie "Ajustierende Karten" sind und setzt den unique Wert der hinzugefügten Karte auf false
        
         for (int i = 0; i < (numbSpezialkarten - numbAdjustCards); i++) {
-            var randomCard = getRandomSpezialkarte(numbSpezialkarten, availableCards);
+            var randomCard = getRandomSpezialkarte(numbSpezialkarten, availableCardsDeckbuilder);
             listDeck.add(randomCard);
-            availableCards.get(randomCard.name).unique = false;
+            availableCardsDeckbuilder.get(randomCard.name).unique = false;
         }
        
         
@@ -51,7 +55,7 @@ public class Deckbuilder {
 
             //kalkuliert die summe jeder Karte. Falls die Summe der Karte kleiner ist als die Summe der bisherigen wird sie in mallestDifferenceCard gespeichert. 
             Card smallestDifferenceCard = null;
-            for (var card : availableCards.values()) {
+            for (var card : availableCardsDeckbuilder.values()) {
                 if (card.unique) {
 
                     if (smallestDifferenceCard == null) {
@@ -64,7 +68,7 @@ public class Deckbuilder {
 
             //nachdem alle Karten überprüft wurden wird die Karte, welche Total Value am nächsten zu 0 bringt, zum Deck hinzugefügt
             listDeck.add(smallestDifferenceCard);
-            availableCards.get(smallestDifferenceCard.name).unique = false;
+            availableCardsDeckbuilder.get(smallestDifferenceCard.name).unique = false;
         }
 
         totalValue = totalCardValue(listDeck);
@@ -85,7 +89,7 @@ public class Deckbuilder {
         var probabilityMap = new ArrayList<Card>();
 
         for (var card : originalMap.values()) {
-            // Schaut ob die karte unique ist
+            // Schaut ob die karte einzigartig ist
             if (card.unique) {
                 addMultiple(card.priority, card, probabilityMap);
             }

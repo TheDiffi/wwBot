@@ -11,7 +11,7 @@ import org.json.simple.parser.JSONParser;
 public class ReadJSONCard {
 
     
-
+    
     @SuppressWarnings("unchecked")
     public static Map<String,Card> readAvailableCards() throws Exception {
 
@@ -37,7 +37,7 @@ public class ReadJSONCard {
     }
  
      
- 
+    //reads the Json to create a Card Object
     private static Card parseCardObject(JSONObject card) {
         //Get card object within list
         JSONObject cardJSONObject = (JSONObject) card.get("Card");
@@ -61,10 +61,13 @@ public class ReadJSONCard {
         boolean friendly = Boolean.parseBoolean((String)cardJSONObject.get("friendly"));    
 
         //Get description as a String
-        String description = (String) cardJSONObject.get("description");    
+        String description = (String) cardJSONObject.get("description"); 
+        
+        //Get nightSequence as int 
+        int nightSequence = Integer.parseInt((String) cardJSONObject.get("nightSequence"));
         
 
-
+        //writes the properties on the card Object
         Card cardObj = new Card();
         cardObj.name = name;
         cardObj.value = value;
@@ -73,6 +76,7 @@ public class ReadJSONCard {
         cardObj.unique = unique;
         cardObj.description = description;
         cardObj.friendly = friendly;
+        cardObj.nightSequence = nightSequence;
 
         return cardObj;
 
