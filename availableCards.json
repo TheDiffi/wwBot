@@ -38,7 +38,7 @@
             "value": "-3",
             "friendly": "true",
             "unique": "true",
-            "priority": "100",
+            "priority": "80",
             "minPlayers": "0",
             "description": "Der Verfluchte beginnt das Spiel zuerst auf der Seite der Dorfbewohner (und wird von der Seherin vorerst als Dorfbewohner gesehen). Wenn der Verfluchte von den Werwölfen angegriffen wird, stirbt er nicht, sondern wird in der kommenden Nacht ebenfalls ein Werwolf (und wird von nun an von der Seherin als Werwolf gesehen). Der Moderator ruft in jeder Nacht den Verfluchten gesondert auf (auch nachdem er ein Werwolf geworden ist, so dass die anderen Spieler im Unklaren darüber bleiben, ob und wer bereits gewählt wurde) und zeigt ihm den „Daumen hoch“, wenn er noch Dorfbewohner ist, und „Daumen runter“, wenn er zum Werwolf wurde. Sobald der Verfluchte ein Werwolf ist, öffnet er zusammen mit den anderen Werwölfen die Augen.   "
         }
@@ -49,7 +49,7 @@
             "value": "-3",
             "friendly": "true",
             "unique": "true",
-            "priority": "70",
+            "priority": "90",
             "minPlayers": "0",
             "description": "Amor erwacht nur während der ersten Nacht und zeigt auf zwei beliebige Spieler (das Geschlecht ist dabei unerheblich). Diese Spieler werden ein Liebespaar und sehen, wer der andere ist (siehe „Liebespaar“ im Abschnitt Wechselnde Gruppen). Wenn einer der beiden getötet wird, stirbt auch der andere sofort aufgrund seines gebrochenen Herzens. Alternative: Fügen Sie Amor als zusätzliche Karte hinzu, wenn Sie die Charaktere verteilen. Nachdem Amor das Liebespaar bestimmt hat, erhält er die übrig gebliebene Charakterkarte und spielt diese im weiteren Spiel.   "
         }
@@ -115,7 +115,7 @@
             "value": "4",
             "friendly": "true",
             "unique": "true",
-            "priority": "85",
+            "priority": "95",
             "minPlayers": "0",
             "description": "Die Hexe kann ihre Künste in der Nacht einmalig pro Spiel zum Heilen einsetzen, um einen Spieler vor dem sicheren Tod zu retten. Sie kann ihre Künste zusätzlich einmal pro Spiel zum Töten einsetzen, um einen Spieler ihrer Wahl zu töten. Der Moderator sollte die Hexe jede Nacht aufrufen und sie fragen, ob sie ihre beiden Fähigkeiten nutzen möchte, auch wenn sie bereits eine oder beide verwendet hat. Beide Fähigkeiten dürfen in derselben Nacht angewendet werden. Der Magier besitzt die gleichen Fähigkeiten wie die Hexe. Alternative: Die Hexe darf nur eine ihrer beiden Fähigkeiten im Spiel nutzen, darf aber bestimmen, welche dies ist.   "
         }
@@ -126,7 +126,7 @@
             "value": "2",
             "friendly": "true",
             "unique": "true",
-            "priority": "15",
+            "priority": "35",
             "minPlayers": "0",
             "description": "Der Idiot stimmt immer für den Tod eines Spielers.   "
         }
@@ -159,7 +159,7 @@
             "value": "4",
             "friendly": "true",
             "unique": "true",
-            "priority": "65",
+            "priority": "55",
             "minPlayers": "0",
             "description": "Der Magier kann seine Künste einmal pro Spiel in einer Nacht zum Heilen einsetzen, um einen Spieler vor dem sicheren Tod zu retten. Er kann seine Künste zusätzlich einmal pro Spiel zum Töten einsetzen, um einen Spieler seiner Wahl zu töten. Der Moderator sollte den Magier jede Nacht aufrufen und ihn fragen, ob er seine beiden Fähigkeiten nutzen möchte, auch wenn er sie bereits verwendet hat. Beide Fähigkeiten dürfen in derselben Nacht angewendet werden. Die Hexe besitzt die gleichen Fähigkeiten wie der Magier. Alternative: Der Magier kann im gesamtem Spiel seine Fähigkeiten zweimal beliebig nutzen: um entweder zweimal zu heilen, je einmal zu heilen und zu töten oder um zweimal zu töten. Er kann beide Aktionen in der gleichen Nacht ausführen."
         }
@@ -170,7 +170,7 @@
             "value": "-2",
             "friendly": "true",
             "unique": "true",
-            "priority": "20",
+            "priority": "25",
             "minPlayers": "0",
             "description": "Die Pazifistin stimmt immer dafür, dass ein Spieler überlebt. Die Pazifistin ist eine gute Hilfe für die Werwölfe, da sie eine Stimme mehr für das Überleben der Spieler am Tag sichert und so die Werwölfe davor bewahren kann, getötet oder gelyncht zu werden. Dieser Charakter wird zusammen mit dem Idioten zufällig in den Kartenstapel gemischt. Die Spieler sollten zu Spielbeginn nicht wissen, ob einer oder beide der Charaktere teilnehmen. Alternative: Die Pazifistin darf weder eine Nominierung durchführen noch eine Nominierung bestätigen und muss zusätzlich immer gegen den Tod eines Spielers stimmen.   "
         }
@@ -282,7 +282,7 @@
             "value": "-8",
             "friendly": "false",
             "unique": "true",
-            "priority": "5",
+            "priority": "10",
             "minPlayers": "0",
             "description": "Das Wolfsjunge gehört zu den Werwölfen und wacht in der Nacht zusammen mit diesen auf. Wenn das Wolfsjunge getötet wird, dürfen die Werwölfe in der kommenden Nacht zwei Opfer auswählen. Die Werwölfe dürfen sich zusammen mit dem Wolfsjungen darauf einigen, das Wolfsjunge zu opfern (alle Werwölfe und das Wolfsjunge müssen dabei zustimmen). Als Ausgleich für dieses Opfer dürfen die Werwölfe in der gleichen Nacht sofort nach der Opferung des Wolfsjungen noch zwei weitere Dorfbewohner  auswählen, die ebenfalls sterben."
         }
