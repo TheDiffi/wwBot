@@ -15,6 +15,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 
 public class Main {
 
@@ -22,7 +23,7 @@ public class Main {
     public static List<Card> listCustomDeck = new ArrayList<>();
     public static List<Card> listDeckbuilder = new ArrayList<>();
     public static List<Card> listFinalDeck = new ArrayList<>();
-    public static HashMap<String, Player> listPlayer = new HashMap<String, Player>();
+    public static HashMap<Snowflake, Player> listPlayer = new HashMap<Snowflake,Player>();
 
     public static void main(String[] args) throws Exception {
 
@@ -37,6 +38,7 @@ public class Main {
         User santa = null;
         User ente = null;
         User fanta = null;
+        
         listJoinedUsers.add(santa);
         listJoinedUsers.add(friedrich);
         listJoinedUsers.add(hannelore);
@@ -44,6 +46,7 @@ public class Main {
         listJoinedUsers.add(samuel);
         listJoinedUsers.add(ente);
         listJoinedUsers.add(fanta);
+        
 
         // speichert den Prefix in einer Variable
         var prefix = "&";
@@ -118,16 +121,20 @@ public class Main {
                                     // TODO Auto-generated catch block
                                     e.printStackTrace();
                                 }
-                                if(listDeckbuilder != null){
+                                if (listDeckbuilder != null) {
                                     channel.createMessage(printCardList(listDeckbuilder)).block();
-                                }else{
+                                } else {
                                     channel.createMessage("something went wrong").block();
                                 }
 
-                            } else if(listJoinedUsers.size() < 5) {
-                                channel.createMessage("noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu machen").block();
-                            } else if(listJoinedUsers.size() >= 35) {
-                                channel.createMessage("theoretisch könnte der bot bot mehr als 35 Spieler schaffen, aus Sicherheitsgründen ist dies jedoch deaktiviert").block();
+                            } else if (listJoinedUsers.size() < 5) {
+                                channel.createMessage(
+                                        "noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu machen")
+                                        .block();
+                            } else if (listJoinedUsers.size() >= 35) {
+                                channel.createMessage(
+                                        "theoretisch könnte der bot bot mehr als 35 Spieler schaffen, aus Sicherheitsgründen ist dies jedoch deaktiviert")
+                                        .block();
                             }
 
                         }
@@ -140,7 +147,7 @@ public class Main {
                             var requestedCard = mapAvailableCards.get(cardName);
                             if (requestedCard != null) {
                                 String message = "Wert: " + Integer.toString(requestedCard.value) + "\n"
-                                        + "Beschreibung: " + requestedCard.description;    
+                                        + "Beschreibung: " + requestedCard.description;
                                 var color = requestedCard.friendly ? Color.GREEN : Color.RED;
 
                                 channel.createEmbed(spec -> {
@@ -154,117 +161,130 @@ public class Main {
 
                         }
 
-                        if (command.get(0).equalsIgnoreCase(prefix + "showlist")) {
-                            //gets the list name
+                        if (command.get(0).equalsIgnoreCase(prefix + "showDeck")) {
+                            // gets the list name
                             String listName = command.get(1);
 
-                            //looks if the list exists
-                            if(listName.equalsIgnoreCase("CustomDeck")){
-                                channel.createMessage(printCardList(listCustomDeck));
+                            // looks if the list exists
+                            if (listName.equalsIgnoreCase("CustomDeck")) {
+                                channel.createMessage(printCardList(listCustomDeck)).block();
 
-                            }else if(listName.equalsIgnoreCase("AlgorithmDeck")){
-                                channel.createMessage(printCardList(listDeckbuilder));
+                            } else if (listName.equalsIgnoreCase("AlgorithmDeck")) {
+                                channel.createMessage(printCardList(listDeckbuilder)).block();
 
-                            }else if(listName.equalsIgnoreCase("FinalDeck")){
-                                channel.createMessage(printCardList(listFinalDeck));
+                            } else if (listName.equalsIgnoreCase("FinalDeck")) {
+                                channel.createMessage(printCardList(listFinalDeck)).block();
                             }
                         }
-
 
                         if (command.get(0).equalsIgnoreCase(prefix + "distributeCards")) {
-                            
-                            if(listFinalDeck.size() == 0){
-                                channel.createMessage("Choose a Deck with **" + prefix + "chooseCustomDeck** or ++" + "chooseAlgorithmDeck**").block();
-                                channel.createMessage("If you have not created a Deck jet, try **" + prefix + "buildDeck** to let the Algorithm build a Deck for you or try **" + prefix + "addCard** to add a Card to your Custom Deck").block();
-                                
-                            }else if(listFinalDeck.size() != listJoinedUsers.size()){
-                                channel.createMessage("There are not as many Cards as there are registered Players").block();
-                            }else if(listFinalDeck.size() == listJoinedUsers.size()){
+                            //first the programm checks if listFinalDeck is the same size as listJoinedPlayers, so that every Player gets a role, no more or less
+                            if (listFinalDeck.size() == 0) {
+                                channel.createMessage("Choose a Deck with **" + prefix + "chooseCustomDeck** or ++"
+                                        + "chooseAlgorithmDeck**").block();
+                                channel.createMessage("If you have not created a Deck jet, try **" + prefix
+                                        + "buildDeck** to let the Algorithm build a Deck for you or try **" + prefix
+                                        + "addCard** to add a Card to your Custom Deck").block();
 
-                                /* for(var  ){
-                                    Player player = new Player;
-                                    player.user = random user from list
-                                    player role = random card
-                                    listFinalDeck.remove()
-                                    listPlayer.put(player.name, player);
-                                }  */
+                            } else if (listFinalDeck.size() != listJoinedUsers.size()) {
+                                channel.createMessage("There are not as many Cards as there are registered Players")
+                                        .block();
+                            } else if (listFinalDeck.size() == listJoinedUsers.size()) {
 
-                                
+                                var tempListFinalCards = new ArrayList<Card>();
+                                for(Card c : listFinalDeck) {
+                                    tempListFinalCards.add(c);
+                                }
 
-                                //TODO: distribute cards
 
+                                        for (User listJoinedUser : listJoinedUsers) {
+
+                                            Player player = new Player();
+                                            player.user = listJoinedUser;
+                                            var rand = (int) (Math.random() * tempListFinalCards.size());
+                                            player.role = tempListFinalCards.get(rand);
+                                            listPlayer.put(player.user.getId(), player);
+                                            tempListFinalCards.remove(rand);
+
+                                            player.user.getPrivateChannel().block()
+                                                    .createMessage("Looks like you are a: " + player.role.name).block();
+
+                                        }
+                                 
+
+                                // TODO: distribute cards
 
                             }
-                                
-                            
-                           
-                            user.getPrivateChannel().block().createMessage("this works!").block();
+
+    
 
                         }
 
-                        
-                      
-                        //Der Command addCard fügt dem Deck eine vom User gewählte Karte hinzu  
-                        if (command.get(0).equalsIgnoreCase(prefix + "addCard")) {
-                            String cardName = command.get(1);
-                            var requestedCard = mapAvailableCards.get(cardName);
-                            listDeckbuilder.add(requestedCard);
-                            channel.createMessage("Die gewählte Karte wurde dem Deck hinzugefügt").block();
-                            channel.createMessage("**New Total Value**: " + Deckbuilder.totalCardValue(listDeckbuilder)).block();
-                            
-                            //überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt und informiert den User über die Differenz
-                            var figureDifference = listDeckbuilder.size() - listJoinedUsers.size();
-                            if (figureDifference < 0){ 
-                                channel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
-                            }else if (figureDifference > 0){
-                                channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
-                            }
-                        }
-
-                        //Der Command removeCard fügt dem Deck eine vom User gewählte Karte hinzu  
-                        if (command.get(0).equalsIgnoreCase(prefix + "removeCard")) {
-                            String cardName = command.get(1);
-                            var requestedCard = mapAvailableCards.get(cardName);
-
-                            //listDeckbuilder.get(i).name.equalsIgnoreCase(cardName);
-
-                            listDeckbuilder.remove(requestedCard);
-                            channel.createMessage("Die gewählte Karte wurde aus dem Deck entfernt").block();
-                            channel.createMessage("**New Total Value**: " + Deckbuilder.totalCardValue(listDeckbuilder)).block();
-                            
-                            //überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt und informiert den User über die Differenz
-                            var figureDifference = listDeckbuilder.size()-listJoinedUsers.size();
-                            if (figureDifference < 0){ 
-                                channel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
-                            }else if (figureDifference > 0){
-                                channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
-                            }
-                        }
-
-
-                        
-                        
-                        
-
-
-
-
-                        // TODO: füge command addCard hinzu
-
-                        /*List<Card> listCustomDeck = new ArrayList<>();
-                            command.get(0) = prefix + "addCard"
-                            command.get(1) -> list
-                            command.get(2) -> Card
+                        /*
                          * addCard lässt jeden Player eine Karte aus den verfügbaren Karten eine Karte
                          * zur listDeckbuilder hinzufügen addCard überprüft bei jedem Aufruf ob
                          * listDeckbuilder nicht größer als listPlayers ist
                          */
+                        // Der Command addCard fügt dem Deck eine vom User gewählte Karte hinzu
+                        if (command.get(0).equalsIgnoreCase(prefix + "addCard")) {
+                            var cardName = command.get(2);
+                            var listName = command.get(1);
+                            if (cardName == null || listName == null) {
+                                channel.createMessage("syntax not correct").block();
+                            } else {
+                                var requestedCard = mapAvailableCards.get(cardName);
+                                List<Card> requestedList = null;
 
-                        // TODO: füge command removeCard hinzu
-                        // removeCard entfernt die Karte aus listCustomDeck
+                                // finds which list the user requests to be edited
+                                if (listName.equalsIgnoreCase("CustomDeck") || listName.equalsIgnoreCase("PersonalDeck")
+                                        || listName.equalsIgnoreCase("listCustomDeck")) {
+                                    requestedList = listCustomDeck;
+                                } else if (listName.equalsIgnoreCase("AlgorithmDeck")) {
+                                    requestedList = listDeckbuilder;
+                                }
 
+                                // calls addCardToDeck and ercieves the Status message back
+                                String message = addCardToDeck(requestedCard, requestedList);
+                                channel.createMessage(message).block();
+                                //shows new List with added Card
+                                channel.createMessage(printCardList(requestedList)).block();
 
+                                // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+                                // und informiert den User über die Differenz
+                                var figureDifference = Math.abs(requestedList.size() - listJoinedUsers.size());
+                                if (figureDifference < 0) {
+                                    channel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                                } else if (figureDifference > 0) {
+                                    channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                                }
 
+                            }
+
+                        }
+
+                        // lässt den user eine Karte aus der gewünschten liste entfernen
+                        // TODO: prüfe ob Karte im Deck ist
+                        if (command.get(0).equalsIgnoreCase(prefix + "removeCard")) {
+                            String cardName = command.get(1);
+                            var requestedCard = mapAvailableCards.get(cardName);
+
+                            // listDeckbuilder.get(i).name.equalsIgnoreCase(cardName);
+
+                            listDeckbuilder.remove(requestedCard);
+                            channel.createMessage("Die gewählte Karte wurde aus dem Deck entfernt").block();
+                            channel.createMessage("**New Total Value**: " + Deckbuilder.totalCardValue(listDeckbuilder))
+                                    .block();
+
+                            // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+                            // und informiert den User über die Differenz
+                            var figureDifference = listDeckbuilder.size() - listJoinedUsers.size();
+                            if (figureDifference < 0) {
+                                channel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig")
+                                        .block();
+                            } else if (figureDifference > 0) {
+                                channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                            }
+                        }
 
                         // TODO: füge command startgame hinzu
                         /*
@@ -304,18 +324,55 @@ public class Main {
 
         var messageList = "";
 
-        if (list == null) {
-            messageList +="seems like this bitch empty";
-        } else if (listDeckbuilder != null) {
-            messageList += "------ success! ------- \n This might take a moment to load \n";
+        if (list == null || list.isEmpty()) {
+            messageList += "seems like this bitch empty";
+        } else if (list != null) {
+            messageList += "~~~~~~~~~~~~~~~~~" + list.getClass().getName() + "~~~~~~~~~~~~~~~~~  \n";
 
-            for (int i = 0; i < listDeckbuilder.size(); i++) {
-                messageList +="**Karte " + (i + 1) + ":** " + listDeckbuilder.get(i).name + " ----- **Value:** " + listDeckbuilder.get(i).value + "\n";
+            for (int i = 0; i < list.size(); i++) {
+                messageList += "**Karte " + (i + 1) + ":** " + list.get(i).name + " ----- **Value:** "
+                        + list.get(i).value + "\n";
             }
-            messageList += "**Total Value**: " + Deckbuilder.totalCardValue(listDeckbuilder);
+            messageList += "**Total Value**: " + Deckbuilder.totalCardValue(list);
         }
 
-        return(messageList);
+        return (messageList);
     }
 
+    public static String addCardToDeck(Card card, List<Card> list) {
+
+        var message = "";
+        boolean existing = false;
+        // überprüft ob die karte unique ist, falls ja, wird überprüft ob die Karte
+        // bereis im Deck ist
+        if (card.unique && list != null) {
+
+            // prüft ob die Karte in der Liste existiert
+            for (Card deckCard : list) {
+                if (deckCard.name.equalsIgnoreCase(card.name)) {
+                    existing = true;
+                }
+            }
+            // wenn die karte existiert wird ein fehler gegeben, ansonsten wird sie
+            // hinzugefügt
+            if (existing) {
+                message += "Die gewählte Karte ist einzigartig und bereits im Deck";
+            } else {
+                list.add(card);
+                message += card.name + " wurde dem Deck hinzugefügt";
+            }
+
+            // falls die karte nicht unique ist oder die liste leer ist wird die Karte ohne
+            // überprüfen hinzugegügt
+        } else if (!card.unique || list == null) {
+            list.add(card);
+            message += card.name + " wurde dem Deck hinzugefügt";
+
+        } else {
+            message += "something went wrong in addCard";
+        }
+
+        return message;
+
+    }
 }

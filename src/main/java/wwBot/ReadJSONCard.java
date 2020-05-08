@@ -29,7 +29,6 @@ public class ReadJSONCard {
         //Iterate over card array
         JSONCardList.forEach( card -> {
             var parsedCard = parseCardObject((JSONObject) card); 
-            System.out.println();
             mapAvailableCards.put(parsedCard.name, parsedCard);
         });
 
