@@ -1,8 +1,6 @@
 package wwBot;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +34,7 @@ public class Deckbuilder {
 
         // add Spezialkarten
         int numbSpezialkarten = playerAmount - (numbDorfbewohner + numbWerwölfe + numbSeher);
-        int numbAdjustCards = numbSpezialkarten != 0 ? (int) (numbSpezialkarten / 3) + 1 : 0;
+        int numbAdjustCards = numbSpezialkarten != 0 ? (int) (numbSpezialkarten / 5) + 1 : 0;
 
         // add random specialcards außer so viele wie "Ajustierende Karten" sind und
         // setzt den unique Wert der hinzugefügten Karte auf false
@@ -52,7 +50,7 @@ public class Deckbuilder {
         // wird so oft ausgeführt wie "Ajustierende Karten" sind
         for (int i = 0; i < numbAdjustCards; i++) {
             // add last special-card, with considering card value of all cards
-            totalValue = totalCardValue(listDeck);
+            totalValue = Globals.totalCardValue(listDeck);
             Card smallestDifferenceCard = null;
             var tempCardList = new ArrayList<Card>();
 
@@ -80,33 +78,18 @@ public class Deckbuilder {
             }
             
 
-            // aus der liste wird zufällig ein element ausgewählt
+            // aus der liste wird zufällig ein element ausgewählt und dem Deck hinzugefügt
             var rand = (int) (Math.random() * (tempCardList.size()));
             listDeck.add(tempCardList.get(rand));
             availableCardsDeckbuilder.get(tempCardList.get(rand).name).unique = false;
         }
 
-        totalValue = totalCardValue(listDeck);
+        totalValue = Globals.totalCardValue(listDeck);
 
         return listDeck;
     }
 
-    // convertieren einer Map zu einer Liste um diese zu shufflen und dan wiederum
-    // als Map zu speichern
-    public static Map<String, Card> shuffleMap(Map<String, Card> originalMap) {
-        var newMap = new HashMap<String, Card>();
-
-        List<Card> shuffleList = new ArrayList<Card>(originalMap.values());
-        Collections.shuffle(shuffleList);
-
-        // some wiered crap from "stackoverflow" that nobody understands
-        for (int i = 0; i < shuffleList.size(); i++) {
-            newMap.put(shuffleList.get(i).name, shuffleList.get(i));
-        }
-
-        return newMap;
-    }
-
+    
     public static void addMultiple(final int amount, final Card card, final List<Card> list) {
         for (int i = 0; i < amount; i++) {
             list.add(card);
@@ -135,15 +118,6 @@ public class Deckbuilder {
         System.out.println("oops, no place for spezialkarten");
 
         return null;
-    }
-
-    // summiert die Values aller karten in der liste
-    public static int totalCardValue(List<Card> list) {
-        int totalValue = 0;
-        for (var card : list) {
-            totalValue += card.value;
-        }
-        return totalValue;
     }
 
 }

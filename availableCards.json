@@ -98,7 +98,7 @@
     {
         "Card": { 
             "name": "Jäger",
-            "value": "3",
+            "value": "2",
             "friendly": "true",
             "nightSequence": "0",
             "unique": "true",
@@ -194,7 +194,7 @@
     {
         "Card": { 
             "name": "Märtyrerin",
-            "value": "3",
+            "value": "2",
             "friendly": "true",
             "nightSequence": "0",
             "unique": "true",
@@ -327,20 +327,8 @@
     },
     {
         "Card": { 
-            "name": "Alter Mann",
-            "value": "0",
-            "friendly": "true",
-            "nightSequence": "0",
-            "unique": "true",
-            "priority": "25",
-            "minPlayers": "0",
-            "description": "Der Alte Mann stirbt in der x. Nacht, wobei x die Anzahl der lebenden Werwölfe plus 1 ist. Das heißt, wenn ein Werwolf während der ersten Tage durch Lynchen (etc.) getötet wird, stirbt der Alte Mann früher, als er anfangs gedacht hat. (Nehmen beispielsweise fünf Werwölfe am Spiel teil, stirbt der Alte Mann in der sechsten Nacht. Wird aber ein Werwolf während der ersten vier Tage getötet, stirbt der Alte Mann schon in der fünften Nacht.) Der Tod des Alten Manns geschieht zusätzlich zu allen anderen Todesfällen (durch Werwölfe etc.). Wenn den Dorfbewohnern die genaue Anzahl Werwölfe nicht bekannt ist, muss der Moderator darauf achten, den Tod des Alten Manns bekannt zu geben. "
-        }
-    },
-    {
-        "Card": { 
             "name": "Aussätzige",
-            "value": "3",
+            "value": "2",
             "friendly": "true",
             "nightSequence": "0",
             "unique": "true",

@@ -1,8 +1,8 @@
 package wwBot;
 
 import java.io.FileReader;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +16,7 @@ public class ReadJSONCard {
     public static Map<String,Card> readAvailableCards() throws Exception {
 
         
-        var mapAvailableCards = new HashMap<String, Card>();
+        var mapAvailableCards = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
         
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();

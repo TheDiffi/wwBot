@@ -2,11 +2,11 @@ package wwBot;
 import discord4j.core.object.entity.User;
 
 public class Player {
-    Card role;
-    User user;
-    boolean alive;
+    public Card role;
+    public User user;
+    public boolean alive;
 
-    Player(){
+    public Player(){
         
     }
     
