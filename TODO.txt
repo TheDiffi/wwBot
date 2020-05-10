@@ -3,6 +3,8 @@ TO DO!
 
 This file seves the purpose to have a clear overlook on what things need to be done
 
+//TODO: clean todo.txt
+
 
 Struktur:
     Main: beinhaltet MessageCreateEvent und inizialisiert "Game"
@@ -25,7 +27,6 @@ Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
     User können nun dem Spiel Joinen und werden zu Player mit ihrem Username in listPlayer gespeichert
     Ein Player kann das Spiel wieder verlassen.
         
-        TODO: gruppiere Commands nach LobbyPhase, GamePhase, EndGamePhase und lagere dies in funktion aus
         
 
     Verfügbaren Karten:
@@ -42,17 +43,11 @@ Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
     Optional:           CustomDeck:
                         Das Custom Deck lässt Player selbst ein Deck erstellen, indem es den Player Karten hinzufügen und entfernen lässt.
                         Diese Karten werden in listCustomDeck gespeichert als Karten Objekte gespeichert.
-                            TODO: erstelle addCard
-                            TODO: erstelle removeCard
-                            TODO: showCaddCard
-                            TODO: calculateCardValue
-
-    DistribuiteCards:
+                       
+    gameStart:
     Nachdem der User sich zwischen dem CustomDeck oder dem Deckbuilder entschieden hat, müssen die Karten zufällig auf die Player verteilt werden
     Es wird in einem Objekt oder Liste der Player und das Karten Objekt gespeichert
     Anschließend werden alle Player über ihre Rolle privat informiert
-
-    gamestart:
     Der AutoModerator übernimmt alle Player mit ihrer Karte und beginnt den Tag/Nacht Zyklus
 
 
@@ -63,16 +58,93 @@ Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
 
 
 
+
 Part 2. AutoModerator - Tag/Nacht Zyklus Bis Gameover
-NIGHT:
+
+
+1ST-NIGHT:  
+    AMOR (einmalig: erwähnen zweier spieler, welche den InLove state bekommen)
+    DOPPELGÄNGERIN (wählt einmalig eine person, erhökt diese karte bei dem tod der person)
+    GÜNSTLING (nicht in ww chat, einmalige Nachricht mit Namen der werwölfe)
+
+NIGHT: unterteilt in preWWPhase , WWPhase, PostWWPhase 
+
+
+    preWWPhase:
+        SÄUFER (wählt alivePlayer, stirbt wenn dieser stirbt, kann ansonsten nachts nicht sterben)
+        LEIBWÄCHTER (wählt alivePlayer, kann nicht 2-mal denselben wählwn)
+        SEHER (wählt jede Nacht einen Spieler)
+        AURA-SEHERIN 
+        ALTE-VETTEL (stimmt jede Nacht über eine Person ab, welche am darauffolgenden tag gemuted wird, nicht 2 mal diesselbe wählen)
+        ZAUBERMEISTERIN
+        PRIESTER (eimalig: kann alivePlayer wählen um ihm blessing zu geben)
+        PARANOMALER-ERMITTLER (einmalig: erwähnt 2 spieler und erfährt ob mindestens einer der beiden ein ww ist)        
+        UNRUHESTIFTERIN (einmalig: darf entscheiden ob nögstem tag 2 personen getötet werden) 
+           
+    WWPhase:
+        WERWÖLFE (haben alle eine Stimme, welche sie in den Werwolf chat schreiben können)
+        WOLFSJUNGES
+
+    ÜBERPRÜFUNG OB EIN PLAYER inDanger IST 
+
+    PostWWPhase
+        HEXE (einmalig: kann sterbende person retten; einmalig: kann alivePlayer töten)
+        MAGIER (wie Hexe)
+
+    ÜBERPRÜFUNG OB EIN PLAYER inDanger IST 
 
 
 
+    SONSTIGE:
+        PRINZ
+        SEHER-LEHRLING
+        PAZIFISTIN
+        JÄGER
+        MÄRTYRERIN
+        BÜRGERMEISTER
+        HARTER-BURSCHE
+        VERFLUCHTER
+        WOLFSJUNGES
+
+
+ 
+    
 
 DAY:
+Wenn der spieler zu beginn des Tages noch in Danger ist, stirbt er im Morgen. Sein Tod und seine Karte wird allen bekanntgegeben.
 
+Während Tag hat jeder Spieler einen Vote, welchen er jederzeit auf einen beliebigen alivePlayer oder einen "nicht-Spieler" anwenden und jederzeit ändern kann.
+Sobald alle Spieler gevoted haben und es eine Mehrheit gibt mit double berechnet, wegen Bürgermeister), stirbt dieser spieler und seine rolle wird bekanntgegeben.
+Falls keine Mehrheit existiert, wartet der bot bis ein player seine meinung ändert. 
+
+
+&nominate // ein player kann einen anderen player fürs lyncen nominieren -> player kommt in listNominated
+&showNominated // printet die listNominated
+
+&vote //votet effektiv für einen spieler, muss nich unbedingt nominiert sein
+
+
+WerWolfChat: wird in der ersten nacht erstellt.
+            wenn die WW am tag schreiben -> erste Nachricht: Warnung -> zweite Nachricht: kein kill in der nächsten Nacht -> dritte Nachricht: preisgebungs eines zufälligen Werwolfes
+
+
+DEAD PLAYERS: muted, jedoch still in game, kein recht auf votes/ihre kartenfähigkeit, ww konmmen aus dem ww chat heraus, alle toden kommen in ein Höllenchatroom
 
 Part 3. Post-Game Infos?
 
 
 Part 4. Music, custom messages and everything else
+
+
+
+
+NEW CARD IDEAS:
+// fake jobs/identities fir jeden Spieler 
+// renames nach den jobs/identities
+
+LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
+THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
+ 
+
+
+

@@ -1,4 +1,4 @@
-  package wwBot.GameStates;
+package wwBot.GameStates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +59,6 @@ public class LobbyState extends GameState {
         listJoinedUsers.add(two);
         listJoinedUsers.add(sdfg);
         listJoinedUsers.add(tree);
-        
-        
 
     }
 
@@ -74,9 +72,10 @@ public class LobbyState extends GameState {
             User user = event.getMember().get();
             var channel = event.getMessage().getChannel().block();
 
+            // falls der User noch nicht registriert ist, wird er hinugefügt
             if (listJoinedUsers.indexOf(user) == -1) {
                 listJoinedUsers.add(user);
-                channel.createMessage("joined").block();
+                channel.createMessage("beigetreten").block();
             } else {
                 channel.createMessage("looks like you're already joined").block();
             }
@@ -89,9 +88,10 @@ public class LobbyState extends GameState {
             User user = event.getMember().get();
             var channel = event.getMessage().getChannel().block();
 
+            // falls der user in der liste ist, wird er entfernt
             if (listJoinedUsers.indexOf(user) != -1) {
                 listJoinedUsers.remove(user);
-                channel.createMessage("you left").block();
+                channel.createMessage("ausgetreten").block();
             } else {
                 channel.createMessage("looks like you're already not in the game").block();
             }
@@ -100,12 +100,12 @@ public class LobbyState extends GameState {
         gameStateCommands.put("leave", leaveCommand);
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
-        // übertprüft ob .size größer als 4 und kleiner als 50 ist
         Command buildDeckCommand = (event, parameters) -> {
             var channel = event.getMessage().getChannel().block();
 
+            // übertprüft ob .size größer als 4 und kleiner als 50 ist
             if (listJoinedUsers.size() > 4 && listJoinedUsers.size() < 35) {
-
+                // versucht den Dekcbuilder Algorithmus aufzurufen und damit deck zu füllen
                 try {
                     deck = Deckbuilder.create(listJoinedUsers.size());
                 } catch (Exception e) {
@@ -113,21 +113,27 @@ public class LobbyState extends GameState {
                     e.printStackTrace();
                 }
 
+                // druckt das neue Deck aus
                 if (deck != null) {
-                    channel.createMessage(Globals.printCardList(deck, "AlgorithmDeck")).block();
-                    //Globals.printCardList(deck, "AlgorithmDeck")
+                    channel.createMessage(Globals.cardListToString(deck, "AlgorithmDeck")).block();
                 } else {
                     channel.createMessage("something went wrong").block();
                 }
 
+                // error Messages falls die spieleranzahl
             } else if (listJoinedUsers.size() < 5) {
-                channel.createMessage(
-                        "noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu machen")
-                        .block();
+                channel.createMessage(messageSpec -> {
+                    messageSpec.setContent(
+                            "noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu finden (mindestens 5)")
+                            .setTts(true);
+                }).block();
+
             } else if (listJoinedUsers.size() >= 35) {
-                channel.createMessage(
-                        "theoretisch könnte der bot bot mehr als 35 Spieler schaffen, aus Sicherheitsgründen ist dies jedoch deaktiviert")
-                        .block();
+                channel.createMessage(messageSpec -> {
+                    messageSpec.setContent(
+                            "theoretisch könnte der Bot mehr als 35 Spieler schaffen, dies ist aber aufgrund der Vorschriften der @Nsa und des @Fbi jedoch deaktiviert")
+                            .setTts(true);
+                }).block();
             }
 
         };
@@ -136,7 +142,7 @@ public class LobbyState extends GameState {
         // shows the current Deck to the user
         Command showDeckCommand = (event, parameters) -> {
 
-                event.getMessage().getChannel().block().createMessage(Globals.printCardList(deck, "Deck")).block();
+            event.getMessage().getChannel().block().createMessage(Globals.cardListToString(deck, "Deck")).block();
 
         };
         gameStateCommands.put("showDeck", showDeckCommand);
@@ -163,7 +169,7 @@ public class LobbyState extends GameState {
                 channel.createMessage(message).block();
 
                 // shows new List with added Card
-                channel.createMessage(Globals.printCardList(deck, "Deck")).block();
+                channel.createMessage(Globals.cardListToString(deck, "Deck")).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
@@ -192,8 +198,8 @@ public class LobbyState extends GameState {
                 String message = removeCardFromDeck(requestedCard, deck);
                 channel.createMessage(message).block();
 
-                // shows new List with added Card
-                channel.createMessage(Globals.printCardList(deck, "Deck")).block();
+                // shows new List without removed Card
+                channel.createMessage(Globals.cardListToString(deck, "Deck")).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
@@ -205,9 +211,15 @@ public class LobbyState extends GameState {
                 }
 
             }
-
         };
         gameStateCommands.put("removeCard", removeCardCommand);
+
+        // empties the Deck
+        Command clearDeckCommand = (event, parameters) -> {
+            deck.clear();
+            event.getMessage().getChannel().block().createMessage("Das Deck wurde ausgeleert").block();
+        };
+        gameStateCommands.put("clearDeck", clearDeckCommand);
 
         // starts the game
         // first: the programm checks if Deck is the same size as listJoinedPlayers or
@@ -222,12 +234,14 @@ public class LobbyState extends GameState {
             } else if (deck.size() != listJoinedUsers.size()) {
                 channel.createMessage("There are not as many Cards as there are registered Players").block();
 
-                // if there are as many cards as joined Users, the Cards get distributed and the Game starts
+                // if there are as many cards as joined Users, the Cards get distributed and the
+                // Game starts
             } else if (deck.size() == listJoinedUsers.size()) {
                 // creates a temporary copy of the Deck
                 var tempDeck = new ArrayList<Card>(deck);
 
-                //listPlayers gets populated with the user and its Card(role)(the card gets chosen randomly -> distributed).
+                // listPlayers gets populated with the user and its Card(role)(the card gets
+                // chosen randomly -> distributed).
                 for (User user : listJoinedUsers) {
 
                     Player player = new Player();
@@ -237,15 +251,15 @@ public class LobbyState extends GameState {
                     game.listPlayer.put(player.user.getId(), player);
                     tempDeck.remove(rand);
 
-                    //the player gets a message describing his role
-                    player.user.getPrivateChannel().block().createMessage("Looks like you are a: " + player.role.name)
-                            .block();
+                    // the player gets a message describing his role
+                    player.user.getPrivateChannel().block()
+                            .createMessage("Es sieht aus als währst du ein " + player.role.name).block();
+
                     Globals.printCard(player.role.name, channel);
 
                 }
-
+                // initializes the next game state
                 game.changeGameState(new MainGameState(game));
-
             }
 
         };
@@ -253,23 +267,33 @@ public class LobbyState extends GameState {
 
     }
 
+    // TODO: create a method that prints images
+    /*
+     * public static void printCardImage(MessageChannel channel, Card card ){
+     * 
+     * try { Image image = ImageIO.read(new File("strawberry.jpg")); } catch
+     * (IOException e) { e.printStackTrace(); }
+     * 
+     * channel.createMessage(messageSpec -> { messageSpec.addFile("Card", image);
+     * }).block();
+     * 
+     * }
+     */
+
+     
+    // recieves a card and a list and adds the card to the list, acoording to some
+    // rules
+    // gibt einen String mit der status-nachricht zurück
     public static String addCardToDeck(Card card, List<Card> list) {
 
         var message = "";
-        boolean existing = false;
         // überprüft ob die karte unique ist, falls ja, wird überprüft ob die Karte
         // bereis im Deck ist
         if (card.unique && list != null) {
 
-            // prüft ob die Karte in der Liste existiert
-            for (Card deckCard : list) {
-                if (deckCard.name.equalsIgnoreCase(card.name)) {
-                    existing = true;
-                }
-            }
             // wenn die karte existiert wird ein fehler gegeben, ansonsten wird sie
             // hinzugefügt
-            if (existing) {
+            if (list.contains(card)) {
                 message += "Die gewählte Karte ist einzigartig und bereits im Deck";
             } else {
                 list.add(card);
@@ -290,28 +314,28 @@ public class LobbyState extends GameState {
 
     }
 
+    // recieves a card and a list and, if the card is present in the list, removes
+    // the card from the list
+    // gibt einen String mit der status-nachricht zurück
     public static String removeCardFromDeck(Card card, List<Card> list) {
 
         var message = "";
-        boolean existing = false;
+
+        // prüft ob die liste nicht leer ist
         if (list != null) {
 
-            // prüft ob die Karte in der Liste existiert
-            for (Card deckCard : list) {
-                if (deckCard.name.equalsIgnoreCase(card.name)) {
-                    existing = true;
-                }
-            }
-            // wenn die karte existiert wird sie entfernt
-            if (existing) {
-                list.remove(card);
+            // prüft ob die Karte in der Liste existiert und entfernt sie falls true
+            boolean removed = list.remove(card);
+
+            // gibt die status meldung
+            if (removed) {
                 message += card.name + " wurde aus dem Deck entfernt";
             } else {
                 message += "Die gewählte Karte ist nicht im Deck";
             }
-
+            // falls die liste leer ist wird ein fehler gegeben
         } else {
-            message += "something went wrong in addCard";
+            message += "something went wrong in removeCard";
         }
 
         return message;

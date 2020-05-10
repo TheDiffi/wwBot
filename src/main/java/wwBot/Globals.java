@@ -6,9 +6,11 @@ import java.util.Map;
 
 import discord4j.core.object.entity.MessageChannel;
 
+//In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {
 	public static Map<String, Card> mapAvailableCards;
 
+	// wird zu start aufgerufen und inizialisiert wichtige Variablen
 	public static void loadGlobals() throws Exception {
 		mapAvailableCards = ReadJSONCard.readAvailableCards();
 	}
@@ -22,31 +24,42 @@ public class Globals {
 		return totalValue;
 	}
 
-	public static String printCardList(List<Card> list, String listName) {
+	// macht aus einer liste von Karten einen String, welcher tabellarisch den namen
+	// und wert jeder Card enthält
+	// param: list - eine Liste von Card, title - wird zum titel der Tabelle (meist
+	// der name der Liste)
+	public static String cardListToString(List<Card> list, String title) {
+		// this variable gets filled with the card infos
+		var message = "";
 
-		var messageList = "";
-
-		if (list.isEmpty()) {
-			messageList += "seems like this bitch empty";
-		} else if (list != null) {
-			messageList += "-----------------" + listName + "----------------------  \n";
+		// if the list is empty an error message appears, else it goes through every
+		// single card and adds them to message
+		if (list == null || list.isEmpty()) {
+			message += "seems like this bitch empty";
+		} else {
+			message += "-----------------" + title + "----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				messageList += "**Karte " + (i + 1) + ":** " + list.get(i).name + " ----- **Value:** "
-						+ list.get(i).value + "\n";
+				message += "**Karte " + (i + 1) + ":** " + list.get(i).name + " ----- **Value:** " + list.get(i).value
+						+ "\n";
 			}
-			messageList += "**Total Value**: " + totalCardValue(list);
+			message += "**Total Value**: " + totalCardValue(list);
 		}
-
-		return (messageList);
+		return (message);
 	}
 
+	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und
+	// erstellt ein embed (nachricht) mit den Informationen der Karte und sendet
+	// dieses in den erhaltenen Channel
 	public static void printCard(String cardName, MessageChannel channel) {
 		var requestedCard = mapAvailableCards.get(cardName);
 
+		// falls eine karte gefunden wird, wird ein embed mit den infos erstellt und in
+		// den channel geschickt
 		if (requestedCard != null) {
 			String message = "Wert: " + Integer.toString(requestedCard.value) + "\n" + "Beschreibung: "
 					+ requestedCard.description;
+			// die farbe ist grün wenn die karte friendly ist, sonst rot
 			var color = requestedCard.friendly ? Color.GREEN : Color.RED;
 
 			channel.createEmbed(spec -> {

@@ -17,14 +17,16 @@ public class Game {
     public Map<String, Command> gameCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Snowflake, Player> listPlayer = new HashMap<Snowflake,Player>();
     public GameState currentGameState;
+    public Snowflake runningInServer;
 
 
-    Game(){
+    Game(Snowflake snowflakeServer){
 
-     
+        runningInServer = snowflakeServer;  
         registerGameCommands();
-        
+        //initializes the first game State
         currentGameState = new LobbyState(this);
+
     }
 
 
@@ -97,5 +99,9 @@ public class Game {
         currentGameState.exit();
         currentGameState = nextGameState;
 	}
+
+
+
+	
     
 }

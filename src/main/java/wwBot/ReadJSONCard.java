@@ -11,11 +11,10 @@ import org.json.simple.parser.JSONParser;
 public class ReadJSONCard {
 
     
-    
     @SuppressWarnings("unchecked")
     public static Map<String,Card> readAvailableCards() throws Exception {
 
-        
+        //loads the available cads
         var mapAvailableCards = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
         
         //JSON parser object to parse read file
