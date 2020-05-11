@@ -12,7 +12,7 @@ public class MainGameState extends GameState {
 
     //loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands(){
-        //TODO: add al Commands needed here
+        //TODO: add all Commands needed here
 
 
     }

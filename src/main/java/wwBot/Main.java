@@ -14,7 +14,7 @@ import java.awt.Color;
 
 public class Main {
 
-    public static Map<Snowflake, Game> runningGames = new HashMap<Snowflake, Game>();
+    public static Map<Snowflake, Game> mapRunningGames = new HashMap<Snowflake, Game>();
     static String prefix;
 
     public static void main(String[] args) throws Exception {
@@ -49,74 +49,118 @@ public class Main {
 
     }
 
-
-
-
     private static void handleCommands(MessageCreateEvent event) {
 
         // messageContent speichert den Inhalt der Message in einer Variable
         // command teilt diesen Inhalt bei einem Leerzeichen und speicher dies in einer
         // Liste
-        var serverId = event.getGuildId().get();
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = Arrays.asList(messageContent.split(" "));
 
         // ping testet ob der bot antwortet
         if (parameters.get(0).equalsIgnoreCase(prefix + "ping")) {
-            event.getMessage().getChannel().block().createMessage("Pong!").block();
+            event.getMessage().getChannel().block().createMessage("Pong! main").block();
         }
-        // help printet alle commands aus
+
+        // help printet alle verfügbaren commands aus
         else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
-            var delim = "\n";
-            //var help = String.join(delim, )
-            //event.getMessage().getChannel().block().createMessage(help).block();
+
+            event.getMessage().getChannel().block()
+                    .createMessage("Gehe in einen Discord Channel um ein Neues Spiel zu starten").block();
 
         }
 
-        // setPrefixTo
-        else if (parameters.get(0).equalsIgnoreCase(prefix + "setPrefixTo")) {
-            prefix = parameters.get(1);
-            event.getMessage().getChannel().block().createMessage("Changed Prefix to: " + prefix).block();
-        }
+        // prüft ob die Nachricht eine DM ist
+        if (event.getGuildId().isPresent()) {
 
-        // überprüft ob auf diesem server bereits ein Game läuft, falls nein erstellt er
-        // ein neues und fügt es zur Map runningGames hinzu
-        else if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
+            var serverId = event.getGuildId().get();
+            var channel = event.getMessage().getChannel().block();
 
-            if (!runningGames.containsKey(serverId)) {
+            // help printet alle commands aus
+            if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
+                var delim = "\n";
 
-                var game = new Game(serverId);
-                runningGames.put(serverId, game);
-                gameStartMessage(event.getMessage().getChannel().block(), prefix);
+                // event.getMessage().getChannel().block().createMessage(help).block();
 
-            } else if (runningGames.containsKey(serverId)) {
-                event.getMessage().getChannel().block()
-                        .createMessage("delete the current game before starting a new one").block();
             }
 
-        }
-
-        // überprüft ob auf diesem server bereits ein Game läuft, falls ja, löscht er es
-        else if (parameters.get(0).equalsIgnoreCase(prefix + "DeleteGame")) {
-
-            if (!runningGames.containsKey(serverId)) {
-                event.getMessage().getChannel().block().createMessage("No Game To Delete Found").block();
-            } else if (runningGames.containsKey(serverId)) {
-                runningGames.remove(serverId);
-                event.getMessage().getChannel().block().createEmbed(spec -> {
-                    spec.setColor(Color.RED).setTitle("Game Deleted").setDescription("");
-
-                }).block();
+            // setPrefixTo
+            else if (parameters.get(0).equalsIgnoreCase(prefix + "setPrefixTo")) {
+                prefix = parameters.get(1);
+                event.getMessage().getChannel().block().createMessage("Changed Prefix to: " + prefix).block();
             }
 
-        }
+            // überprüft ob auf diesem server bereits ein Game läuft, falls nein erstellt er
+            // ein neues und fügt es zur Map runningGames hinzu
+            else if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
 
-        // falls ein Spiel existiert (also gerade läuft), und der Command auf dem
-        // Server, auf dem das Spiel läuft, geschrieben wurde, wird die Eingabe zum Game
-        // weitergeleited
-        else if (runningGames.containsKey(serverId)) {
-            var game = runningGames.get(serverId);
-            game.handleCommands(event);
+                if (!mapRunningGames.containsKey(serverId)) {
+
+                    var game = new Game(serverId, channel);
+                    mapRunningGames.put(serverId, game);
+                    gameStartMessage(event.getMessage().getChannel().block(), prefix);
+
+                } else if (mapRunningGames.containsKey(serverId)) {
+                    event.getMessage().getChannel().block().createMessage(
+                            "use **" + prefix + "DeleteGame** to delete the current game before starting a new one")
+                            .block();
+                }
+
+            }
+
+            // überprüft ob auf diesem server bereits ein Game läuft, falls ja, löscht er es
+            else if (parameters.get(0).equalsIgnoreCase(prefix + "DeleteGame")) {
+
+                if (!mapRunningGames.containsKey(serverId)) {
+                    event.getMessage().getChannel().block().createMessage("No Game To Delete Found").block();
+                } else if (mapRunningGames.containsKey(serverId)) {
+                    mapRunningGames.remove(serverId);
+                    event.getMessage().getChannel().block().createEmbed(spec -> {
+                        spec.setColor(Color.RED).setTitle("Game Deleted").setDescription("");
+
+                    }).block();
+                }
+
+            }
+
+            // falls ein Spiel existiert (also gerade läuft), und der Command auf dem
+            // Server, auf dem das Spiel läuft, geschrieben wurde, wird die Eingabe zum Game
+            // weitergeleited
+            else if (mapRunningGames.containsKey(serverId)) {
+                var game = mapRunningGames.get(serverId);
+                game.handleCommands(event);
+            }
+
+            // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
+            // Game befindet
+        } else {
+            //prüft ob überhaupt ein game läuft
+            if (!mapRunningGames.isEmpty()) {
+
+                Game game = null;
+                var isInGame = 0;
+                var userId = event.getMessage().getAuthor().get().getId();
+                var tempListGame = mapRunningGames.values();
+
+                for (Game tempGame : tempListGame) {
+                    if (tempGame.listPlayer.containsKey(userId)) {
+                        isInGame ++;
+                        game = tempGame;
+                    }
+                }
+                if(isInGame == 0){
+                    event.getMessage().getChannel().block().createMessage("It looks like you are not in a game or that your game is still in lobby phase").block();    
+                }else if(isInGame == 1 && game != null){
+                    game.handleCommands(event);
+                }else if(isInGame > 1){
+                    event.getMessage().getChannel().block().createMessage("It looks like you are in **" + isInGame + "** Games. You should only be in one game at a time.").block();
+
+                }
+
+            }else {
+                event.getMessage().getChannel().block().createMessage("no Game found").block();
+            }
+
         }
     }
 

@@ -22,7 +22,7 @@ public class LobbyState extends GameState {
         registerGameCommands();
 
         // simulates Users
-        User hannelore = null;
+  /*       User hannelore = null;
         User friedrich = null;
         User samuel = null;
         User raffael = null;
@@ -58,7 +58,7 @@ public class LobbyState extends GameState {
         listJoinedUsers.add(one);
         listJoinedUsers.add(two);
         listJoinedUsers.add(sdfg);
-        listJoinedUsers.add(tree);
+        listJoinedUsers.add(tree); */
 
     }
 
@@ -67,41 +67,46 @@ public class LobbyState extends GameState {
 
         final var mapAvailableCards = Globals.mapAvailableCards;
 
+        // ping testet ob der bot antwortet
+        Command pingCommand = (event, parameters, msgChannel) -> {
+
+            msgChannel.createMessage("Pong! LobbyState").block();
+
+        };
+        gameStateCommands.put("ping", pingCommand);
+
         // join füght den user zu listJoinedUsers hinzu
-        Command joinCommand = (event, parameters) -> {
+        Command joinCommand = (event, parameters, msgChannel) -> {
             User user = event.getMember().get();
-            var channel = event.getMessage().getChannel().block();
 
             // falls der User noch nicht registriert ist, wird er hinugefügt
             if (listJoinedUsers.indexOf(user) == -1) {
                 listJoinedUsers.add(user);
-                channel.createMessage("beigetreten").block();
+                msgChannel.createMessage(user.getUsername() + " ist beigetreten!").block();
             } else {
-                channel.createMessage("looks like you're already joined").block();
+                msgChannel.createMessage("looks like you're already joined").block();
             }
         };
         gameStateCommands.put("join", joinCommand);
 
         // leave entfernt den user von listJoinedUsers
-        Command leaveCommand = (event, parameters) -> {
+        Command leaveCommand = (event, parameters, msgChannel) -> {
 
             User user = event.getMember().get();
-            var channel = event.getMessage().getChannel().block();
 
             // falls der user in der liste ist, wird er entfernt
             if (listJoinedUsers.indexOf(user) != -1) {
                 listJoinedUsers.remove(user);
-                channel.createMessage("ausgetreten").block();
+                msgChannel.createMessage(user.getUsername() + " ist ausgetreten").block();
             } else {
-                channel.createMessage("looks like you're already not in the game").block();
+                msgChannel.createMessage("looks like you're already not in the game").block();
             }
 
         };
         gameStateCommands.put("leave", leaveCommand);
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
-        Command buildDeckCommand = (event, parameters) -> {
-            var channel = event.getMessage().getChannel().block();
+        Command buildDeckCommand = (event, parameters, msgChannel) -> {
 
             // übertprüft ob .size größer als 4 und kleiner als 50 ist
             if (listJoinedUsers.size() > 4 && listJoinedUsers.size() < 35) {
@@ -109,27 +114,26 @@ public class LobbyState extends GameState {
                 try {
                     deck = Deckbuilder.create(listJoinedUsers.size());
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
                 // druckt das neue Deck aus
                 if (deck != null) {
-                    channel.createMessage(Globals.cardListToString(deck, "AlgorithmDeck")).block();
+                    msgChannel.createMessage(Globals.cardListToString(deck, "AlgorithmDeck")).block();
                 } else {
-                    channel.createMessage("something went wrong").block();
+                    msgChannel.createMessage("something went wrong").block();
                 }
 
                 // error Messages falls die spieleranzahl
             } else if (listJoinedUsers.size() < 5) {
-                channel.createMessage(messageSpec -> {
+                msgChannel.createMessage(messageSpec -> {
                     messageSpec.setContent(
                             "noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu finden (mindestens 5)")
                             .setTts(true);
                 }).block();
 
             } else if (listJoinedUsers.size() >= 35) {
-                channel.createMessage(messageSpec -> {
+                msgChannel.createMessage(messageSpec -> {
                     messageSpec.setContent(
                             "theoretisch könnte der Bot mehr als 35 Spieler schaffen, dies ist aber aufgrund der Vorschriften der @Nsa und des @Fbi jedoch deaktiviert")
                             .setTts(true);
@@ -140,9 +144,9 @@ public class LobbyState extends GameState {
         gameStateCommands.put("buildDeck", buildDeckCommand);
 
         // shows the current Deck to the user
-        Command showDeckCommand = (event, parameters) -> {
+        Command showDeckCommand = (event, parameters, msgChannel) -> {
 
-            event.getMessage().getChannel().block().createMessage(Globals.cardListToString(deck, "Deck")).block();
+            msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
 
         };
         gameStateCommands.put("showDeck", showDeckCommand);
@@ -153,31 +157,30 @@ public class LobbyState extends GameState {
          * listDeckbuilder nicht größer als listPlayers ist
          */
         // Der Command addCard fügt dem Deck eine vom User gewählte Karte hinzu
-        Command addCardCommand = (event, parameters) -> {
+        Command addCardCommand = (event, parameters, msgChannel) -> {
 
             var cardName = parameters.get(0);
-            var channel = event.getMessage().getChannel().block();
 
             if (cardName == "" || cardName == null) {
-                channel.createMessage("syntax not correct").block();
+                msgChannel.createMessage("syntax not correct").block();
             } else {
 
                 var requestedCard = mapAvailableCards.get(cardName);
 
                 // calls addCardToDeck and recieves the Status message back
                 String message = addCardToDeck(requestedCard, deck);
-                channel.createMessage(message).block();
+                msgChannel.createMessage(message).block();
 
                 // shows new List with added Card
-                channel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+                msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
                 var figureDifference = Math.abs(deck.size() - listJoinedUsers.size());
                 if (figureDifference < 0) {
-                    channel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
-                    channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
                 }
 
             }
@@ -185,29 +188,28 @@ public class LobbyState extends GameState {
         gameStateCommands.put("addCard", addCardCommand);
 
         // lässt den user eine Karte aus der gewünschten liste entfernen
-        Command removeCardCommand = (event, parameters) -> {
+        Command removeCardCommand = (event, parameters, msgChannel) -> {
             String cardName = parameters.get(0);
-            var channel = event.getMessage().getChannel().block();
 
             if (cardName == null) {
-                channel.createMessage("syntax not correct").block();
+                msgChannel.createMessage("syntax not correct").block();
             } else {
                 var requestedCard = mapAvailableCards.get(cardName);
 
                 // calls removeCardFromDeck and recieves the Status message back
                 String message = removeCardFromDeck(requestedCard, deck);
-                channel.createMessage(message).block();
+                msgChannel.createMessage(message).block();
 
                 // shows new List without removed Card
-                channel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+                msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
                 var figureDifference = Math.abs(deck.size() - listJoinedUsers.size());
                 if (figureDifference < 0) {
-                    channel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
-                    channel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
                 }
 
             }
@@ -215,24 +217,23 @@ public class LobbyState extends GameState {
         gameStateCommands.put("removeCard", removeCardCommand);
 
         // empties the Deck
-        Command clearDeckCommand = (event, parameters) -> {
+        Command clearDeckCommand = (event, parameters, msgChannel) -> {
             deck.clear();
-            event.getMessage().getChannel().block().createMessage("Das Deck wurde ausgeleert").block();
+            msgChannel.createMessage("Das Deck wurde ausgeleert").block();
         };
         gameStateCommands.put("clearDeck", clearDeckCommand);
 
         // starts the game
         // first: the programm checks if Deck is the same size as listJoinedPlayers or
         // empty
-        Command startGameCommand = (event, parameters) -> {
-            var channel = event.getMessage().getChannel().block();
+        Command startGameCommand = (event, parameters, msgChannel) -> {
 
             // first the programm checks if Deck is the same size as listJoinedPlayers, so
             // that every Player gets a role, no more or less
             if (deck == null) {
-                channel.createMessage("How u gonna play with no Deck??!?").block();
+                msgChannel.createMessage("How u gonna play with no Deck?").block();
             } else if (deck.size() != listJoinedUsers.size()) {
-                channel.createMessage("There are not as many Cards as there are registered Players").block();
+                msgChannel.createMessage("There are not as many Cards as there are registered Players").block();
 
                 // if there are as many cards as joined Users, the Cards get distributed and the
                 // Game starts
@@ -252,12 +253,14 @@ public class LobbyState extends GameState {
                     tempDeck.remove(rand);
 
                     // the player gets a message describing his role
-                    player.user.getPrivateChannel().block()
-                            .createMessage("Es sieht aus als währst du ein " + player.role.name).block();
-
-                    Globals.printCard(player.role.name, channel);
+                    var privateChannel = player.user.getPrivateChannel().block();
+                    privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
+                    
+                    Globals.printCard(player.role.name, privateChannel);
 
                 }
+
+                msgChannel.createMessage("Game Created!").block();
                 // initializes the next game state
                 game.changeGameState(new MainGameState(game));
             }
@@ -280,7 +283,6 @@ public class LobbyState extends GameState {
      * }
      */
 
-     
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules
     // gibt einen String mit der status-nachricht zurück

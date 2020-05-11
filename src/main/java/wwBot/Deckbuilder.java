@@ -96,14 +96,14 @@ public class Deckbuilder {
 
         for (var card : mapAvailableCards.values()) {
             // Schaut ob die karte einzigartig ist und noch nicht enthalten ist
-            if (card.unique && listDeck.contains(card)) {
+            if (card.unique && !listDeck.contains(card)) {
                 addMultiple(card.priority, card, probabilityMap);
             }
         }
 
         // holt sich ein zufälliges Element aus probabilityMap und returnt es
         if (amount > 0) {
-            int randomValue = (int) (Math.random() * probabilityMap.size() + 1);
+            int randomValue = (int) (Math.random() * probabilityMap.size());
             return probabilityMap.get(randomValue);
         }
 
