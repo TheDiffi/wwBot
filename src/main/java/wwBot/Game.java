@@ -16,7 +16,7 @@ import wwBot.GameStates.MainGameState;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
-    public Map<Snowflake, Player> listPlayer = new HashMap<Snowflake, Player>();
+    public Map<String, Player> mapPlayer = new HashMap<String, Player>();
     public GameState currentGameState;
     public Snowflake runningInServer;
     public MessageChannel runningInChannel;

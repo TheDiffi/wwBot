@@ -249,7 +249,7 @@ public class LobbyState extends GameState {
                     player.user = user;
                     var rand = (int) (Math.random() * tempDeck.size());
                     player.role = tempDeck.get(rand);
-                    game.listPlayer.put(player.user.getId(), player);
+                    game.mapPlayer.put(player.role.name, player);
                     tempDeck.remove(rand);
 
                     // the player gets a message describing his role

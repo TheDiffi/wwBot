@@ -43,7 +43,9 @@ public class Main {
 
                     }
 
-                });
+                }).onErrorResume();
+                
+                ;
 
         client.login().block();
 
@@ -143,7 +145,7 @@ public class Main {
                 var tempListGame = mapRunningGames.values();
 
                 for (Game tempGame : tempListGame) {
-                    if (tempGame.listPlayer.containsKey(userId)) {
+                    if (tempGame.mapPlayer.containsKey(userId)) {
                         isInGame ++;
                         game = tempGame;
                     }

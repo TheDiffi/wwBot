@@ -66,6 +66,7 @@ Part 2. AutoModerator - Tag/Nacht Zyklus Bis Gameover
     AMOR (einmalig: erwähnen zweier spieler, welche den InLove state bekommen)
     DOPPELGÄNGERIN (wählt einmalig eine person, erhökt diese karte bei dem tod der person)
     GÜNSTLING (nicht in ww chat, einmalige Nachricht mit Namen der werwölfe)
+    WERWÖLFE
 
 NIGHT: unterteilt in preWWPhase , WWPhase, PostWWPhase 
 
