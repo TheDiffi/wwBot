@@ -10,8 +10,8 @@ public class GameState {
     public Map<String, Command> gameStateCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Game game;
 
-    GameState (Game incomingGame){
-        game = incomingGame;
+    protected GameState (Game game2){
+        game = game2;
         
     }
 

@@ -34,7 +34,7 @@ public class Globals {
 
 		// if the list is empty an error message appears, else it goes through every
 		// single card and adds them to message
-		if (list == null || list.isEmpty()) {
+		if (list.isEmpty()) {
 			message += "seems like this bitch empty";
 		} else {
 			message += "-----------------" + title + "----------------------  \n";
@@ -71,4 +71,18 @@ public class Globals {
 		}
 	}
 
+	public static void createEmbed(MessageChannel channel, Color color, String title, String description) {
+        channel.createEmbed(emb -> {
+            emb.setColor(color).setTitle(title).setDescription(description);
+        }).block();
+	}
+	
+	public static void createMessageBuilder(MessageChannel channel, String message, boolean ifTTS) {
+        channel.createMessage(messageSpec -> {
+            messageSpec.setContent(message)
+                    .setTts(ifTTS);
+                }).block();
+    }
+
+	
 }

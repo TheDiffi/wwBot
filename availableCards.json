@@ -80,7 +80,7 @@
             "unique": "true",
             "priority": "30",
             "minPlayers": "0",
-            "description": "Wenn der Harte Bursche von den Werwölfen ausgewählt wird, stirbt er erst in der folgenden Nacht und nicht bereits in derselben   "
+            "description": "Wenn der Harte Bursche von den Werwölfen ausgewählt wird, stirbt er erst in der folgenden Nacht und nicht bereits in derselben"
         }
     },
     {
@@ -274,8 +274,7 @@
             "minPlayers": "0",
             "description": "Die Doppelgängerin wählt in der ersten Nacht einen Mitspieler aus. Wenn dieser in einer der folgenden Nächte getötet wird, übernimmt sie heimlich dessen Charakter. Bis das Ziel nachts getötet wurde und die Doppelgängerin eventuell einen „bösen“ Charakter erhält, befindet sich die Doppelgängerin auf der Seite der Dorfbewohner. Stirbt der gewählte Spieler am Tag, erhält die Doppelgängerin den entsprechenden neuen Charakter nicht! Der Moderator muss der Doppelgängerin genau zeigen, welchen neuen Charakter sie spielt. Die Doppelgängerin ist für die Seherin eine Dorfbewohnerin, bis sie eventuell zu einem Werwolf wird. Alternative: Die Doppelgängerin wählt in der ersten Nacht einen Mitspieler und erhält sofort dessen Charakter (der eigentliche Spieler behält ebenfalls seinen zugelosten Charakter). Die Doppelgängerin muss jede Nacht gesondert aufgerufen werden, um dann ihre erhaltene Fähigkeit nutzen zu können (wenn sie keinen speziellen Charakter erhalten hat, sollte sie trotzdem vom Moderator aufgerufen werden, um die anderen Spieler im Unklaren zu lassen, wen die Doppelgängerin kopiert). Während diese Alternative sehr viel Spaß machen kann, kommt es gelegentlich zu sich sehr hinterhältig veränderten Spielbalancen, je nachdem, welchen Charakter die Doppelgängerin erhält.   "
         }
-    }
-    ,
+    },
     {
         "Card": { 
             "name": "Säufer",
@@ -335,13 +334,5 @@
             "minPlayers": "0",
             "description": "Die Stimme des Bürgermeisters zählt zweifach, wenn über das Lynchen eines Spielers abgestimmt wird un es mit einem Ausgleich enden würde."
         }
-    }
-    
-
-
-
-
-
-
-
+    }   
 ]

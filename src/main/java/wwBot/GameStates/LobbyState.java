@@ -13,8 +13,8 @@ import wwBot.Globals;
 import wwBot.Player;
 
 public class LobbyState extends GameState {
-    public static List<User> listJoinedUsers = new ArrayList<>();
-    public static List<Card> deck = new ArrayList<>();
+    public List<User> listJoinedUsers = new ArrayList<>();
+    public List<Card> deck = new ArrayList<>();
 
     public LobbyState(Game game) {
         super(game);
@@ -22,43 +22,22 @@ public class LobbyState extends GameState {
         registerGameCommands();
 
         // simulates Users
-  /*       User hannelore = null;
-        User friedrich = null;
-        User samuel = null;
-        User raffael = null;
-        User santa = null;
-        User ente = null;
-        User fanta = null;
-        User hi = null;
-        User ho = null;
-        User hun = null;
-        User huh = null;
-        User damn = null;
-        User oof2 = null;
-        User oof = null;
-        User one = null;
-        User two = null;
-        User sdfg = null;
-        User tree = null;
-
-        listJoinedUsers.add(santa);
-        listJoinedUsers.add(friedrich);
-        listJoinedUsers.add(hannelore);
-        listJoinedUsers.add(raffael);
-        listJoinedUsers.add(samuel);
-        listJoinedUsers.add(ente);
-        listJoinedUsers.add(fanta);
-        listJoinedUsers.add(hi);
-        listJoinedUsers.add(ho);
-        listJoinedUsers.add(hun);
-        listJoinedUsers.add(huh);
-        listJoinedUsers.add(damn);
-        listJoinedUsers.add(oof2);
-        listJoinedUsers.add(oof);
-        listJoinedUsers.add(one);
-        listJoinedUsers.add(two);
-        listJoinedUsers.add(sdfg);
-        listJoinedUsers.add(tree); */
+        /*
+         * User hannelore = null; User friedrich = null; User samuel = null; User
+         * raffael = null; User santa = null; User ente = null; User fanta = null; User
+         * hi = null; User ho = null; User hun = null; User huh = null; User damn =
+         * null; User oof2 = null; User oof = null; User one = null; User two = null;
+         * User sdfg = null; User tree = null;
+         * 
+         * listJoinedUsers.add(santa); listJoinedUsers.add(friedrich);
+         * listJoinedUsers.add(hannelore); listJoinedUsers.add(raffael);
+         * listJoinedUsers.add(samuel); listJoinedUsers.add(ente);
+         * listJoinedUsers.add(fanta); listJoinedUsers.add(hi); listJoinedUsers.add(ho);
+         * listJoinedUsers.add(hun); listJoinedUsers.add(huh);
+         * listJoinedUsers.add(damn); listJoinedUsers.add(oof2);
+         * listJoinedUsers.add(oof); listJoinedUsers.add(one); listJoinedUsers.add(two);
+         * listJoinedUsers.add(sdfg); listJoinedUsers.add(tree);
+         */
 
     }
 
@@ -147,6 +126,14 @@ public class LobbyState extends GameState {
         Command showDeckCommand = (event, parameters, msgChannel) -> {
 
             msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+            // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+            // und informiert den User über die Differenz
+            var figureDifference = deck.size() - listJoinedUsers.size();
+            if (figureDifference < 0) {
+                msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+            } else if (figureDifference > 0) {
+                msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+            }
 
         };
         gameStateCommands.put("showDeck", showDeckCommand);
@@ -176,7 +163,7 @@ public class LobbyState extends GameState {
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
-                var figureDifference = Math.abs(deck.size() - listJoinedUsers.size());
+                var figureDifference = deck.size() - listJoinedUsers.size();
                 if (figureDifference < 0) {
                     msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
@@ -205,7 +192,7 @@ public class LobbyState extends GameState {
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
-                var figureDifference = Math.abs(deck.size() - listJoinedUsers.size());
+                var figureDifference = deck.size() - listJoinedUsers.size();
                 if (figureDifference < 0) {
                     msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
@@ -238,6 +225,7 @@ public class LobbyState extends GameState {
                 // if there are as many cards as joined Users, the Cards get distributed and the
                 // Game starts
             } else if (deck.size() == listJoinedUsers.size()) {
+                msgChannel.createMessage("Einen Moment Gedult...").block();
                 // creates a temporary copy of the Deck
                 var tempDeck = new ArrayList<Card>(deck);
 
@@ -249,13 +237,13 @@ public class LobbyState extends GameState {
                     player.user = user;
                     var rand = (int) (Math.random() * tempDeck.size());
                     player.role = tempDeck.get(rand);
-                    game.mapPlayer.put(player.role.name, player);
+                    game.mapPlayers.put(player.user.getId(), player);
                     tempDeck.remove(rand);
 
                     // the player gets a message describing his role
                     var privateChannel = player.user.getPrivateChannel().block();
                     privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
-                    
+
                     Globals.printCard(player.role.name, privateChannel);
 
                 }
@@ -268,6 +256,11 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("startGame", startGameCommand);
 
+        // help
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            msgChannel.createMessage("TODO: create help in LOBBYPHASE").block();
+        };
+        gameStateCommands.put("help", helpCommand);
     }
 
     // TODO: create a method that prints images

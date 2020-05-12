@@ -16,7 +16,9 @@ import wwBot.GameStates.MainGameState;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
-    public Map<String, Player> mapPlayer = new HashMap<String, Player>();
+    public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
+    public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
+    public HashMap<Snowflake, PrivateCommand> mapPrivateCommands = new HashMap<Snowflake, PrivateCommand>();
     public GameState currentGameState;
     public Snowflake runningInServer;
     public MessageChannel runningInChannel;
@@ -31,6 +33,10 @@ public class Game {
         currentGameState = new LobbyState(this);
 
     }
+
+
+
+
 
     public void handleCommands(MessageCreateEvent event) {
 
@@ -47,7 +53,7 @@ public class Game {
         var foundCommandState = currentGameState.gameStateCommands.get(requestedCommand);
         if (foundCommandState != null) {
             foundCommandState.execute(event, parameters, runningInChannel);
-        } else {
+        } else if( !requestedCommand.equalsIgnoreCase("newGame") && !requestedCommand.equalsIgnoreCase("DeleteGame")) {
             runningInChannel.createMessage("Command Not Found").block();
         }
 
@@ -76,18 +82,20 @@ public class Game {
         gameCommands.put("showCard", showCardCommand);
 
         // basically !help
-        Command explainCommand = (event, parameters, msgChannel) -> {
+        Command helpCommand = (event, parameters, msgChannel) -> {
 
             // TODO: create a message builder or embed with all the info
-
-            msgChannel.createMessage(
-                    "Choose a Deck with **" + prefix + "chooseCustomDeck** or ++" + "chooseAlgorithmDeck**").block();
+            // help
+            
+        msgChannel.createMessage("TODO: add help Command in Game").block();
+        
             msgChannel.createMessage("If you have not created a Deck jet, try **" + prefix
                     + "buildDeck** to let the Algorithm build a Deck for you or try **" + prefix
-                    + "addCard** to add a Card to your Custom Deck").block();
+                    + "addCard** to add a Card or **" + prefix
+                    + "removeCard** to remove a Card to your Custom Deck").block();
 
         };
-        gameCommands.put("explain", explainCommand);
+        gameCommands.put("help", helpCommand);
 
     }
 
