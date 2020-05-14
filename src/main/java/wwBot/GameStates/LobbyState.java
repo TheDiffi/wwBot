@@ -1,5 +1,6 @@
 package wwBot.GameStates;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import wwBot.Player;
 public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
     public List<Card> deck = new ArrayList<>();
+    public boolean gameRuleAutomatic = true;
+    public User userModerator;
 
     public LobbyState(Game game) {
         super(game);
@@ -125,7 +128,16 @@ public class LobbyState extends GameState {
         // shows the current Deck to the user
         Command showDeckCommand = (event, parameters, msgChannel) -> {
 
+            // prints the deck
             msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+
+            // prints the moderator if there is one
+            if (!gameRuleAutomatic && userModerator != null) {
+                msgChannel.createMessage("Moderator: " + userModerator.getUsername());
+            } else if (!gameRuleAutomatic && userModerator == null) {
+                msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
+            }
+
             // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
             // und informiert den User über die Differenz
             var figureDifference = deck.size() - listJoinedUsers.size();
@@ -210,49 +222,118 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("clearDeck", clearDeckCommand);
 
+        // sets the moderator to manual/automatic
+        Command gameruleCommand = (event, parameters, msgChannel) -> {
+            var gamerule = parameters.get(0);
+
+            if (gamerule.equalsIgnoreCase("Automatic")) {
+                if (!gameRuleAutomatic) {
+                    gameRuleAutomatic = true;
+                    Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf automatisch gestellt",
+                            "In diesem Modus wird keine Person benötigt, da der Bot die vollständige Rolle des Moderators einnimmt.");
+                } else {
+                    Globals.createMessageBuilder(msgChannel, "Der Moderator ist schon auf automatisch gestellt", false);
+                }
+            }
+            if (gamerule.equalsIgnoreCase("Manual")) {
+                if (gameRuleAutomatic) {
+                    gameRuleAutomatic = false;
+                    Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf manuell gestellt",
+                            "In diesem Modus wird eine Person benötigt, welche die Rolle des Moderators einnimmt. Diese Person sollte dem Spiel nicht beitreten.");
+                } else {
+                    Globals.createMessageBuilder(msgChannel, "Der Moderator ist schon auf manuell gestellt", false);
+                }
+            }
+            if (gamerule.equalsIgnoreCase("RandomJobs")) {
+
+                msgChannel.createMessage("TODO: add random jobs lol");
+            }
+
+        };
+        gameStateCommands.put("gamerule", gameruleCommand);
+
+        Command makeMeModeratorCommand = (event, parameters, msgChannel) -> {
+
+            if (!gameRuleAutomatic) {
+                userModerator = event.getMessage().getAuthor().get();
+                Globals.createEmbed(msgChannel, Color.GREEN,
+                        "@" + event.getMessage().getAuthor().get().getUsername() + "is the Moderator", "");
+
+            } else {
+                msgChannel.createMessage(
+                        "Das Spiel befindet sich im automatischen Moderations-Modus. Der Command \"&gamerule Manual\" ändert das Spiel in den manuellen Moderations-Modus.");
+            }
+
+        };
+        gameStateCommands.put("makeMeModerator", makeMeModeratorCommand);
+
         // starts the game
+        // cheks if there is a moderator or the gamerule is set to automatic
         // first: the programm checks if Deck is the same size as listJoinedPlayers or
         // empty
         Command startGameCommand = (event, parameters, msgChannel) -> {
+            var checkMod = false;
 
-            // first the programm checks if Deck is the same size as listJoinedPlayers, so
-            // that every Player gets a role, no more or less
-            if (deck == null) {
-                msgChannel.createMessage("How u gonna play with no Deck?").block();
-            } else if (deck.size() != listJoinedUsers.size()) {
-                msgChannel.createMessage("There are not as many Cards as there are registered Players").block();
+            if (gameRuleAutomatic) {
+                checkMod = true;
+            } else if (!gameRuleAutomatic && userModerator != null) {
+                checkMod = true;
+            } else if (!gameRuleAutomatic && userModerator == null) {
+                checkMod = false;
+                msgChannel.createMessage("How u gonna play with no Moderator?").block();
 
-                // if there are as many cards as joined Users, the Cards get distributed and the
-                // Game starts
-            } else if (deck.size() == listJoinedUsers.size()) {
-                msgChannel.createMessage("Einen Moment Gedult...").block();
-                // creates a temporary copy of the Deck
-                var tempDeck = new ArrayList<Card>(deck);
+            }
 
-                // listPlayers gets populated with the user and its Card(role)(the card gets
-                // chosen randomly -> distributed).
-                for (User user : listJoinedUsers) {
+            if (checkMod) {
+                // first the programm checks if Deck is the same size as listJoinedPlayers, so
+                // that every Player gets a role, no more or less
+                if (deck == null) {
+                    msgChannel.createMessage("How u gonna play with no Deck?").block();
+                } else if (deck.size() != listJoinedUsers.size()) {
+                    msgChannel.createMessage("There are not as many Cards as there are registered Players").block();
 
-                    Player player = new Player();
-                    player.user = user;
-                    var rand = (int) (Math.random() * tempDeck.size());
-                    player.role = tempDeck.get(rand);
-                    game.mapPlayers.put(player.user.getId(), player);
-                    tempDeck.remove(rand);
+                    // if there are as many cards as joined Users, the Cards get distributed and the
+                    // Game starts
+                } else if (deck.size() == listJoinedUsers.size()) {
 
-                    // the player gets a message describing his role
-                    var privateChannel = player.user.getPrivateChannel().block();
-                    privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
+                    msgChannel.createMessage("Einen Moment Gedult...").block();
+                    // creates a temporary copy of the Deck
+                    var tempDeck = new ArrayList<Card>(deck);
 
-                    Globals.printCard(player.role.name, privateChannel);
+                    // listPlayers gets populated with the user and its Card(role)(the card gets
+                    // chosen randomly -> distributed).
+                    for (User user : listJoinedUsers) {
 
+                        // creates a new player and fills the object
+                        Player player = new Player();
+                        player.user = user;
+                        var rand = (int) (Math.random() * tempDeck.size());
+                        player.role = tempDeck.get(rand);
+                        tempDeck.remove(rand);
+
+                        // loads the values into the game
+                        game.mapPlayers.put(player.user.getId(), player);
+                        game.deck = deck;
+                        game.gameRuleAutomatic = gameRuleAutomatic;
+                        game.userModerator = userModerator;
+
+                        // the player gets a message describing his role
+                        var privateChannel = player.user.getPrivateChannel().block();
+                        privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
+                        Globals.printCard(player.role.name, privateChannel);
+                    }
                 }
 
                 msgChannel.createMessage("Game Created!").block();
                 // initializes the next game state
-                game.changeGameState(new MainGameState(game));
-            }
+                if(gameRuleAutomatic){
+                    game.changeGameState(new MainGameState(game));
+                } else {
+                    game.changeGameState(new SemiMainGameState(game));
+                }
+                
 
+            }
         };
         gameStateCommands.put("startGame", startGameCommand);
 

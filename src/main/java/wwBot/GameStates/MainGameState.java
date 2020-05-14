@@ -3,6 +3,7 @@ package wwBot.GameStates;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,6 +17,7 @@ import wwBot.PrivateCommand;
 
 public class MainGameState extends GameState {
 
+    public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
     public List<Boolean> nightRolesDone = new ArrayList<>();
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
@@ -23,10 +25,11 @@ public class MainGameState extends GameState {
     MainGameState(Game game) {
         super(game);
         registerStateCommands();
+        mapPlayers = game.mapPlayers;
 
         //loads living Players for the first time
         var livingPlayers = game.livingPlayers;
-        for (var player : game.mapPlayers.entrySet()) {
+        for (var player : mapPlayers.entrySet()) {
             if(player.getValue().alive){
                 livingPlayers.put(player.getKey(), player.getValue());
             }
@@ -35,6 +38,10 @@ public class MainGameState extends GameState {
         loadLivingRoles(livingPlayers);
 
         sendMessageOnFirstNight();
+
+
+
+
         // prüft ob die rolle bei den existierenden Rollen dabei ist und führt falls
         // true die Bedingungen des Günstling aus
         if (mapExistingRoles.get("Günstling") != null) {
@@ -54,7 +61,7 @@ public class MainGameState extends GameState {
             var playerWithThisRole = mapExistingRoles.get("Amor").get(0);
             var privateChannel = playerWithThisRole.user.getPrivateChannel().block();
             
-            // TODO: add Amor function
+            //Amor in Love function
             var mssg = "Flüstere mir nun zwei Namen zu und ich lasse deine Liebespfeile ihr Ziel treffen. Doch gib Acht! Ich verstehe dich nur wenn du die Namen in **einer Nachricht** und mit **einem Leerzeichen** dazwischen schreibst. ";
             Globals.createEmbed(privateChannel, Color.GREEN,
                     "Es kitzelt dich in den Fingern und du weißt, es ist Zeit deinen Bogen auszupacken ", mssg);
@@ -66,13 +73,13 @@ public class MainGameState extends GameState {
                     Player person2 = null;
                     int found = 0;
 
-                    for (var player : game.mapPlayers.entrySet()) {
+                    for (var player : mapPlayers.entrySet()) {
                         if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
                             person1 = player.getValue();
                             found++;
                         }
                     }
-                    for (var player : game.mapPlayers.entrySet()) {
+                    for (var player : mapPlayers.entrySet()) {
                         if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(1))) {
                             person2 = player.getValue();
                             found++;

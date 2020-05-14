@@ -1,5 +1,6 @@
 package wwBot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +10,7 @@ import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
@@ -19,9 +21,12 @@ public class Game {
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
     public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
     public HashMap<Snowflake, PrivateCommand> mapPrivateCommands = new HashMap<Snowflake, PrivateCommand>();
+    public List<Card> deck = new ArrayList<>();
     public GameState currentGameState;
     public Snowflake runningInServer;
     public MessageChannel runningInChannel;
+    public boolean gameRuleAutomatic = true;
+    public User userModerator;
 
     Game(Snowflake snowflakeServer, MessageChannel givenChannel) {
 
@@ -99,7 +104,7 @@ public class Game {
 
     }
 
-    public void changeGameState(MainGameState nextGameState) {
+    public void changeGameState(GameState nextGameState) {
         currentGameState.exit();
         currentGameState = nextGameState;
     }
