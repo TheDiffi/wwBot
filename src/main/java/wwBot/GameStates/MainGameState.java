@@ -37,7 +37,7 @@ public class MainGameState extends GameState {
         
         loadLivingRoles(livingPlayers);
 
-        sendMessageOnFirstNight();
+        MessagesMain.onGameStart(game);
 
 
 
@@ -52,6 +52,9 @@ public class MainGameState extends GameState {
             mssg += "Die Werwölfe sind: ";
             for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
                 mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
+            }
+            if(mapExistingRoles.containsKey("Wolfsjunges")){
+                mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
             }
 
             Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
@@ -128,13 +131,7 @@ public class MainGameState extends GameState {
 
     }
 
-    private void sendMessageOnFirstNight() {
-        // verkündet den Start der ersten Nacht
-        Globals.createMessageBuilder(game.runningInChannel, "Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.", true);
-        Globals.createMessageBuilder(game.runningInChannel, " Im Mondschein bestimmen die Dorfbewohner das man dieser Situation ein Ende setzen muss. ", true);
-        Globals.createMessageBuilder(game.runningInChannel, "Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht", true);
-        Globals.createMessageBuilder(game.runningInChannel, "`In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren`", false);
-    }
+
 
     // läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
     // mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle

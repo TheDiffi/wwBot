@@ -22,15 +22,15 @@ public class Deckbuilder {
 
         // add Seher
         int numbSeher = playerAmount > 18 ? 2 : 1;
-        addMultiple(numbSeher, mapAvailableCards.get("Seher"), listDeck);
+        Globals.addMultiple(numbSeher, mapAvailableCards.get("Seher"), listDeck);
 
         // add Werwölfe
         int numbWerwölfe = (int) Math.pow(((playerAmount - 2) / 3d), 0.85);
-        addMultiple(numbWerwölfe, mapAvailableCards.get("Werwolf"), listDeck);
+        Globals.addMultiple(numbWerwölfe, mapAvailableCards.get("Werwolf"), listDeck);
 
         // add Dorfbewohner
         int numbDorfbewohner = (int) Math.pow(playerAmount * 1.3, 0.65);
-        addMultiple(numbDorfbewohner, mapAvailableCards.get("Dorfbewohner"), listDeck);
+        Globals.addMultiple(numbDorfbewohner, mapAvailableCards.get("Dorfbewohner"), listDeck);
 
         // add Spezialkarten
         int numbSpezialkarten = playerAmount - (numbDorfbewohner + numbWerwölfe + numbSeher);
@@ -83,12 +83,6 @@ public class Deckbuilder {
         return listDeck;
     }
 
-        //fügt mehrere Karten einer Liste hinzu
-    public static void addMultiple(final int amount, final Card card, final List<Card> list) {
-        for (int i = 0; i < amount; i++) {
-            list.add(card);
-        }
-    }
         //nimmt mit Berücksichtigung auf die Häufigkeit der Karten eine zufällige Karte und fügt sie dem Deck hinzu, falls sie noch nicht im Deck ist
     public static Card getRandomUniqueCard(int amount, Map<String, Card> mapAvailableCards, List<Card> listDeck) {
 
@@ -97,7 +91,7 @@ public class Deckbuilder {
         for (var card : mapAvailableCards.values()) {
             // Schaut ob die karte einzigartig ist und noch nicht enthalten ist
             if (card.unique && !listDeck.contains(card)) {
-                addMultiple(card.priority, card, probabilityMap);
+                Globals.addMultiple(card.priority, card, probabilityMap);
             }
         }
 

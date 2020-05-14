@@ -77,12 +77,19 @@ public class Globals {
         }).block();
 	}
 	
-	public static void createMessageBuilder(MessageChannel channel, String message, boolean ifTTS) {
+	public static void createMessage(MessageChannel channel, String message, boolean ifTTS) {
         channel.createMessage(messageSpec -> {
             messageSpec.setContent(message)
                     .setTts(ifTTS);
                 }).block();
     }
+
+	//fügt mehrere Karten einer Liste hinzu
+	public static void addMultiple( int amount,  Card card,  List<Card> list) {
+	    for (int i = 0; i < amount; i++) {
+	        list.add(card);
+	    }
+	}
 
 	
 }

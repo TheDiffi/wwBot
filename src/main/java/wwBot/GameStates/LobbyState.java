@@ -232,7 +232,7 @@ public class LobbyState extends GameState {
                     Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf automatisch gestellt",
                             "In diesem Modus wird keine Person benötigt, da der Bot die vollständige Rolle des Moderators einnimmt.");
                 } else {
-                    Globals.createMessageBuilder(msgChannel, "Der Moderator ist schon auf automatisch gestellt", false);
+                    Globals.createMessage(msgChannel, "Der Moderator ist schon auf automatisch gestellt", false);
                 }
             }
             if (gamerule.equalsIgnoreCase("Manual")) {
@@ -241,7 +241,7 @@ public class LobbyState extends GameState {
                     Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf manuell gestellt",
                             "In diesem Modus wird eine Person benötigt, welche die Rolle des Moderators einnimmt. Diese Person sollte dem Spiel nicht beitreten.");
                 } else {
-                    Globals.createMessageBuilder(msgChannel, "Der Moderator ist schon auf manuell gestellt", false);
+                    Globals.createMessage(msgChannel, "Der Moderator ist schon auf manuell gestellt", false);
                 }
             }
             if (gamerule.equalsIgnoreCase("RandomJobs")) {

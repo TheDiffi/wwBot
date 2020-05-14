@@ -9,8 +9,8 @@ import java.util.Map;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
+import wwBot.GameStates.MessagesMain;
 
 public class Main {
 
@@ -81,7 +81,7 @@ public class Main {
 
                         var game = new Game(serverId, channel);
                         mapRunningGames.put(serverId, game);
-                        gameStartMessage(event.getMessage().getChannel().block(), prefix);
+                        MessagesMain.gameStartMessage(event.getMessage().getChannel().block(), prefix);
 
                     } else if (mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage(
@@ -166,23 +166,6 @@ public class Main {
 
         }
 
-    }
-
-    // erzeugt und sendet ein Embed und eine Nachricht. Wird zu spielstart
-    // aufgerufen
-    public static void gameStartMessage(MessageChannel channel, String prefix) {
-
-        Globals.createEmbed(channel, Color.GREEN, "Created New Game!", "");
-
-        Globals.createMessageBuilder(channel,
-                "Guten Abend liebe Dorfbewohner. \n Ich, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.",
-                true);
-        Globals.createMessageBuilder(channel,
-                "`Ihr könnt dem Dorf beitreten indem ihr \""
-                + prefix + "join\" eingebt. Sobald alle Dorfbewohner bereit sind könnt ihr euch mit \"" + prefix
-                + "buildDeck\" ein Deck vorschlagen lassen.`",
-                false);
-                
     }
 
 }
