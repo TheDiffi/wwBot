@@ -32,14 +32,7 @@ public class SemiMainGameState extends GameState {
         mapPlayers = game.mapPlayers;
         userModerator = game.userModerator;
 
-        // loads living Players for the first time
-        for (var player : game.mapPlayers.entrySet()) {
-            if (player.getValue().alive) {
-                livingPlayers.put(player.getKey(), player.getValue());
-            }
-        }
-        game.livingPlayers = livingPlayers;
-        loadLivingRoles(livingPlayers);
+        reloadGameLists();
 
         MessagesMain.onGameStart(game);
 
@@ -112,7 +105,7 @@ public class SemiMainGameState extends GameState {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 reloadGameLists();
-                new Day(game);
+                new Day();
 
                 return true;
             } else {
