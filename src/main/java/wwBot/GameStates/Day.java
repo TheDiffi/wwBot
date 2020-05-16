@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
@@ -136,7 +137,8 @@ public class Day {
                 return false;
             }
         };
-        game.mapPrivateCommands.put(game.userModerator.getId(), lynchCommand);
+        game.addPrivateCommand(game.userModerator.getId(),lynchCommand);
+        
 
     }
 
@@ -155,7 +157,7 @@ public class Day {
                 return false;
             }
         };
-        game.mapPrivateCommands.put(game.userModerator.getId(), endDayCommand);
+        game.addPrivateCommand(game.userModerator.getId(), endDayCommand);
     }
 
     private void lynchPlayer(Player player) {

@@ -40,7 +40,7 @@ public class SemiMainGameState extends GameState {
         MessagesMain.onGameStart(game);
 
         userModerator.getPrivateChannel().block().createMessage(
-                "Willkommen Moderator! \n Deine Aufgabe ist es das spiel für beide parteien so fair wie möglich zu machen! \n Du kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
+                "Willkommen Moderator! \nDeine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
                 .block();
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -51,7 +51,7 @@ public class SemiMainGameState extends GameState {
                 return false;
             }
         };
-        game.mapPrivateCommands.put(userModerator.getId(), readyCommand);
+        game.addPrivateCommand(userModerator.getId(), readyCommand);
 
     }
 
@@ -60,7 +60,8 @@ public class SemiMainGameState extends GameState {
             MessageChannel runningInChannel) {
         var found = super.handleCommand(requestedCommand, event, parameters, runningInChannel);
 
-        if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())) {
+        if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())
+                || event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
             // checks the Command map of the current DayPhase
             if (isDay) {
                 var foundCommand = day.mapCommands.get(requestedCommand);
@@ -158,7 +159,7 @@ public class SemiMainGameState extends GameState {
                 return false;
             }
         };
-        game.mapPrivateCommands.put(userModerator.getId(), sonnenaufgangCommand);
+        game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
     }
 
     private void reloadGameLists() {
@@ -204,6 +205,24 @@ public class SemiMainGameState extends GameState {
     }
 
     private void registerStateCommands() {
+
+        // ping testet ob der bot antwortet
+        Command pingCommand = (event, parameters, msgChannel) -> {
+
+            msgChannel.createMessage("Pong! SemiMainGameState").block();
+
+        };
+        gameStateCommands.put("ping", pingCommand);
+
+        // zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = "";
+            for (var command : gameStateCommands.entrySet()) {
+                mssg += "\n" + command.getKey();
+            }
+            msgChannel.createMessage(mssg).block();
+        };
+        gameStateCommands.put("showCommands", showCommandsCommand);
 
         // shows the current Deck to the user
         Command showDeckCommand = (event, parameters, msgChannel) -> {

@@ -118,7 +118,7 @@ public class MainGameState extends GameState {
                 return succsess;
 
             };
-            game.mapPrivateCommands.put(playerWithThisRole.user.getId(), amorCommand);
+            game.addPrivateCommand(playerWithThisRole.user.getId(), amorCommand);
 
         }
 
@@ -171,6 +171,24 @@ public class MainGameState extends GameState {
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerStateCommands() {
+
+        // ping testet ob der bot antwortet
+        Command pingCommand = (event, parameters, msgChannel) -> {
+
+            msgChannel.createMessage("Pong! Game").block();
+
+        };
+        gameStateCommands.put("ping", pingCommand);
+
+        //zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = "";
+            for (var command : gameStateCommands.entrySet()) {
+                mssg+= "\n"+command.getKey();
+            }
+             msgChannel.createMessage(mssg).block();
+        };
+        gameStateCommands.put("showCommands", showCommandsCommand);
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {

@@ -57,12 +57,22 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
+        // zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = "";
+            for (var command : gameStateCommands.entrySet()) {
+                mssg += "\n" + command.getKey();
+            }
+            msgChannel.createMessage(mssg).block();
+        };
+        gameStateCommands.put("showCommands", showCommandsCommand);
+
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
             User user = event.getMessage().getAuthor().get();
             var bool = true;
             // falls es einen moderator gibt darf dieser nicht joinen
-            if (!gameRuleAutomatic && userModerator !=null &&user.getId().equals(userModerator.getId())) {
+            if (!gameRuleAutomatic && userModerator != null && user.getId().equals(userModerator.getId())) {
                 bool = false;
             }
 
@@ -214,7 +224,7 @@ public class LobbyState extends GameState {
                 // und informiert den User über die Differenz
                 var figureDifference = deck.size() - listJoinedUsers.size();
                 if (figureDifference < 0) {
-                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                    msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
                     msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
                 }
@@ -261,15 +271,23 @@ public class LobbyState extends GameState {
         gameStateCommands.put("gamerule", gameruleCommand);
 
         Command makeMeModeratorCommand = (event, parameters, msgChannel) -> {
+            var isJoined = false;
+            if(listJoinedUsers.indexOf(event.getMessage().getAuthor().get()) != -1){
+                isJoined = true;
+            }
 
-            if (!gameRuleAutomatic) {
+            if (!gameRuleAutomatic && !isJoined) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN,
-                        "@" + event.getMessage().getAuthor().get().getUsername() + " is the Moderator", "");
-
+                        event.getMessage().getAuthor().get().getMention() + " is the Moderator", "");
+            } else if (isJoined) {
+                msgChannel.createMessage(
+                        "Es sieht aus als wärst du dem Spiel beigetreten, benutze den Command \"&leave\" um Moderator zu werden")
+                        .block();
             } else {
                 msgChannel.createMessage(
-                        "Das Spiel befindet sich im automatischen Moderations-Modus. Der Command \"&gamerule Manual\" ändert das Spiel in den manuellen Moderations-Modus.");
+                        "Das Spiel befindet sich im automatischen Moderations-Modus. Der Command \"&gamerule Manual\" ändert das Spiel in den manuellen Moderations-Modus.")
+                        .block();
             }
 
         };

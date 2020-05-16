@@ -66,7 +66,7 @@ public class Main {
                 // help printet alle commands aus
                 if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
                     event.getMessage().getChannel().block().createMessage("TODO: fill help in MAIN").block();
-
+                    event.getMessage().getChannel().block().createMessage("Bla Bla schreibe &startGame").block();
                 }
                 if (parameters.get(0).equalsIgnoreCase(prefix + "ping")) {
                     event.getMessage().getChannel().block().createMessage("Pong! MAIN").block();
@@ -75,7 +75,7 @@ public class Main {
 
                 // überprüft ob auf diesem server bereits ein Game läuft, falls nein erstellt er
                 // ein neues und fügt es zur Map runningGames hinzu
-                else if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
+                if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
 
@@ -109,7 +109,7 @@ public class Main {
                 // falls ein Spiel existiert (also gerade läuft), und der Command auf dem
                 // Server, auf dem das Spiel läuft, geschrieben wurde, wird die Eingabe zum Game
                 // weitergeleited
-                if (mapRunningGames.containsKey(serverId)) {
+                else if (mapRunningGames.containsKey(serverId)) {
                     var game = mapRunningGames.get(serverId);
                     game.handleCommands(event);
                 }
@@ -151,11 +151,15 @@ public class Main {
                     } else {
                         // überprüft, ob in der map dieser User ist, d.h. ob das programm auf eine
                         // Antwort "wartet"
-                        if (game.mapPrivateCommands != null && (game.mapPrivateCommands.containsKey(userId) || game.userModerator.getId().equals(userId))) {
-                            var success = game.mapPrivateCommands.get(userId).execute(event, parameters,
-                                    event.getMessage().getChannel().block());
-                            if (success) { 
-                                game.mapPrivateCommands.remove(userId);
+                        if (game.mapPrivateCommands != null && game.mapPrivateCommands.size() > 0
+                                && (game.mapPrivateCommands.containsKey(userId))) {
+                            //looks at every command registered for this Id
+                            for (int i = 0; i < game.mapPrivateCommands.get(userId).size();i++) {
+                                var success = game.mapPrivateCommands.get(userId).get(i).execute(event, parameters,
+                                        event.getMessage().getChannel().block());
+                                if (success) {
+                                    game.mapPrivateCommands.get(userId).remove(i);
+                                }
                             }
                         } else {
                             event.getMessage().getChannel().block().createMessage("you have no access to this command")
