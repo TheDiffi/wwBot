@@ -6,6 +6,7 @@ public class Player {
     public User user;
     public boolean alive = true;
     public Player inLoveWith;
+    public int votes = 0;;
 
     public Player(){
         

@@ -27,20 +27,17 @@ public class MainGameState extends GameState {
         registerStateCommands();
         mapPlayers = game.mapPlayers;
 
-        //loads living Players for the first time
+        // loads living Players for the first time
         var livingPlayers = game.livingPlayers;
         for (var player : mapPlayers.entrySet()) {
-            if(player.getValue().alive){
+            if (player.getValue().alive) {
                 livingPlayers.put(player.getKey(), player.getValue());
             }
         }
-        
+
         loadLivingRoles(livingPlayers);
 
         MessagesMain.onGameStart(game);
-
-
-
 
         // prüft ob die rolle bei den existierenden Rollen dabei ist und führt falls
         // true die Bedingungen des Günstling aus
@@ -53,7 +50,7 @@ public class MainGameState extends GameState {
             for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
                 mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
             }
-            if(mapExistingRoles.containsKey("Wolfsjunges")){
+            if (mapExistingRoles.containsKey("Wolfsjunges")) {
                 mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
             }
 
@@ -63,8 +60,8 @@ public class MainGameState extends GameState {
         if (mapExistingRoles.get("Amor") != null) {
             var playerWithThisRole = mapExistingRoles.get("Amor").get(0);
             var privateChannel = playerWithThisRole.user.getPrivateChannel().block();
-            
-            //Amor in Love function
+
+            // Amor in Love function
             var mssg = "Flüstere mir nun zwei Namen zu und ich lasse deine Liebespfeile ihr Ziel treffen. Doch gib Acht! Ich verstehe dich nur wenn du die Namen in **einer Nachricht** und mit **einem Leerzeichen** dazwischen schreibst. ";
             Globals.createEmbed(privateChannel, Color.GREEN,
                     "Es kitzelt dich in den Fingern und du weißt, es ist Zeit deinen Bogen auszupacken ", mssg);
@@ -96,21 +93,30 @@ public class MainGameState extends GameState {
                         Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + person1.user.getUsername() + " und "
                                 + person2.user.getUsername() + " haben sich unsterblich verliebt");
                         game.runningInChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-                        person1.user.getPrivateChannel().block().createMessage("Du fällst mit **"+ person2.user.getUsername() + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt").block();
-                        person2.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"+ person1.user.getUsername() + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt").block();
-                        
-                        Globals.createEmbed(msgChannel, Color.RED, "Error: Zwei identische Usernames gefunden", "Tut mir leid, ich verstehe dich nicht. \n Deine Nachricht sollte aussehen: \n<Username> <Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal!");
+                        person1.user.getPrivateChannel().block().createMessage("Du fällst mit **"
+                                + person2.user.getUsername()
+                                + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
+                                .block();
+                        person2.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
+                                + person1.user.getUsername()
+                                + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
+                                .block();
+
+                    } else {
+                        Globals.createEmbed(msgChannel, Color.RED, "Error: Zwei identische Usernames gefunden",
+                                "Tut mir leid, ich verstehe dich nicht. \n Deine Nachricht sollte aussehen: \n<Username> <Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal!");
                         succsess = false;
 
                     }
 
                 } else {
                     msgChannel.createMessage(
-                            "Tut mir leid ich verstehe dich nicht \n Deine Nachricht sollte aussehen \n<Username>LEERZEICHEN<Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal").block();
-                            succsess = false;
+                            "Tut mir leid ich verstehe dich nicht \n Deine Nachricht sollte aussehen \n<Username>LEERZEICHEN<Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal")
+                            .block();
+                    succsess = false;
                 }
                 return succsess;
-                
+
             };
             game.mapPrivateCommands.put(playerWithThisRole.user.getId(), amorCommand);
 
@@ -130,8 +136,6 @@ public class MainGameState extends GameState {
         }
 
     }
-
-
 
     // läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
     // mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle
@@ -162,11 +166,8 @@ public class MainGameState extends GameState {
         mapExistingRoles.put("Werwolf", listWerwölfe);
         mapExistingRoles.put("Seher", listSeher);
         mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
-        
+
     }
-
-
-    
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerStateCommands() {
@@ -183,4 +184,3 @@ public class MainGameState extends GameState {
 
     // TODO: add Day Night Cycle
 }
-
