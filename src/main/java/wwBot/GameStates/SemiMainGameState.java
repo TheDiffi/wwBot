@@ -139,8 +139,6 @@ public class SemiMainGameState extends GameState {
             Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
         }
 
-        
-
         endFirstNight();
 
     }
@@ -153,8 +151,7 @@ public class SemiMainGameState extends GameState {
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                reloadGameLists();
-                isDay = true;
+                changeDayPhase();
 
                 return true;
             } else {
@@ -246,7 +243,7 @@ public class SemiMainGameState extends GameState {
 
     }
 
-    private void printPlayers(MessageChannel msgChannel, Map<Snowflake, Player> map) {
+    public void printPlayers(MessageChannel msgChannel, Map<Snowflake, Player> map) {
         var mssgList = "";
         for (var playerset : map.entrySet()) {
             var player = playerset.getValue();
@@ -257,7 +254,7 @@ public class SemiMainGameState extends GameState {
         Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
     }
 
-    private void printPlayers(MessageChannel msgChannel, List<Player> list) {
+    public void printPlayers(MessageChannel msgChannel, List<Player> list) {
         var mssgList = "";
         for (var player : list) {
             mssgList += player.user.getUsername() + ": ";
@@ -265,6 +262,20 @@ public class SemiMainGameState extends GameState {
             mssgList += Boolean.toString(player.alive) + "\n";
         }
         Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
+    }
+
+    @Override
+    public void changeDayPhase() {
+        reloadGameLists();
+        if (isDay) {
+            isDay = false;
+            night = new Night(game);
+
+        } else if (!isDay) {
+            isDay = true;
+            day = new Day(game);
+        }
+
     }
 
 }

@@ -16,25 +16,27 @@ public class GameState {
             String.CASE_INSENSITIVE_ORDER);
     Game game;
 
-    protected GameState (Game game2){
+    protected GameState(Game game2) {
         game = game2;
-        
+
     }
 
-	public void exit() {
+    public void exit() {
     }
-    
-    public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters, MessageChannel runningInChannel) {
+
+    public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
+            MessageChannel runningInChannel) {
         var foundCommandState = gameStateCommands.get(requestedCommand);
         if (foundCommandState != null) {
             foundCommandState.execute(event, parameters, runningInChannel);
             return true;
         }
-        
+
         return false;
     }
 
-    
+    public void changeDayPhase() {
 
+    }
 
 }

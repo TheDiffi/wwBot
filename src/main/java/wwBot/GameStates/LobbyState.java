@@ -16,7 +16,7 @@ import wwBot.Player;
 public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
     public List<Card> deck = new ArrayList<>();
-    public boolean gameRuleAutomatic = true;
+    public boolean gameRuleAutomatic = false;
     public User userModerator;
 
     public LobbyState(Game game) {
@@ -59,22 +59,30 @@ public class LobbyState extends GameState {
 
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
-            User user = event.getMember().get();
+            User user = event.getMessage().getAuthor().get();
+            var bool = true;
+            // falls es einen moderator gibt darf dieser nicht joinen
+            if (!gameRuleAutomatic && userModerator !=null &&user.getId().equals(userModerator.getId())) {
+                bool = false;
+            }
 
             // falls der User noch nicht registriert ist, wird er hinugefügt
-            if (listJoinedUsers.indexOf(user) == -1) {
+            if (listJoinedUsers.indexOf(user) == -1 && bool) {
                 listJoinedUsers.add(user);
                 msgChannel.createMessage(user.getUsername() + " ist beigetreten!").block();
+            } else if (!bool) {
+                msgChannel.createMessage("You cannot join if you are the Moderator").block();
             } else {
                 msgChannel.createMessage("looks like you're already joined").block();
             }
+
         };
         gameStateCommands.put("join", joinCommand);
 
         // leave entfernt den user von listJoinedUsers
         Command leaveCommand = (event, parameters, msgChannel) -> {
 
-            User user = event.getMember().get();
+            User user = event.getMessage().getAuthor().get();
 
             // falls der user in der liste ist, wird er entfernt
             if (listJoinedUsers.indexOf(user) != -1) {
@@ -239,7 +247,7 @@ public class LobbyState extends GameState {
                 if (gameRuleAutomatic) {
                     gameRuleAutomatic = false;
                     Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf manuell gestellt",
-                            "In diesem Modus wird eine Person benötigt, welche die Rolle des Moderators einnimmt. Diese Person sollte dem Spiel nicht beitreten.");
+                            "In diesem Modus wird eine Person benötigt, welche die Rolle des Moderators einnimmt. Diese Person sollte dem Spiel nicht beitreten sondern den Befehl \"&MakeMeModerator\" aufrufen.");
                 } else {
                     Globals.createMessage(msgChannel, "Der Moderator ist schon auf manuell gestellt", false);
                 }
@@ -257,7 +265,7 @@ public class LobbyState extends GameState {
             if (!gameRuleAutomatic) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN,
-                        "@" + event.getMessage().getAuthor().get().getUsername() + "is the Moderator", "");
+                        "@" + event.getMessage().getAuthor().get().getUsername() + " is the Moderator", "");
 
             } else {
                 msgChannel.createMessage(
@@ -322,16 +330,14 @@ public class LobbyState extends GameState {
                         privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
                         Globals.printCard(player.role.name, privateChannel);
                     }
+                    msgChannel.createMessage("Game Created!").block();
+                    // initializes the next game state
+                    if (gameRuleAutomatic) {
+                        game.changeGameState(new MainGameState(game));
+                    } else {
+                        game.changeGameState(new SemiMainGameState(game));
+                    }
                 }
-
-                msgChannel.createMessage("Game Created!").block();
-                // initializes the next game state
-                if(gameRuleAutomatic){
-                    game.changeGameState(new MainGameState(game));
-                } else {
-                    game.changeGameState(new SemiMainGameState(game));
-                }
-                
 
             }
         };

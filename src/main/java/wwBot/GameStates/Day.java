@@ -1,5 +1,6 @@
 package wwBot.GameStates;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,7 +10,9 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Command;
 import wwBot.Game;
+import wwBot.Globals;
 import wwBot.Player;
+import wwBot.PrivateCommand;
 
 public class Day {
 
@@ -76,7 +79,7 @@ public class Day {
 
     }
 
-//counts the votes and lynchs the player with the most
+    // counts the votes and lynchs the player with the most
     private void countVotes() {
         // if every living player has voted, the votes get counted
         if (mapVotes.size() == game.livingPlayers.size()) {
@@ -84,17 +87,18 @@ public class Day {
             var hasMajority = false;
             Player mostVoted = null;
 
-            //searches for the person with the highest votes. If there are more than one hasMajority gets set to false
+            // searches for the person with the highest votes. If there are more than one
+            // hasMajority gets set to false
             for (var player : mapAmountVotes.entrySet()) {
-                if(amount > player.getValue()){
+                if (amount > player.getValue()) {
                     mostVoted = player.getKey();
                     hasMajority = true;
-                }else if (amount == player.getValue()){
+                } else if (amount == player.getValue()) {
                     hasMajority = false;
                 }
             }
 
-            if(hasMajority && mostVoted != null){
+            if (hasMajority && mostVoted != null) {
                 lynch(mostVoted);
             }
         }
@@ -102,32 +106,67 @@ public class Day {
 
     private void lynch(Player mostVoted) {
 
-        if (game.currentGameState.mapExistingRoles.containsKey("Märtyrerin")){
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED, "Alle Spieler Haben Gewählt!",
+                "Auf dem Schaffott steht *" + mostVoted.user.getMention()
+                        + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren.");
+        // kills the player
+        PrivateCommand lynchCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("lynch")) {
+                if (parameters.size() == 2) {
+                    var unluckyPerson = Globals.findPlayerByName(parameters.get(1), game.livingPlayers);
+                    if (unluckyPerson != null) {
+                        lynchPlayer(unluckyPerson);
+                        endDay();
+                        return true;
+                    } else if (parameters.get(1).equalsIgnoreCase("Nobody")) {
+                        Globals.createEmbed(game.runningInChannel, Color.GREEN, "Niemand wurde gelyncht!",
+                                "Mit einer Unsicherheit im Herzen gehen die Dorfbewohner schlafen.");
+                        endDay();
+                        return true;
+                    } else {
+                        msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
+                                .block();
+                        return false;
+                    }
+                } else {
+                    msgChannel.createMessage("wrong syntax, try again").block();
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        };
+        game.mapPrivateCommands.put(game.userModerator.getId(), lynchCommand);
 
-        }else{
-            killPlayer(mostVoted);
-        }
     }
 
-    private void killPlayer(Player player) {
-        //1) Message
+    private void endDay() {
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
+                "Wenn bu bereit bist, den Tag zu beenden tippe den Command \"endDay\"", "");
+        //
+        PrivateCommand endDayCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("endDay")
+                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                game.currentGameState.changeDayPhase();
+                MessagesMain.onNightAuto(game);
 
-        //2) player = dead
+                return true;
+            } else {
+                return false;
+            }
+        };
+        game.mapPrivateCommands.put(game.userModerator.getId(), endDayCommand);
+    }
+
+    private void lynchPlayer(Player player) {
+        // 1) Message
+        Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getMention() + " wurde gelyncht!",
+                "Er war ein: *" + player.role.name + "*!");
+        // 2) player = dead
         player.alive = false;
-
-        //3) Check consequences
-        if(player.inLoveWith != null){
-            //announces the lovers and kills the other person
-            //TODO: announce
-            player.inLoveWith.alive = false;
-            
-        }
+        game.deadPlayers.add(player);
 
     }
-
-
-
-
 
     private void addVote(MessageCreateEvent event, User voter, Player votedFor) {
         mapVotes.put(voter.getId(), votedFor);
@@ -140,8 +179,7 @@ public class Day {
             mapAmountVotes.put(votedFor, 1);
         }
         event.getMessage().getChannel().block()
-                .createMessage(
-                        voter.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
+                .createMessage(voter.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
                 .block();
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.util.Snowflake;
 
 //In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {
@@ -72,24 +73,40 @@ public class Globals {
 	}
 
 	public static void createEmbed(MessageChannel channel, Color color, String title, String description) {
-        channel.createEmbed(emb -> {
-            emb.setColor(color).setTitle(title).setDescription(description);
-        }).block();
+		channel.createEmbed(emb -> {
+			emb.setColor(color).setTitle(title).setDescription(description);
+		}).block();
 	}
-	
+
 	public static void createMessage(MessageChannel channel, String message, boolean ifTTS) {
-        channel.createMessage(messageSpec -> {
-            messageSpec.setContent(message)
-                    .setTts(ifTTS);
-                }).block();
-    }
-
-	//fügt mehrere Karten einer Liste hinzu
-	public static void addMultiple( int amount,  Card card,  List<Card> list) {
-	    for (int i = 0; i < amount; i++) {
-	        list.add(card);
-	    }
+		channel.createMessage(messageSpec -> {
+			messageSpec.setContent(message).setTts(ifTTS);
+		}).block();
 	}
 
-	
+	// fügt mehrere Karten einer Liste hinzu
+	public static void addMultiple(int amount, Card card, List<Card> list) {
+		for (int i = 0; i < amount; i++) {
+			list.add(card);
+		}
+	}
+
+	// finds a player in a Map by Username. Returns null if it finds noone or
+	// multiple Players
+	public static Player findPlayerByName(String name, Map<Snowflake, Player> map) {
+		Player foundPlayer = null;
+		var found = 0;
+		for (var player : map.entrySet()) {
+			if (player.getValue().user.getUsername().equalsIgnoreCase(name)) {
+				foundPlayer = player.getValue();
+				found++;
+			}
+
+		}
+		if (found != 1) {
+			foundPlayer = null;
+		}
+		return foundPlayer;
+	}
+
 }

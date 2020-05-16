@@ -124,14 +124,18 @@ public class Main {
                 Game game = null;
                 var isInGame = 0;
                 var tempListGame = mapRunningGames.values();
-                // prüft ob der spieler in genau einem spiel ist
+                // prüft ob der spieler in genau einem spiel ist (Player/Moderator)
                 for (Game tempGame : tempListGame) {
                     if (tempGame.mapPlayers.containsKey(userId)) {
                         isInGame++;
                         game = tempGame;
+                    } else if (tempGame.userModerator != null && tempGame.userModerator.getId().equals(userId)) {
+                        isInGame++;
+                        game = tempGame;
                     }
                 }
-                if (isInGame == 0) {
+
+                if (isInGame == 0 && game.userModerator.getId().equals(event.getMessage().getAuthor().get().getId())) {
                     event.getMessage().getChannel().block()
                             .createMessage(
                                     "It looks like you are not in a game or that your game is still in lobby phase")
@@ -147,10 +151,10 @@ public class Main {
                     } else {
                         // überprüft, ob in der map dieser User ist, d.h. ob das programm auf eine
                         // Antwort "wartet"
-                        if (game.mapPrivateCommands != null && game.mapPrivateCommands.containsKey(userId)) {
+                        if (game.mapPrivateCommands != null && (game.mapPrivateCommands.containsKey(userId) || game.userModerator.getId().equals(userId))) {
                             var success = game.mapPrivateCommands.get(userId).execute(event, parameters,
                                     event.getMessage().getChannel().block());
-                            if (success) {
+                            if (success) { 
                                 game.mapPrivateCommands.remove(userId);
                             }
                         } else {

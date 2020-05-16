@@ -14,18 +14,18 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
-import wwBot.GameStates.MainGameState;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
     public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
+    public List<Player> deadPlayers = new ArrayList<>();
     public HashMap<Snowflake, PrivateCommand> mapPrivateCommands = new HashMap<Snowflake, PrivateCommand>();
     public List<Card> deck = new ArrayList<>();
     public GameState currentGameState;
     public Snowflake runningInServer;
     public MessageChannel runningInChannel;
-    public boolean gameRuleAutomatic = true;
+    public boolean gameRuleAutomatic = false;
     public User userModerator;
 
     Game(Snowflake snowflakeServer, MessageChannel givenChannel) {
@@ -49,16 +49,19 @@ public class Game {
         List<String> parameters = new LinkedList<>(Arrays.asList(messageContent.split(" ")));
         var requestedCommand = parameters.remove(0);
         requestedCommand = requestedCommand.substring(1);
+        boolean found = false;
 
         var foundCommandGame = gameCommands.get(requestedCommand);
         if (foundCommandGame != null) {
-            foundCommandGame.execute(event, parameters, runningInChannel);
+            foundCommandGame.execute( event, parameters, runningInChannel);
+            found = true;
         }
 
-        var foundCommandState = currentGameState.gameStateCommands.get(requestedCommand);
-        if (foundCommandState != null) {
-            foundCommandState.execute(event, parameters, runningInChannel);
-        } else if( !requestedCommand.equalsIgnoreCase("newGame") && !requestedCommand.equalsIgnoreCase("DeleteGame")) {
+        if (currentGameState.handleCommand(requestedCommand, event, parameters, runningInChannel)) {
+            found = true;
+        }
+
+        if (!found) {
             runningInChannel.createMessage("Command Not Found").block();
         }
 

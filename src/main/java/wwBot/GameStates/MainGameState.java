@@ -131,7 +131,7 @@ public class MainGameState extends GameState {
         }
         // falls alle player fertig sind wird die nächste phase gestartet
         if (isDone) {
-            // TODO: am Ende jeder Tag und Nach wird livingPlayers geupdatet
+
             // wwPhase.start();
         }
 
@@ -171,7 +171,6 @@ public class MainGameState extends GameState {
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerStateCommands() {
-        // TODO: add all Commands needed here
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
@@ -182,5 +181,4 @@ public class MainGameState extends GameState {
 
     }
 
-    // TODO: add Day Night Cycle
 }
