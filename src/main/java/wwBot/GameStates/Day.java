@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
@@ -26,6 +25,10 @@ public class Day {
     Day(Game getGame) {
         game = getGame;
         registerDayCommands();
+        // message on daystart
+        Globals.createEmbed(game.runningInChannel, Color.WHITE, "Aufgewacht und aus den Federn!",
+                "Todo: fill message on daystart");
+
     }
 
     public void registerDayCommands() {
@@ -46,6 +49,7 @@ public class Day {
             // Vote
             var voter = event.getMessage().getAuthor().get();
             Player votedFor = null;
+            var allowedToVote = false;
 
             // checks the syntax and finds the wanted player
             if (parameters != null && parameters.size() != 0) {
@@ -59,6 +63,12 @@ public class Day {
                 event.getMessage().getChannel().block().createMessage("Wrong syntax").block();
             }
 
+            for (var player : game.livingPlayers.entrySet()) {
+                if (player.getValue().user.getUsername().equals(voter.getUsername())) {
+                    allowedToVote = true;
+                }
+            }
+
             // if a player has been found, it checks if this player is alive
             if (votedFor == null) {
                 event.getMessage().getChannel().block().createMessage("Player not found.").block();
@@ -68,7 +78,10 @@ public class Day {
                         .block();
                 // if the player is alive, he and the voter get put into a map (Key = voter,
                 // Value = votedFor)
-            } else if (votedFor.alive) {
+            } else if (!allowedToVote) {
+                event.getMessage().getChannel().block().createMessage("You are not allowed to vote!").block();
+
+            } else if (votedFor.alive && allowedToVote) {
                 // if the same key gets put in a second time, the first value is dropped
                 addVote(event, voter, votedFor);
             }
@@ -83,7 +96,7 @@ public class Day {
     // counts the votes and lynchs the player with the most
     private void countVotes() {
         // if every living player has voted, the votes get counted
-        if (mapVotes.size() == game.livingPlayers.size()) {
+        if (mapVotes.size() >= game.livingPlayers.size()) {
             var amount = 0;
             var hasMajority = false;
             Player mostVoted = null;
@@ -137,8 +150,7 @@ public class Day {
                 return false;
             }
         };
-        game.addPrivateCommand(game.userModerator.getId(),lynchCommand);
-        
+        game.addPrivateCommand(game.userModerator.getId(), lynchCommand);
 
     }
 

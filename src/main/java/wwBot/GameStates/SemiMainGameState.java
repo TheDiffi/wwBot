@@ -153,6 +153,7 @@ public class SemiMainGameState extends GameState {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 changeDayPhase();
+                msgChannel.createMessage("changed To Day").block();
 
                 return true;
             } else {
