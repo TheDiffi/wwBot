@@ -215,6 +215,13 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
+		//shows the available Commands in this Phase
+        Command helpCommand = (event, parameters, msgChannel) -> {
+
+            msgChannel.createMessage("TODO: add help Command in Main State").block();
+        };
+        gameStateCommands.put("help", helpCommand);
+
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";

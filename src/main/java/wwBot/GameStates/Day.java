@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import wwBot.Card;
 import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
@@ -32,6 +33,7 @@ public class Day {
     }
 
     public void registerDayCommands() {
+        var mapAvailableCards = Globals.mapAvailableCards;
 
         // replys with pong!
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -91,7 +93,39 @@ public class Day {
         };
         mapCommands.put("vote", voteCommand);
 
+        // gives the mod a one-time access to
+        Command lynchCommand = (event, parameters, msgChannel) -> {
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                if (parameters != null && parameters.size() == 1) {
+                    var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                    if (unluckyPerson != null) {
+                        killPlayer(unluckyPerson, mapAvailableCards.get("Dorfbewohner"));
+                    } else {
+                        msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
+                                .block();
+                    }
+                } else {
+                    msgChannel.createMessage("wrong syntax, try again").block();
+                }
+            }
+        };
+        mapCommands.put("lynch", lynchCommand);
+
+
+        // calls endDay()
+        Command endDayCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+               endDay();
+            } else {
+                msgChannel.createMessage("only the moderator may use this command").block();
+            }
+        };
+        mapCommands.put("endDay", endDayCommand);
+
     }
+
+    // TODO:add Bürgermeister function
 
     // counts the votes and lynchs the player with the most
     private void countVotes() {
@@ -113,45 +147,139 @@ public class Day {
             }
 
             if (hasMajority && mostVoted != null) {
-                lynch(mostVoted);
+                suggestMostVoted(mostVoted);
             }
         }
     }
 
-    private void lynch(Player mostVoted) {
+    private void addVote(MessageCreateEvent event, User voter, Player votedFor) {
+        mapVotes.put(voter.getId(), votedFor);
 
+        var tempAmount = mapAmountVotes.get(votedFor);
+        if (tempAmount != null) {
+            tempAmount++;
+            mapAmountVotes.put(votedFor, tempAmount);
+        } else {
+            mapAmountVotes.put(votedFor, 1);
+        }
+        event.getMessage().getChannel().block()
+                .createMessage(voter.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
+                .block();
+    }
+
+    private void suggestMostVoted(Player mostVoted) {
         Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED, "Alle Spieler Haben Gewählt!",
                 "Auf dem Schaffott steht *" + mostVoted.user.getMention()
-                        + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren.");
-        // kills the player
-        PrivateCommand lynchCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("lynch")) {
-                if (parameters.size() == 2) {
-                    var unluckyPerson = Globals.findPlayerByName(parameters.get(1), game.livingPlayers);
-                    if (unluckyPerson != null) {
-                        lynchPlayer(unluckyPerson);
-                        endDay();
-                        return true;
-                    } else if (parameters.get(1).equalsIgnoreCase("Nobody")) {
-                        Globals.createEmbed(game.runningInChannel, Color.GREEN, "Niemand wurde gelyncht!",
-                                "Mit einer Unsicherheit im Herzen gehen die Dorfbewohner schlafen.");
-                        endDay();
-                        return true;
+                        + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. Mit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
+        for (var player : game.livingPlayers.entrySet()) {
+            if (player.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                        "Frag die Märtyrerin ob sie sich anstelle der nominierten Person lynchen lassen will.", false);
+                break;
+            }
+        }
+
+    }
+
+    private void killPlayer(Player unluckyPlayer, Card causedByRole) {
+        var mapAvailableCards = Globals.mapAvailableCards;
+        var dies = true;
+
+        // checks if the player dies
+        dies = checkIfDies(unluckyPlayer, causedByRole, dies);
+
+        if (dies) {
+            // kills player
+            unluckyPlayer.alive = false;
+            game.deadPlayers.add(unluckyPlayer);
+
+            // reveals the players death and identity
+            checkDeathMessages(unluckyPlayer, causedByRole);
+
+            Globals.printCard(unluckyPlayer.role.name, game.runningInChannel);
+
+            // calculates the consequences
+
+            if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) {
+                // looks if there is a Zauberlehrling in the game
+                for (var player : game.livingPlayers.entrySet()) {
+                    // if he finds a Lehrling he is the new Seher
+                    if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
+                        player.getValue().role = mapAvailableCards.get("Seher");
+                        MessagesMain.seherlehrlingWork(game, unluckyPlayer);
+                    }
+                }
+
+            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Aussätzige")) {
+                // if killed by Werwölfe
+                if (causedByRole != null && causedByRole.name.equalsIgnoreCase("Werwolf")) {
+                    // if the dying player is the Aussätzige, the Werwölfe kill noone the next night
+                    MessagesMain.verfluchtenMutation(game, unluckyPlayer);
+                    Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                            "Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten",
+                            false);
+                }
+
+            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Wolfsjunges")) {
+                // if not killed by Werwölfe (does not make sense but ok.)
+                if (causedByRole != null && !causedByRole.name.equalsIgnoreCase("Werwolf")) {
+                    // if the Wolfsjunges dies, the WW can kill two players in the following night.
+                    Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                            "Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
+                            false);
+                }
+            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
+                MessagesMain.jägerDeath(game, unluckyPlayer);
+
+                PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
+                    if (parameters != null) {
+                        var player = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                        // if a player is found
+                        if (player != null) {
+                            killPlayer(unluckyPlayer, mapAvailableCards.get("Jäger"));
+                            return true;
+                        } else {
+                            event.getMessage().getChannel().block()
+                                    .createMessage("Ich konnte diesen Spieler leider nicht finden").block();
+                            return false;
+
+                        }
                     } else {
-                        msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
-                                .block();
                         return false;
                     }
-                } else {
-                    msgChannel.createMessage("wrong syntax, try again").block();
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        };
-        game.addPrivateCommand(game.userModerator.getId(), lynchCommand);
+                };
+                game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
 
+            }
+        }
+
+    }
+
+    // checks the conditions if the player dies
+    private boolean checkIfDies(Player unluckyPlayer, Card causedByRole, Boolean dies) {
+        if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.name.equals("Werwolf")) {
+            dies = false;
+            Globals.createMessage(game.runningInChannel, "Der Verfluchte hat Mutiert", true);
+        }
+        return dies;
+    }
+
+    private void checkDeathMessages(Player player, Card cause) {
+
+        if (cause.name.equalsIgnoreCase("Werwolf")) {
+            MessagesMain.deathByWW(game, player);
+        } else if (cause.name.equalsIgnoreCase("Hexe") || cause.name.equalsIgnoreCase("Magier")) {
+            MessagesMain.deathByMagic(game, player);
+        } else if (cause.name.equalsIgnoreCase("Amor")) {
+            MessagesMain.deathByLove(game, player);
+        } else if (cause.name.equalsIgnoreCase("Jäger")) {
+            MessagesMain.deathByGunshot(game, player);
+        } else if (cause.name.equalsIgnoreCase("Dorfbewohner")) {
+            MessagesMain.deathByLynchen(game, player);
+        } else {
+            MessagesMain.death(game, player);
+
+        }
     }
 
     private void endDay() {
@@ -172,28 +300,4 @@ public class Day {
         game.addPrivateCommand(game.userModerator.getId(), endDayCommand);
     }
 
-    private void lynchPlayer(Player player) {
-        // 1) Message
-        Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getMention() + " wurde gelyncht!",
-                "Er war ein: *" + player.role.name + "*!");
-        // 2) player = dead
-        player.alive = false;
-        game.deadPlayers.add(player);
-
-    }
-
-    private void addVote(MessageCreateEvent event, User voter, Player votedFor) {
-        mapVotes.put(voter.getId(), votedFor);
-
-        var tempAmount = mapAmountVotes.get(votedFor);
-        if (tempAmount != null) {
-            tempAmount++;
-            mapAmountVotes.put(votedFor, tempAmount);
-        } else {
-            mapAmountVotes.put(votedFor, 1);
-        }
-        event.getMessage().getChannel().block()
-                .createMessage(voter.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
-                .block();
-    }
 }

@@ -1,10 +1,10 @@
 [
     {
         "Card": {
+            "nightPrio": "2",
             "unique": "false",
             "name": "Werwolf",
             "priority": "100",
-            "nightSequence": "0",
             "value": "-6",
             "minPlayers": "0",
             "friendly": "false",
@@ -13,10 +13,10 @@
     },
     {
         "Card": {
+            "nightPrio": "-1",
             "unique": "false",
             "name": "Dorfbewohner",
             "priority": "100",
-            "nightSequence": "0",
             "value": "1",
             "minPlayers": "0",
             "friendly": "true",
@@ -24,11 +24,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "1",
             "unique": "false",
             "name": "Seher",
             "priority": "80",
-            "nightSequence": "0",
             "value": "7",
             "minPlayers": "0",
             "friendly": "true",
@@ -37,10 +37,10 @@
     },
     {
         "Card": { 
+            "nightPrio": "-1",
             "name": "Verfluchter",
             "value": "-3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "60",
             "minPlayers": "0",
@@ -49,10 +49,10 @@
     },
     {
         "Card": { 
+            "nightPrio": "-1",
             "name": "Amor",
             "value": "-3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "90",
             "minPlayers": "0",
@@ -61,10 +61,10 @@
     },
     {
         "Card": { 
+            "nightPrio": "1",
             "name": "Aura-Seherin",
             "value": "3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -72,11 +72,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1", 
             "name": "Harter-Bursche",
             "value": "3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "30",
             "minPlayers": "0",
@@ -85,10 +85,10 @@
     },
     {
         "Card": { 
+            "nightPrio": "-1",
             "name": "Jäger",
             "value": "3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "50",
             "minPlayers": "0",
@@ -96,11 +96,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "0",
             "name": "Leibwächter",
             "value": "3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "45",
             "minPlayers": "0",
@@ -108,11 +108,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "3", 
             "name": "Hexe",
             "value": "4",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "85",
             "minPlayers": "0",
@@ -121,10 +121,10 @@
     },
     {
         "Card": { 
+            "nightPrio": "-1",
             "name": "Idiot",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "35",
             "minPlayers": "0",
@@ -132,11 +132,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Lykanthrophin",
             "value": "-1",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "35",
             "minPlayers": "0",
@@ -144,11 +144,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "1",
             "name": "Paranormaler-Ermittler",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "20",
             "minPlayers": "0",
@@ -156,11 +156,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "3",
             "name": "Magier",
             "value": "4",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -168,11 +168,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Pazifistin",
             "value": "-2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -180,11 +180,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Märtyrerin",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "30",
             "minPlayers": "0",
@@ -192,11 +192,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "0",
             "name": "Priester",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -204,11 +204,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Prinz",
             "value": "3",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "35",
             "minPlayers": "0",
@@ -216,11 +216,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "0", 
             "name": "Unruhestifterin",
             "value": "-2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "15",
             "minPlayers": "0",
@@ -228,11 +228,11 @@
         }
     },
     {
-        "Card": { 
-            "name": "Seher-Lehrling",
+        "Card": {
+            "nightPrio": "-1",
+            "name": "SeherLehrling",
             "value": "4",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "15",
             "minPlayers": "0",
@@ -240,11 +240,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Günstling",
             "value": "-6",
             "friendly": "false",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "20",
             "minPlayers": "0",
@@ -252,11 +252,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "1", 
             "name": "Zaubermeisterin",
             "value": "-3",
             "friendly": "false",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -264,11 +264,11 @@
         }
     },
     {
-        "Card": {  
+        "Card": { 
+            "nightPrio": "-1", 
             "name": "Doppelgängerin",
             "value": "-2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "30",
             "minPlayers": "0",
@@ -276,11 +276,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "0",
             "name": "Säufer",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "35",
             "minPlayers": "0",
@@ -288,11 +288,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "2",
             "name": "Wolfsjunges",
             "value": "-8",
             "friendly": "false",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "10",
             "minPlayers": "0",
@@ -300,11 +300,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "0",
             "name": "Alte-Vettel",
             "value": "1",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -312,11 +312,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Aussätzige",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "25",
             "minPlayers": "0",
@@ -324,11 +324,11 @@
         }
     },
     {
-        "Card": { 
+        "Card": {
+            "nightPrio": "-1",
             "name": "Bürgermeister",
             "value": "2",
             "friendly": "true",
-            "nightSequence": "0",
             "unique": "true",
             "priority": "55",
             "minPlayers": "0",
