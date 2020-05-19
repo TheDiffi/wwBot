@@ -45,8 +45,8 @@ public class SemiMainGameState extends GameState {
                 .block();
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
+        
                 initiateFirstNight();
-
                 return true;
             } else {
                 return false;

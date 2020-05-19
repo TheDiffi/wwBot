@@ -39,8 +39,10 @@ public class Night {
 	}
 
 	private void initiateNight() {
+		// sorts all roles by when they wake up in a list (i starts at 0 => all Roles that dont wanke up are not added)
 		var sortedRoles = new ArrayList<Player>();
 		for (int i = 0; i < 4; i++) {
+			
 			for (var player : game.livingPlayers.entrySet()) {
 				if (player.getValue().role.nightSequence == i) {
 					sortedRoles.add(player.getValue());

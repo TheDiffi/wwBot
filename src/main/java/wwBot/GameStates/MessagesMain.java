@@ -80,8 +80,9 @@ public class MessagesMain {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY, "Nacht",
                                 "Nachts einigen sich die werwölfe auf ein Opfer. In dieser Phase erwachen Spezialkarten, es folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
                 var mssg = "";
-                for (Player player : sortedRoles) {
-                        mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
+                for (int i = 0; i < sortedRoles.size(); i++) {
+                        mssg += Integer.toString(i) + ") " + sortedRoles.get(i).user.getUsername() + ": ist "
+                                        + sortedRoles.get(i).role.name + "\n";
                 }
                 mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,

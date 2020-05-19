@@ -19,10 +19,9 @@ public class Day {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Snowflake, Player> mapVotes = new HashMap<>();
-    public Map<Player, Integer> mapAmountVotes = new HashMap<>();
+    public Map<Player, Double> mapAmountVotes = new HashMap<>();
     Game game;
 
-    // TODO:add Bürgermeister function
     // TODO: tell the mod about &votingPhase on DayStart
 
     Day(Game getGame) {
@@ -128,12 +127,14 @@ public class Day {
             // and the person voted for as value
             // before that, it checks if the person already voted and if true changes the
             // Vote
-            var voter = event.getMessage().getAuthor().get();
+            var voterUser = event.getMessage().getAuthor().get();
             var allowedToVote = false;
+            var voter = new Player();
             // checks if the player calling this command lives
             for (var player : game.livingPlayers.entrySet()) {
-                if (player.getValue().user.getUsername().equals(voter.getUsername())) {
+                if (player.getValue().user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
+                    voter = player.getValue();
                 }
             }
 
@@ -179,7 +180,7 @@ public class Day {
     private void countVotes() {
         // if every living player has voted, the votes get counted
         if (mapVotes.size() >= game.livingPlayers.size()) {
-            var amount = 0;
+            var amount = 0d;
             var hasMajority = false;
             Player mostVoted = null;
 
@@ -201,23 +202,28 @@ public class Day {
         }
     }
 
-    private void addVote(MessageCreateEvent event, User voter, Player votedFor) {
-        mapVotes.put(voter.getId(), votedFor);
+    private void addVote(MessageCreateEvent event, Player voter, Player votedFor) {
+        mapVotes.put(voter.user.getId(), votedFor);
+        var voteValue = 1d;
+        //der Bürgermeister hat im Falle eines ausgleichs den entscheidenden Vorteil
+        if (voter.role.name.equalsIgnoreCase("Bürgermeister")) {
+            voteValue = 1.5d;
+        }
 
         var tempAmount = mapAmountVotes.get(votedFor);
         if (tempAmount != null) {
-            tempAmount++;
+            tempAmount += voteValue;
             mapAmountVotes.put(votedFor, tempAmount);
         } else {
-            mapAmountVotes.put(votedFor, 1);
+            mapAmountVotes.put(votedFor, voteValue);
         }
         event.getMessage().getChannel().block()
-                .createMessage(voter.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
+                .createMessage(voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
                 .block();
     }
 
     private void suggestMostVoted(Player mostVoted) {
-        //suggests the most Voted Player to the Mod
+        // suggests the most Voted Player to the Mod
         MessagesMain.suggestMostVoted(game, mostVoted);
         // some cards can interfere in this stage (Prinz, Märtyrerin)
         checkLynchConditions();
@@ -228,7 +234,8 @@ public class Day {
         for (var player : game.livingPlayers.entrySet()) {
             if (player.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
                 Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                        "Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.", false);
+                        "Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.",
+                        false);
                 break;
             }
         }
