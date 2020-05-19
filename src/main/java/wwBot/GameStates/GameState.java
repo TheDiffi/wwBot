@@ -39,4 +39,8 @@ public class GameState {
 
     }
 
+    public void endMainGame(int winner) {
+
+    }
+
 }

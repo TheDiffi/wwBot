@@ -13,6 +13,7 @@ out/
 /bootstrap
 /dependencies.xml
 .java-version
+.VSCodeCounter
 
 target/
 pom.xml.tag

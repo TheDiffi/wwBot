@@ -31,7 +31,6 @@ public class SemiMainGameState extends GameState {
     public User userModerator;
 
     SemiMainGameState(wwBot.Game game) {
-        //TODO: check for game end on every kill
         super(game);
         registerStateCommands();
         mapPlayers = game.mapPlayers;
@@ -215,7 +214,7 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
-		//shows the available Commands in this Phase
+        // shows the available Commands in this Phase
         Command helpCommand = (event, parameters, msgChannel) -> {
 
             msgChannel.createMessage("TODO: add help Command in Main State").block();
@@ -305,6 +304,18 @@ public class SemiMainGameState extends GameState {
             day = new Day(game);
         }
 
+    }
+
+    @Override
+    public void endMainGame(int winner) {
+        // sends gameover message
+        if (winner == 0) {
+            Globals.createEmbed(game.runningInChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
+        } else {
+            Globals.createEmbed(game.runningInChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
+        }
+        // changes gamestate
+        game.changeGameState(new PostGameState(game, winner));
     }
 
 }

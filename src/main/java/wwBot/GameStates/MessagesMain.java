@@ -173,4 +173,10 @@ public class MessagesMain {
                                 true);
         }
 
+        public static void suggestMostVoted(Game game, Player mostVoted) {
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
+                                "Alle Spieler Haben Gewählt!", "Auf dem Schaffott steht *" + mostVoted.user.getMention()
+                                                + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. Mit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
+        }
+
 }

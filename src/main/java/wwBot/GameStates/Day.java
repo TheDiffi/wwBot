@@ -20,13 +20,14 @@ public class Day {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Snowflake, Player> mapVotes = new HashMap<>();
     public Map<Player, Integer> mapAmountVotes = new HashMap<>();
-
     Game game;
+
+    // TODO:add Bürgermeister function
+    // TODO: tell the mod about &votingPhase on DayStart
 
     Day(Game getGame) {
         game = getGame;
         registerDayCommands();
-        
 
     }
 
@@ -39,59 +40,20 @@ public class Day {
         };
         mapCommands.put("ping", pingCommand);
 
-        // Players can vote each day
-        Command voteCommand = (event, parameters, msgChannel) -> {
+        // shows the moderator the list of players
+        Command startVotingPhaseCommand = (event, parameters, msgChannel) -> {
 
-            // if &vote is called, the programm saves a map with the person who voted for as
-            // key
-            // and the person voted for as value
-            // before that, it checks if the person already voted and if true changes the
-            // Vote
-            var voter = event.getMessage().getAuthor().get();
-            Player votedFor = null;
-            var allowedToVote = false;
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                startVotingPhase();
 
-            // checks the syntax and finds the wanted player
-            if (parameters != null && parameters.size() != 0) {
-                for (var player : game.mapPlayers.entrySet()) {
-                    if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
-                        votedFor = player.getValue();
-                    }
-                }
             } else {
-                // wrong syntax
-                event.getMessage().getChannel().block().createMessage("Wrong syntax").block();
+                msgChannel.createMessage("only the moderator can use this command");
             }
-
-            for (var player : game.livingPlayers.entrySet()) {
-                if (player.getValue().user.getUsername().equals(voter.getUsername())) {
-                    allowedToVote = true;
-                }
-            }
-
-            // if a player has been found, it checks if this player is alive
-            if (votedFor == null) {
-                event.getMessage().getChannel().block().createMessage("Player not found.").block();
-            } else if (!votedFor.alive) {
-                event.getMessage().getChannel().block()
-                        .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
-                        .block();
-                // if the player is alive, he and the voter get put into a map (Key = voter,
-                // Value = votedFor)
-            } else if (!allowedToVote) {
-                event.getMessage().getChannel().block().createMessage("You are not allowed to vote!").block();
-
-            } else if (votedFor.alive && allowedToVote) {
-                // if the same key gets put in a second time, the first value is dropped
-                addVote(event, voter, votedFor);
-            }
-
-            countVotes();
-
         };
-        mapCommands.put("vote", voteCommand);
+        mapCommands.put("votingPhase", startVotingPhaseCommand);
 
-        // gives the mod a one-time access to
+        // lynch calls killPlayer() as killed by the villagers
         Command lynchCommand = (event, parameters, msgChannel) -> {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters != null && parameters.size() == 1) {
@@ -110,37 +72,37 @@ public class Day {
         mapCommands.put("lynch", lynchCommand);
 
         // lets the moderator kill a person and checks the consequences
-		Command killCommand = (event, parameters, msgChannel) -> {
-			// only the moderator can use this command
-			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				if (parameters.size() == 2) {
-					// finds the requested Player
-					var unluckyPlayer = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
-					// gets the cause
-					var causedBy = parameters.get(1);
-					// finds the cause (role)
-					var causedByRole = mapAvailableCards.get(causedBy);
-					if (unluckyPlayer != null && (causedByRole != null || causedBy.equalsIgnoreCase("null"))) {
+        Command killCommand = (event, parameters, msgChannel) -> {
+            // only the moderator can use this command
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                if (parameters.size() == 2) {
+                    // finds the requested Player
+                    var unluckyPlayer = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                    // gets the cause
+                    var causedBy = parameters.get(1);
+                    // finds the cause (role)
+                    var causedByRole = mapAvailableCards.get(causedBy);
+                    if (unluckyPlayer != null && (causedByRole != null || causedBy.equalsIgnoreCase("null"))) {
                         killPlayer(unluckyPlayer, causedByRole);
                         event.getMessage().getChannel().block().createMessage("Erfolg!").block();
-					} else {
-						event.getMessage().getChannel().block().createMessage(
-								"Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
-								.block();
-					}
+                    } else {
+                        event.getMessage().getChannel().block().createMessage(
+                                "Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+                                .block();
+                    }
 
-				} else {
-					event.getMessage().getChannel().block().createMessage(
-							"Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
-							.block();
+                } else {
+                    event.getMessage().getChannel().block().createMessage(
+                            "Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+                            .block();
 
-				}
-			} else {
-				event.getMessage().getChannel().block().createMessage("You have no permission for this command")
-						.block();
-			}
-		};
-		mapCommands.put("kill", killCommand);
+                }
+            } else {
+                event.getMessage().getChannel().block().createMessage("You have no permission for this command")
+                        .block();
+            }
+        };
+        mapCommands.put("kill", killCommand);
 
         // calls endDay()
         Command endDayCommand = (event, parameters, msgChannel) -> {
@@ -155,9 +117,63 @@ public class Day {
 
     }
 
-    // TODO:add Bürgermeister function
-    // TODO: start voting phase when every death has been announced
-    // TODO: add Command for mod &startVotingPhase
+    private void startVotingPhase() {
+        // TODO: MessagesMain.startVotePhase();
+
+        // registers the vote command
+        Command voteCommand = (event, parameters, msgChannel) -> {
+
+            // if &vote is called, the programm saves a map with the person who voted for as
+            // key
+            // and the person voted for as value
+            // before that, it checks if the person already voted and if true changes the
+            // Vote
+            var voter = event.getMessage().getAuthor().get();
+            var allowedToVote = false;
+            // checks if the player calling this command lives
+            for (var player : game.livingPlayers.entrySet()) {
+                if (player.getValue().user.getUsername().equals(voter.getUsername())) {
+                    allowedToVote = true;
+                }
+            }
+
+            if (allowedToVote) {
+                Player votedFor = null;
+                // checks the syntax and finds the wanted player
+                if (parameters != null && parameters.size() != 0) {
+                    for (var player : game.mapPlayers.entrySet()) {
+                        if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
+                            votedFor = player.getValue();
+                        }
+                    }
+                } else {
+                    // wrong syntax
+                    event.getMessage().getChannel().block().createMessage("Wrong syntax").block();
+                }
+
+                // if a player has been found, it checks if this player is alive
+                if (votedFor == null) {
+                    event.getMessage().getChannel().block().createMessage("Player not found.").block();
+                } else if (!votedFor.alive) {
+                    event.getMessage().getChannel().block()
+                            .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
+                            .block();
+                    // if the player is alive, he and the voter get put into a map (Key = voter,
+                    // Value = votedFor)
+                } else if (votedFor.alive) {
+                    // if the same key gets put in a second time, the first value is dropped
+                    addVote(event, voter, votedFor);
+                }
+                // counts the votes: checks if all players have voted and if there is a mojority
+                countVotes();
+            } else if (!allowedToVote) {
+                event.getMessage().getChannel().block().createMessage("You are not allowed to vote!").block();
+
+            }
+        };
+        mapCommands.put("vote", voteCommand);
+
+    }
 
     // counts the votes and lynchs the player with the most
     private void countVotes() {
@@ -201,21 +217,24 @@ public class Day {
     }
 
     private void suggestMostVoted(Player mostVoted) {
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED, "Alle Spieler Haben Gewählt!",
-                "Auf dem Schaffott steht *" + mostVoted.user.getMention()
-                        + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. Mit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
-        for (var player : game.livingPlayers.entrySet()) {
-            if (player.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
-                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                        "Frag die Märtyrerin ob sie sich anstelle der nominierten Person lynchen lassen will.", false);
-                break;
-            }
-        }
+        //suggests the most Voted Player to the Mod
+        MessagesMain.suggestMostVoted(game, mostVoted);
+        // some cards can interfere in this stage (Prinz, Märtyrerin)
+        checkLynchConditions();
 
     }
 
+    private void checkLynchConditions() {
+        for (var player : game.livingPlayers.entrySet()) {
+            if (player.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                        "Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.", false);
+                break;
+            }
+        }
+    }
+
     private void killPlayer(Player unluckyPlayer, Card causedByRole) {
-        var mapAvailableCards = Globals.mapAvailableCards;
         var dies = true;
 
         // checks if the player dies
@@ -232,6 +251,20 @@ public class Day {
             Globals.printCard(unluckyPlayer.role.name, game.runningInChannel);
 
             // calculates the consequences
+
+            checkConsequences(unluckyPlayer, causedByRole);
+        }
+
+    }
+
+    private void checkConsequences(Player unluckyPlayer, Card causedByRole) {
+        var mapAvailableCards = Globals.mapAvailableCards;
+
+        // recieves true if the game ended
+        var gameEnded = checkIfGameEnds();
+
+        // if the game did not end, checkConsequences continues
+        if (!gameEnded) {
 
             if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) {
                 // looks if there is a Zauberlehrling in the game
@@ -285,7 +318,31 @@ public class Day {
 
             }
         }
+    }
 
+    // collects every "good" and every "bad" role in a list and compares the size.
+    // If the are equaly or less "good" than "bad" roles, the ww won
+    private boolean checkIfGameEnds() {
+        var amountGoodPlayers = 0;
+        var amountBadPlayers = 0;
+        var amountWW = 0;
+        for (var playerEntry : game.livingPlayers.entrySet()) {
+            if (playerEntry.getValue().role.friendly) {
+                amountGoodPlayers++;
+            } else if (!playerEntry.getValue().role.friendly) {
+                amountBadPlayers++;
+            }
+        }
+        if (amountWW < 1) {
+            // int winner: 1 = Dorfbewohner, 2 = Werwölfe
+            game.currentGameState.endMainGame(1);
+            return true;
+        } else if (amountBadPlayers >= amountGoodPlayers) {
+            game.currentGameState.endMainGame(2);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // checks the conditions if the player dies
@@ -322,7 +379,7 @@ public class Day {
         PrivateCommand endDayCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
                     && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
                 game.currentGameState.changeDayPhase();
 
                 return true;

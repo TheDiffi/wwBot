@@ -21,11 +21,24 @@ public class Night {
 		registerNightCommands();
 
 		
-		// initiateNight();
 		
 		// first: Informatial message
 		// second: sorted list of who tp call
 		// third: another message explaining how to kill someone
+		initiateNight();
+		
+		for (var player : game.livingPlayers.entrySet()) {
+			player.getValue().user.asMember(game.runningInServer).blockOptional().ifPresent( spec ->{spec.edit( a ->{ a.setMute(true).setDeafen(false);
+				});
+			});
+		
+		}
+		// TODO: create privateChannel for ww & mod
+		//TODO: fullmute all Players until sunrise
+
+	}
+
+	private void initiateNight() {
 		var sortedRoles = new ArrayList<Player>();
 		for (int i = 0; i < 4; i++) {
 			for (var player : game.livingPlayers.entrySet()) {
@@ -39,11 +52,6 @@ public class Night {
 		} else {
 			game.userModerator.getPrivateChannel().block().createMessage("no Roles to call").block();
 		}
-		
-
-		// TODO: create privateChannel for ww & mod
-		//TODO: fullmute all Players until sunrise
-
 	}
 
 	public void registerNightCommands() {
