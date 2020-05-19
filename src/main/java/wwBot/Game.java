@@ -16,11 +16,11 @@ import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
 
 public class Game {
-    public Map<String, Command> gameCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
-    public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
-    public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
+    public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    public Map<Snowflake, Player> mapPlayers = new HashMap<>();
+    public Map<Snowflake, Player> livingPlayers = new HashMap<>();
     public List<Player> deadPlayers = new ArrayList<>();
-    public HashMap<Snowflake, PrivateCommand> mapPrivateCommands = new HashMap<Snowflake, PrivateCommand>();
+    public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
     public List<Card> deck = new ArrayList<>();
     public GameState currentGameState;
     public Snowflake runningInServer;
@@ -80,6 +80,16 @@ public class Game {
             
         };
         gameCommands.put("ping", pingCommand);
+
+        //zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = "";
+            for (var command : gameCommands.entrySet()) {
+                mssg+= "\n"+command.getKey();
+            }
+             msgChannel.createMessage(mssg).block();
+        };
+        gameCommands.put("showCommands", showCommandsCommand);
         
         Command showCardCommand = (event, parameters, msgChannel) -> {
             String cardName = parameters.get(0);
@@ -111,5 +121,16 @@ public class Game {
         currentGameState.exit();
         currentGameState = nextGameState;
     }
+
+
+	public void addPrivateCommand(Snowflake id, PrivateCommand lynchCommand) {
+	    var tempList = new ArrayList<PrivateCommand>();
+	    if (mapPrivateCommands.containsKey(id)) {  
+	        tempList = mapPrivateCommands.get(id);
+	    } 
+	       
+	        tempList.add(lynchCommand);
+	        mapPrivateCommands.put(id, tempList);
+	}
 
 }

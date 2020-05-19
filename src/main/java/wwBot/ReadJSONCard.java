@@ -62,7 +62,7 @@ public class ReadJSONCard {
         String description = (String) cardJSONObject.get("description"); 
         
         //Get nightSequence as int 
-        int nightSequence = Integer.parseInt((String) cardJSONObject.get("nightSequence"));
+        int nightPrio = Integer.parseInt((String) cardJSONObject.get("nightPrio"));
         
 
         //writes the properties on the card Object
@@ -74,7 +74,8 @@ public class ReadJSONCard {
         cardObj.unique = unique;
         cardObj.description = description;
         cardObj.friendly = friendly;
-        cardObj.nightSequence = nightSequence;
+        cardObj.nightSequence = nightPrio;
+        
 
         return cardObj;
 
