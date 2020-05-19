@@ -49,13 +49,7 @@ public class MessagesMain {
 
         }
 
-        public static void onNightAuto(Game game) {
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Es wird Nacht...🌙",
-                                "`In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren`");
-
-        }
-
-        public static void firstNightManual(Game game) {
+        public static void firstNightMod(Game game) {
                 // Nachricht an alle
                 Globals.createEmbed(game.runningInChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
                                 "`In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren. \n Tipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). `");
@@ -67,6 +61,17 @@ public class MessagesMain {
 
         }
 
+        public static void onNightAuto(Game game) {
+                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Es wird Nacht...🌇",
+                                "`In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren`");
+
+        }
+
+        public static void onDayAuto(Game game) {
+                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Es wird Tag...🌅",
+                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+        }
+
         public static void semiOnNightStart(Game game, ArrayList<Player> sortedRoles) {
                 // Nachricht an alle
                 Globals.createEmbed(game.runningInChannel, Color.BLACK, "🌙Nacht🌙",
@@ -76,9 +81,16 @@ public class MessagesMain {
                                 "Nachts einigen sich die werwölfe auf ein Opfer. In dieser Phase erwachen Spezialkarten, es folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
                 var mssg = "";
                 for (Player player : sortedRoles) {
-                        mssg += player.role.name + "\n";
+                        mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
                 }
-                Globals.createMessage(game.userModerator.getPrivateChannel().block(), mssg, false);
+                mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
+                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
+                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                                "Wichtig: töte die Player mit &kill <Opfer> <GetötetDurchRolle> erst wenn du deren Tod verkündest, also im Morgengrauen. Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgiebst.",
+                                false);
 
         }
 
@@ -94,32 +106,32 @@ public class MessagesMain {
         }
 
         public static void deathByMagic(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED, 
+                Globals.createEmbed(game.runningInChannel, Color.RED,
                                 player.user.getUsername() + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
                                 revealId(player));
         }
 
         public static void deathByGunshot(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
-                                player.user.getUsername() + " wurde von einem Schuss im Bein getroffen und verblutete daraufhin. ",
+                Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getUsername()
+                                + " wurde von einem Schuss im Bein getroffen und verblutete daraufhin. ",
                                 revealId(player));
         }
 
         public static void deathByLynchen(Game game, Player player) {
-                                Globals.createEmbed(game.runningInChannel, Color.RED, 
-                                player.user.getUsername() + " wird öffentlich hingerichtet. ",
-                                revealId(player));
+                Globals.createEmbed(game.runningInChannel, Color.RED,
+                                player.user.getUsername() + " wird öffentlich hingerichtet. ", revealId(player));
         }
 
         public static void deathByLove(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
-                                player.user.getUsername() + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
+                Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getUsername()
+                                + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
                                 revealId(player));
         }
 
         public static void deathByMartyrium(Game game, Player player) {
                 Globals.createEmbed(game.runningInChannel, Color.RED,
-                                player.user.getUsername() + " wirft sich freiwillig von der Brücke um ein Zeichen zu setzen. ",
+                                player.user.getUsername()
+                                                + " wirft sich freiwillig von der Brücke um ein Zeichen zu setzen. ",
                                 revealId(player));
         }
 
@@ -130,27 +142,35 @@ public class MessagesMain {
         }
 
         public static void wwInfection(Game game) {
-                Globals.createMessage(game.runningInChannel, "Die Werwölfe wurden infiziert und dürfen in der nägsten Nacht niemanden töten", true);
-                
+                Globals.createMessage(game.runningInChannel,
+                                "Die Werwölfe wurden infiziert und dürfen in der nägsten Nacht niemanden töten", true);
+
         }
-        
+
         public static void seherlehrlingWork(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel, "Bestürzt über den Tod seines Meisters, beschließt der " + player.role.name + " die Sache selbst in die Hand zu nehmen. Fortan tritt er in die Fußstapfen seines Meisters und such jede Nacht nach den Werwölfen.", true);
-							
+                Globals.createMessage(game.runningInChannel, "Bestürzt über den Tod seines Meisters, beschließt der "
+                                + player.role.name
+                                + " die Sache selbst in die Hand zu nehmen. Fortan tritt er in die Fußstapfen seines Meisters und such jede Nacht nach den Werwölfen.",
+                                true);
+
         }
-        
-        public static void verfluchtenMutation(Game game, Player player){
-                Globals.createMessage(game.runningInChannel, "Die Dorfbewohner finden zerfetzte Kleider im Wald und wissen, dass dies nur eines bedeuten kann: der Verfluchte ist mutiert!", true);
+
+        public static void verfluchtenMutation(Game game, Player player) {
+                Globals.createMessage(game.runningInChannel,
+                                "Die Dorfbewohner finden zerfetzte Kleider im Wald und wissen, dass dies nur eines bedeuten kann: der Verfluchte ist mutiert!",
+                                true);
         }
 
         public static void wolfsjungesDeath(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel, "Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.", true);
+                Globals.createMessage(game.runningInChannel,
+                                "Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
+                                true);
         }
 
         public static void jägerDeath(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel, "Mit letzter kraft zückt der Jäger sein Gewehr. Er ist nun gebeten mir *privat* die Person zu nennen auf die er schießt.", true);
+                Globals.createMessage(game.runningInChannel,
+                                "Mit letzter kraft zückt der Jäger sein Gewehr. Er ist nun gebeten mir *privat* die Person zu nennen auf die er schießt.",
+                                true);
         }
-
-        
 
 }

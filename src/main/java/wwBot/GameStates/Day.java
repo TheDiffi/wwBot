@@ -26,9 +26,7 @@ public class Day {
     Day(Game getGame) {
         game = getGame;
         registerDayCommands();
-        // message on daystart
-        Globals.createEmbed(game.runningInChannel, Color.WHITE, "Aufgewacht und aus den Federn!",
-                "Todo: fill message on daystart");
+        
 
     }
 
@@ -111,12 +109,44 @@ public class Day {
         };
         mapCommands.put("lynch", lynchCommand);
 
+        // lets the moderator kill a person and checks the consequences
+		Command killCommand = (event, parameters, msgChannel) -> {
+			// only the moderator can use this command
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				if (parameters.size() == 2) {
+					// finds the requested Player
+					var unluckyPlayer = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+					// gets the cause
+					var causedBy = parameters.get(1);
+					// finds the cause (role)
+					var causedByRole = mapAvailableCards.get(causedBy);
+					if (unluckyPlayer != null && (causedByRole != null || causedBy.equalsIgnoreCase("null"))) {
+                        killPlayer(unluckyPlayer, causedByRole);
+                        event.getMessage().getChannel().block().createMessage("Erfolg!").block();
+					} else {
+						event.getMessage().getChannel().block().createMessage(
+								"Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+								.block();
+					}
+
+				} else {
+					event.getMessage().getChannel().block().createMessage(
+							"Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+							.block();
+
+				}
+			} else {
+				event.getMessage().getChannel().block().createMessage("You have no permission for this command")
+						.block();
+			}
+		};
+		mapCommands.put("kill", killCommand);
 
         // calls endDay()
         Command endDayCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-               endDay();
+                endDay();
             } else {
                 msgChannel.createMessage("only the moderator may use this command").block();
             }
@@ -126,6 +156,8 @@ public class Day {
     }
 
     // TODO:add Bürgermeister function
+    // TODO: start voting phase when every death has been announced
+    // TODO: add Command for mod &startVotingPhase
 
     // counts the votes and lynchs the player with the most
     private void countVotes() {
@@ -138,9 +170,10 @@ public class Day {
             // searches for the person with the highest votes. If there are more than one
             // hasMajority gets set to false
             for (var player : mapAmountVotes.entrySet()) {
-                if (amount > player.getValue()) {
+                if (amount < player.getValue()) {
                     mostVoted = player.getKey();
                     hasMajority = true;
+                    amount = player.getValue();
                 } else if (amount == player.getValue()) {
                     hasMajority = false;
                 }
@@ -284,13 +317,13 @@ public class Day {
 
     private void endDay() {
         Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
-                "Wenn bu bereit bist, den Tag zu beenden tippe den Command \"endDay\"", "");
+                "Wenn bu bereit bist, den Tag zu beenden tippe den Command \"confirm\"", "");
         //
         PrivateCommand endDayCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("endDay")
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
                     && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
                 game.currentGameState.changeDayPhase();
-                MessagesMain.onNightAuto(game);
 
                 return true;
             } else {

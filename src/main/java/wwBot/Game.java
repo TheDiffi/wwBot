@@ -104,7 +104,6 @@ public class Game {
 
             // TODO: create a message builder or embed with all the info
             // help
-            
         msgChannel.createMessage("TODO: add help Command in Game").block();
         
             msgChannel.createMessage("If you have not created a Deck jet, try **" + prefix

@@ -23,13 +23,15 @@ public class SemiMainGameState extends GameState {
     public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
-    public boolean isDay = false;
-    public Day day = new Day(game);
-    public Night night = new Night(game);
+    // -1 = 1stNight; 0 = Day; 1 = Night;
+    public int dayPhase = -1;
+    public Day day = null;
+    public Night night = null;
 
     public User userModerator;
 
     SemiMainGameState(wwBot.Game game) {
+        //TODO: check for game end on every kill
         super(game);
         registerStateCommands();
         mapPlayers = game.mapPlayers;
@@ -63,7 +65,7 @@ public class SemiMainGameState extends GameState {
         if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())
                 || event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
             // checks the Command map of the current DayPhase
-            if (isDay) {
+            if (dayPhase == 0) {
                 var foundCommand = day.mapCommands.get(requestedCommand);
                 if (foundCommand != null) {
                     foundCommand.execute(event, parameters, runningInChannel);
@@ -73,7 +75,7 @@ public class SemiMainGameState extends GameState {
                             .block();
                     found = true;
                 }
-            } else if (!isDay) {
+            } else if (dayPhase == 1) {
                 var foundCommand = night.mapCommands.get(requestedCommand);
                 if (foundCommand != null) {
                     foundCommand.execute(event, parameters, runningInChannel);
@@ -115,7 +117,7 @@ public class SemiMainGameState extends GameState {
                 listRolesToBeCalled.add(player);
             }
         }
-        MessagesMain.firstNightManual(game);
+        MessagesMain.firstNightMod(game);
         var mssg = "";
         for (Player player : listRolesToBeCalled) {
             mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
@@ -145,7 +147,7 @@ public class SemiMainGameState extends GameState {
     }
 
     private void endFirstNight() {
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.GREEN,
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
                 "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
                 "PS: niemand stirbt in der ersten Nacht");
         // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
@@ -153,8 +155,6 @@ public class SemiMainGameState extends GameState {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 changeDayPhase();
-                msgChannel.createMessage("changed To Day").block();
-
                 return true;
             } else {
                 return false;
@@ -294,12 +294,14 @@ public class SemiMainGameState extends GameState {
     @Override
     public void changeDayPhase() {
         reloadGameLists();
-        if (isDay) {
-            isDay = false;
+        if (dayPhase == 0) {
+            MessagesMain.onNightAuto(game);
+            dayPhase = 1;
             night = new Night(game);
 
-        } else if (!isDay) {
-            isDay = true;
+        } else if (dayPhase == 1 || dayPhase == -1) {
+            MessagesMain.onDayAuto(game);
+            dayPhase = 0;
             day = new Day(game);
         }
 

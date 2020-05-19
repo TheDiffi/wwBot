@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import wwBot.Card;
 import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
@@ -19,12 +18,9 @@ public class Night {
 
 	public Night(Game getGame) {
 		game = getGame;
-		registerDayCommands();
+		registerNightCommands();
 
-		// message on daystart
-		Globals.createEmbed(game.runningInChannel, Color.WHITE, "Aufgewacht und aus den Federn!",
-				"Todo: fill message on daystart");
-
+		
 		// initiateNight();
 		
 		// first: Informatial message
@@ -44,14 +40,13 @@ public class Night {
 			game.userModerator.getPrivateChannel().block().createMessage("no Roles to call").block();
 		}
 		
-		// TODO: add command endNight
 
 		// TODO: create privateChannel for ww & mod
+		//TODO: fullmute all Players until sunrise
 
 	}
 
-	public void registerDayCommands() {
-		var mapAvailableCards = Globals.mapAvailableCards;
+	public void registerNightCommands() {
 
 		// replys with pong!
 		Command pingCommand = (event, parameters, msgChannel) -> {
@@ -69,7 +64,23 @@ public class Night {
 		};
 		mapCommands.put("help", helpCommand);
 
-		// lets the moderator kill a person and checks the consequences
+		// shows the moderator the list of players
+        Command endNightCommand = (event, parameters, msgChannel) -> {
+ 
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+			   endNight();
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+		mapCommands.put("endNight", endNightCommand);
+		
+		
+
+
+
+		/* // lets the moderator kill a person and checks the consequences
 		Command killCommand = (event, parameters, msgChannel) -> {
 			// only the moderator can use this command
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
@@ -99,11 +110,29 @@ public class Night {
 						.block();
 			}
 		};
-		mapCommands.put("kill", killCommand);
+		mapCommands.put("kill", killCommand); */
 
 	}
 
-	private void killPlayer(Player unluckyPlayer, Card causedByRole) {
+	private void endNight() {
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
+                "Um zu bestätigen, dass bu bereit bist die Nacht zu beenden, tippe \"confirm\"", "");
+        //
+        PrivateCommand endNightCommand = (event, parameters, msgChannel) -> {
+			//checks if written by mod and if right command
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
+                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                game.currentGameState.changeDayPhase();
+				//TODO: unmute all players
+                return true;
+            } else {
+                return false;
+            }
+        };
+        game.addPrivateCommand(game.userModerator.getId(), endNightCommand);
+    }
+
+	/* private void killPlayer(Player unluckyPlayer, Card causedByRole) {
 		var mapAvailableCards = Globals.mapAvailableCards;
 		var dies = true;
 
@@ -202,6 +231,6 @@ public class Night {
 			MessagesMain.death(game, player);
 
 		}
-	}
+	} */
 
 }

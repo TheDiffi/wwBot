@@ -288,7 +288,7 @@ public class LobbyState extends GameState {
             if (!gameRuleAutomatic && !isJoined) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN,
-                        event.getMessage().getAuthor().get().getMention() + " is the Moderator", "");
+                        " " + event.getMessage().getAuthor().get().getUsername() + " ist der Moderator", "");
             } else if (isJoined) {
                 msgChannel.createMessage(
                         "Es sieht aus als wärst du dem Spiel beigetreten, benutze den Command \"&leave\" um Moderator zu werden")
