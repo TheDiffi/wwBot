@@ -57,6 +57,15 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            var mssg = "";
+            for (var command : gameStateCommands.entrySet()) {
+                mssg += "\n"+command.getKey();
+            }
+             msgChannel.createMessage(mssg).block();
+        };
+        gameStateCommands.put("help", helpCommand);
+
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
             User user = event.getMessage().getAuthor().get();
@@ -343,11 +352,7 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("startGame", startGameCommand);
 
-        // help
-        Command helpCommand = (event, parameters, msgChannel) -> {
-            msgChannel.createMessage("TODO: create help in LOBBYPHASE").block();
-        };
-        gameStateCommands.put("help", helpCommand);
+    
     }
 
     // TODO: create a method that prints images
