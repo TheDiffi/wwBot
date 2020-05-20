@@ -15,7 +15,7 @@ import wwBot.GameStates.MessagesMain;
 public class Main {
 
     public static Map<Snowflake, Game> mapRunningGames = new HashMap<Snowflake, Game>();
-    static String prefix;
+    public static String prefix;
 
     public static void main(String[] args) throws Exception {
 
@@ -56,18 +56,14 @@ public class Main {
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = Arrays.asList(messageContent.split(" "));
 
-        // prüft ob die Nachricht eine DM ist
+        // prüft ob die Nachricht keine DM(DirectMessage) ist
         if (event.getGuildId().isPresent()) {
 
             if (messageContent.startsWith(prefix)) {
                 var serverId = event.getGuildId().get();
                 var channel = event.getMessage().getChannel().block();
 
-                // help printet alle commands aus
-                if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
-                    event.getMessage().getChannel().block().createMessage("TODO: fill help in MAIN").block();
-                    event.getMessage().getChannel().block().createMessage("Bla Bla schreibe &startGame").block();
-                }
+                // replies with Pong!
                 if (parameters.get(0).equalsIgnoreCase(prefix + "ping")) {
                     event.getMessage().getChannel().block().createMessage("Pong! MAIN").block();
 
@@ -78,10 +74,8 @@ public class Main {
                 if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
-
                         var game = new Game(serverId, channel);
                         mapRunningGames.put(serverId, game);
-                        MessagesMain.gameStartMessage(event.getMessage().getChannel().block(), prefix);
 
                     } else if (mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage(
@@ -96,6 +90,7 @@ public class Main {
 
                     if (!mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage("No Game To Delete Found").block();
+
                     } else if (mapRunningGames.containsKey(serverId)) {
                         mapRunningGames.remove(serverId);
                         event.getMessage().getChannel().block().createEmbed(spec -> {
@@ -111,7 +106,16 @@ public class Main {
                 // weitergeleited
                 else if (mapRunningGames.containsKey(serverId)) {
                     var game = mapRunningGames.get(serverId);
+                    
                     game.handleCommands(event);
+                }
+                // ruft help für main auf(nur wenn noch kein Spiel läuft)
+                else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
+                    MessagesMain.helpMain(event);
+                }
+                // prints a list of the commands of this class
+                if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
+                    MessagesMain.showCommandsMain(event);
                 }
             }
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
@@ -153,8 +157,8 @@ public class Main {
                         // Antwort "wartet"
                         if (game.mapPrivateCommands != null && game.mapPrivateCommands.size() > 0
                                 && (game.mapPrivateCommands.containsKey(userId))) {
-                            //looks at every command registered for this Id
-                            for (int i = 0; i < game.mapPrivateCommands.get(userId).size();i++) {
+                            // looks at every command registered for this Id
+                            for (int i = 0; i < game.mapPrivateCommands.get(userId).size(); i++) {
                                 var success = game.mapPrivateCommands.get(userId).get(i).execute(event, parameters,
                                         event.getMessage().getChannel().block());
                                 if (success) {

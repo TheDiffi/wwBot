@@ -14,6 +14,7 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
+import wwBot.GameStates.MessagesMain;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -33,15 +34,12 @@ public class Game {
         runningInChannel = givenChannel;
         runningInServer = snowflakeServer;
         registerGameCommands();
+        MessagesMain.newGameStartMessage(runningInChannel);
 
         // initializes the first game State
         currentGameState = new LobbyState(this);
 
     }
-
-
-
-
 
     public void handleCommands(MessageCreateEvent event) {
 
@@ -51,16 +49,16 @@ public class Game {
         requestedCommand = requestedCommand.substring(1);
         boolean found = false;
 
-        var foundCommandGame = gameCommands.get(requestedCommand);
-        if (foundCommandGame != null) {
-            foundCommandGame.execute( event, parameters, runningInChannel);
-            found = true;
-        }
-
         if (currentGameState.handleCommand(requestedCommand, event, parameters, runningInChannel)) {
             found = true;
         }
 
+        else if (gameCommands.containsKey(requestedCommand)) {
+            gameCommands.get(requestedCommand).execute(event, parameters, runningInChannel);
+            found = true;
+        }
+
+        // found überprüft ob der Command irgentwo gefunden wurde
         if (!found) {
             runningInChannel.createMessage("Command Not Found").block();
         }
@@ -70,27 +68,32 @@ public class Game {
     // loads the Commands available throughout the game into the map gameCommands
     private void registerGameCommands() {
 
-        // speichert den Prefix in einer Variable
-        var prefix = "&";
-
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
-            
-               msgChannel.createMessage("Pong! Game").block();
-            
+
+            msgChannel.createMessage("Pong! Game").block();
+
         };
         gameCommands.put("ping", pingCommand);
 
-        //zeigt die verfügbaren commands
+        // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";
             for (var command : gameCommands.entrySet()) {
-                mssg+= "\n"+command.getKey();
+                mssg += "\n" + command.getKey();
             }
-             msgChannel.createMessage(mssg).block();
+            msgChannel.createMessage(mssg).block();
         };
         gameCommands.put("showCommands", showCommandsCommand);
-        
+
+        // basically !help
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            MessagesMain.helpGame(event);
+
+        };
+        gameCommands.put("help", helpCommand);
+
+        // prints a requested card
         Command showCardCommand = (event, parameters, msgChannel) -> {
             String cardName = parameters.get(0);
 
@@ -99,21 +102,6 @@ public class Game {
 
         gameCommands.put("showCard", showCardCommand);
 
-        // basically !help
-        Command helpCommand = (event, parameters, msgChannel) -> {
-
-            // TODO: create a message builder or embed with all the info
-            // help
-        msgChannel.createMessage("TODO: add help Command in Game").block();
-        
-            msgChannel.createMessage("If you have not created a Deck jet, try **" + prefix
-                    + "buildDeck** to let the Algorithm build a Deck for you or try **" + prefix
-                    + "addCard** to add a Card or **" + prefix
-                    + "removeCard** to remove a Card to your Custom Deck").block();
-
-        };
-        gameCommands.put("help", helpCommand);
-
     }
 
     public void changeGameState(GameState nextGameState) {
@@ -121,15 +109,14 @@ public class Game {
         currentGameState = nextGameState;
     }
 
+    public void addPrivateCommand(Snowflake id, PrivateCommand lynchCommand) {
+        var tempList = new ArrayList<PrivateCommand>();
+        if (mapPrivateCommands.containsKey(id)) {
+            tempList = mapPrivateCommands.get(id);
+        }
 
-	public void addPrivateCommand(Snowflake id, PrivateCommand lynchCommand) {
-	    var tempList = new ArrayList<PrivateCommand>();
-	    if (mapPrivateCommands.containsKey(id)) {  
-	        tempList = mapPrivateCommands.get(id);
-	    } 
-	       
-	        tempList.add(lynchCommand);
-	        mapPrivateCommands.put(id, tempList);
-	}
+        tempList.add(lynchCommand);
+        mapPrivateCommands.put(id, tempList);
+    }
 
 }

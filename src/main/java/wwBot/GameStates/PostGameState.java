@@ -15,7 +15,6 @@ public class PostGameState extends GameState {
 
 	//loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands(){
-        //TODO: add al Commands needed here
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {

@@ -34,6 +34,7 @@ public class Night {
 		
 		}
 		// TODO: create privateChannel for ww & mod
+		//TODO: tell WW and mod about this channel
 		//TODO: fullmute all Players until sunrise
 
 	}

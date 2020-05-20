@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Card;
 import wwBot.Command;

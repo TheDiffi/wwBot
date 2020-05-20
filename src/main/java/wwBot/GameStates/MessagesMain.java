@@ -3,25 +3,32 @@ package wwBot.GameStates;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.Main;
 import wwBot.Player;
 
 public class MessagesMain {
+        public static String prefix = Main.prefix;
 
         // erzeugt und sendet ein Embed und eine Nachricht. Wird zu spielstart
         // aufgerufen
-        public static void gameStartMessage(MessageChannel channel, String prefix) {
+        public static void newGameStartMessage(MessageChannel channel) {
 
                 Globals.createEmbed(channel, Color.GREEN, "Created New Game!", "");
 
                 Globals.createMessage(channel,
-                                "Guten Abend liebe Dorfbewohner. \n Ich, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.",
+                                "*Guten Abend liebe Dorfbewohner. \n Ich, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.*",
                                 true);
-                Globals.createMessage(channel, "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
-                                + "join\" eingebt. Sobald alle Dorfbewohner bereit sind könnt ihr euch mit \"" + prefix
-                                + "buildDeck\" ein Deck vorschlagen lassen.`", false);
+                Globals.createMessage(channel,
+                                "Ihr befindet euch nun in der Lobby Phase. Hier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit \""
+                                                + prefix
+                                                + "join\" dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit \""
+                                                + prefix
+                                                + "StartGame\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benüzt oder du nicht weißt was du tun sollst, tippe \""
+                                                + prefix + "help\".", false);
 
         }
 
@@ -178,6 +185,48 @@ public class MessagesMain {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
                                 "Alle Spieler Haben Gewählt!", "Auf dem Schaffott steht *" + mostVoted.user.getMention()
                                                 + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. Mit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
+        }
+
+        public static String getHelpInfo() {
+                var mssg = "*---------------------------*";
+                mssg += "\n*" + prefix + "help*: TODO: finde gute formulierung";
+                mssg += "\n*" + prefix + "showCommands*: zeigt dir die Liste mit den zurzeit verfügbaren Commands";
+                mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obrigen Commands nach hilfe wenn du nicht weiter weißt🙂";
+                return mssg;
+        }
+
+        public static void helpMain(MessageCreateEvent event) {
+                Globals.createMessage(event.getMessage().getChannel().block(), "Schreibe " + prefix
+                                + "newGame zm ein neues Spiel zu starten! \n(Je Server kann nur ein Spiel gleichzeitig laufen) \nFalls du weitere Fragen hast kannst du jederzeit "
+                                + prefix
+                                + "showCommands eingeben um dir eine Liste der zurzeit verfügbaren Befehle anzeigen zu lassen oder erneut mit "
+                                + prefix + "help nach hilfe fragen😁", false);
+        }
+
+        public static void showCommandsMain(MessageCreateEvent event) {
+                // mssg +="\n*" + prefix + "";
+                var mssg = "*" + prefix + "newGame*: Startet ein neues Spiel";
+                mssg += "\n*" + prefix
+                                + "deleteGame*: Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
+                mssg += getHelpInfo();
+                Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+        }
+
+        public static void helpGame(MessageCreateEvent event) {
+                // help
+                event.getMessage().getChannel().block().createMessage("TODO: add help Command in Game").block();
+
+                Globals.createMessage(event.getMessage().getChannel().block(),
+                                "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
+                                                + "join\" eingebt. \nSobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit \""
+                                                + prefix
+                                                + "buildDeck\" generiert mein algorythmus automatisch ein faires Deck. \n Dieses kann anschließend mit \""
+                                                + prefix + "addCard <Karte>\" und \"" + prefix
+                                                + "removeCard <Karte>\" bearbeitet werden. \nMit \"" + prefix
+                                                + "gamerule manual\" und \"" + prefix
+                                                + "gamerule automatic\"(coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manaul\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein(Coming soon)\n*Wenn alle Spieler beigetretn und ein Deck registriert wurde, lasse das Spiel mit \""
+                                                + prefix + "startgame\" starten!*`",
+                                false);
         }
 
 }
