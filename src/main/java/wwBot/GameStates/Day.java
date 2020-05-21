@@ -254,7 +254,7 @@ public class Day {
             // reveals the players death and identity
             checkDeathMessages(unluckyPlayer, causedByRole);
 
-            Globals.printCard(unluckyPlayer.role.name, game.runningInChannel);
+            Globals.printCard(unluckyPlayer.role.name, game.mainChannel);
 
             // calculates the consequences
 
@@ -355,7 +355,7 @@ public class Day {
     private boolean checkIfDies(Player unluckyPlayer, Card causedByRole, Boolean dies) {
         if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.name.equals("Werwolf")) {
             dies = false;
-            Globals.createMessage(game.runningInChannel, "Der Verfluchte hat Mutiert", true);
+            Globals.createMessage(game.mainChannel, "Der Verfluchte hat Mutiert", true);
         }
         return dies;
     }

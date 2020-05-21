@@ -3,12 +3,18 @@ package wwBot;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.PermissionOverwrite;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.MessagesMain;
 
@@ -56,10 +62,41 @@ public class Main {
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = Arrays.asList(messageContent.split(" "));
 
+        // test (remove after)
+        if (parameters.get(0).equalsIgnoreCase(prefix + "test")) {
+
+            var guild = event.getGuild().block();
+            var defaultRole = guild.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                    .get();
+
+            event.getMessage().getChannel().block().createMessage("test").block();
+            event.getGuild().block().createTextChannel(spec -> {
+                var overrides = new HashSet<PermissionOverwrite>();
+                overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                        PermissionSet.of(Permission.VIEW_CHANNEL)));
+                overrides.add(PermissionOverwrite.forMember(event.getMember().get().getId(),
+                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+                spec.setPermissionOverwrites(overrides);
+                spec.setName("testchannel");
+            }).block();
+
+            event.getMember().get().edit(a -> a.setMute(true)).block();
+            event.getMessage().getChannel().block().createEmbed(spec -> {
+                spec.setImage("https://cdn.discordapp.com/attachments/317717230081015809/711579726338326578/image0.jpg")
+                        .setFooter("test4",
+                                "https://cdn.discordapp.com/attachments/545307459691085828/709058905237356554/Werwolf.jpg")
+                        .setTitle("title").setAuthor("by me",
+                                "https://discord.com/developers/docs/resources/channel#channel-object-channel-types",
+                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png").setThumbnail("https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
+            }).block();
+
+        }
+
         // prüft ob die Nachricht keine DM(DirectMessage) ist
         if (event.getGuildId().isPresent()) {
 
             if (messageContent.startsWith(prefix)) {
+                var server = event.getGuild().block();
                 var serverId = event.getGuildId().get();
                 var channel = event.getMessage().getChannel().block();
 
@@ -74,7 +111,7 @@ public class Main {
                 if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
-                        var game = new Game(serverId, channel);
+                        var game = new Game(server, channel);
                         mapRunningGames.put(serverId, game);
 
                     } else if (mapRunningGames.containsKey(serverId)) {
@@ -106,7 +143,7 @@ public class Main {
                 // weitergeleited
                 else if (mapRunningGames.containsKey(serverId)) {
                     var game = mapRunningGames.get(serverId);
-                    
+
                     game.handleCommands(event);
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)

@@ -4,13 +4,17 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Command;
 import wwBot.Globals;
@@ -24,9 +28,10 @@ public class SemiMainGameState extends GameState {
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
     // -1 = 1stNight; 0 = Day; 1 = Night;
-    public int dayPhase = -1;
+    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
     public Day day = null;
     public Night night = null;
+    public MessageChannel wwChat;
 
     public User userModerator;
 
@@ -45,7 +50,7 @@ public class SemiMainGameState extends GameState {
                 .block();
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
-        
+
                 initiateFirstNight();
                 return true;
             } else {
@@ -64,7 +69,7 @@ public class SemiMainGameState extends GameState {
         if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())
                 || event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
             // checks the Command map of the current DayPhase
-            if (dayPhase == 0) {
+            if (dayPhase == DayPhase.DAY) {
                 var foundCommand = day.mapCommands.get(requestedCommand);
                 if (foundCommand != null) {
                     foundCommand.execute(event, parameters, runningInChannel);
@@ -74,7 +79,7 @@ public class SemiMainGameState extends GameState {
                             .block();
                     found = true;
                 }
-            } else if (dayPhase == 1) {
+            } else if (dayPhase == DayPhase.NORMALE_NIGHT) {
                 var foundCommand = night.mapCommands.get(requestedCommand);
                 if (foundCommand != null) {
                     foundCommand.execute(event, parameters, runningInChannel);
@@ -97,6 +102,11 @@ public class SemiMainGameState extends GameState {
     private void initiateFirstNight() {
         var listRolesToBeCalled = new ArrayList<Player>();
         var uniqueRolesInThisPhase = new ArrayList<String>();
+
+        createWerwolfChat();
+
+        // generates which Roles need to be called
+
         uniqueRolesInThisPhase.add("Günstling");
         uniqueRolesInThisPhase.add("Amor");
         uniqueRolesInThisPhase.add("Doppelgängerin");
@@ -116,45 +126,61 @@ public class SemiMainGameState extends GameState {
                 listRolesToBeCalled.add(player);
             }
         }
-        MessagesMain.firstNightMod(game);
-        var mssg = "";
-        for (Player player : listRolesToBeCalled) {
-            mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
-        }
-        mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
-                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
+
+        MessagesMain.firstNightMod(game, listRolesToBeCalled);
 
         if (mapExistingRoles.get("Günstling") != null) {
-            var playerWithThisRole = mapExistingRoles.get("Günstling").get(0);
-            var privateChannel = playerWithThisRole.user.getPrivateChannel().block();
+            var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
 
-            mssg = "";
-            mssg += "Die Werwölfe sind: ";
-            for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
-            }
-            if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
-            }
-
-            Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
+            MessagesMain.günstlingMessage(privateChannel, mapExistingRoles);
         }
 
         endFirstNight();
 
     }
 
+    // creates a private MessageChannel and puts all the WW and the Moderator ob the
+    // Whitelist
+    public void createWerwolfChat() {
+        var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                .get();
+        wwChat = game.server.createTextChannel(spec -> {
+            var overrides = new HashSet<PermissionOverwrite>();
+            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL)));
+            for (var player : mapExistingRoles.get("Werwolf")) {
+                overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
+                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+            if (!game.gameRuleAutomatic) {
+                overrides.add(
+                        PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
+                                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+
+            spec.setPermissionOverwrites(overrides);
+            spec.setName("Werwolf-Chat");
+        }).block();
+    }
+//if present, deletes the wwChat
+    public void deleteWerwolfChat() {
+        if (game.server.getChannelById(wwChat.getId()).block() != null) {
+            game.server.getChannelById(wwChat.getId()).block().delete();
+        }
+    }
+
     private void endFirstNight() {
         Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
                 "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
                 "PS: niemand stirbt in der ersten Nacht");
+                
         // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 changeDayPhase();
                 return true;
+
             } else {
                 return false;
             }
@@ -208,7 +234,6 @@ public class SemiMainGameState extends GameState {
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
-
             msgChannel.createMessage("Pong! SemiMainGameState").block();
 
         };
@@ -293,14 +318,14 @@ public class SemiMainGameState extends GameState {
     @Override
     public void changeDayPhase() {
         reloadGameLists();
-        if (dayPhase == 0) {
+        if (dayPhase == DayPhase.DAY) {
             MessagesMain.onNightAuto(game);
-            dayPhase = 1;
+            dayPhase = DayPhase.NORMALE_NIGHT;
             night = new Night(game);
 
-        } else if (dayPhase == 1 || dayPhase == -1) {
+        } else if (dayPhase == DayPhase.NORMALE_NIGHT || dayPhase == DayPhase.FIRST_NIGHT) {
             MessagesMain.onDayAuto(game);
-            dayPhase = 0;
+            dayPhase = DayPhase.DAY;
             day = new Day(game);
         }
 
@@ -309,13 +334,17 @@ public class SemiMainGameState extends GameState {
     @Override
     public void endMainGame(int winner) {
         // sends gameover message
-        if (winner == 0) {
-            Globals.createEmbed(game.runningInChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
-        } else {
-            Globals.createEmbed(game.runningInChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
+        if (winner == 1) {
+            Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
+        } else if(winner == 2){
+            Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
         }
         // changes gamestate
         game.changeGameState(new PostGameState(game, winner));
     }
 
+}
+
+enum DayPhase {
+    FIRST_NIGHT, NORMALE_NIGHT, DAY
 }

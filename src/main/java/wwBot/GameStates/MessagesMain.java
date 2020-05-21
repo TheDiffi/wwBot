@@ -2,9 +2,12 @@ package wwBot.GameStates;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Main;
@@ -20,68 +23,75 @@ public class MessagesMain {
                 Globals.createEmbed(channel, Color.GREEN, "Created New Game!", "");
 
                 Globals.createMessage(channel,
-                                "*Guten Abend liebe Dorfbewohner. \n Ich, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.*",
+                                "Guten Abend liebe Dorfbewohner. \nIch, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.",
                                 true);
                 Globals.createMessage(channel,
                                 "Ihr befindet euch nun in der Lobby Phase. Hier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit \""
                                                 + prefix
                                                 + "join\" dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit \""
                                                 + prefix
-                                                + "StartGame\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benüzt oder du nicht weißt was du tun sollst, tippe \""
-                                                + prefix + "help\".", false);
+                                                + "Start\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benüzt oder du nicht weißt was du tun sollst, tippe \""
+                                                + prefix + "help\".",
+                                false);
 
         }
 
         public static void onGameStart(Game game) {
 
                 // verkündet den Start der ersten Nacht
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Willkommen bei : Die Werölfe von Düsterwald",
-                                "");
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werölfe von Düsterwald", "");
 
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.",
                                 true);
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Im Mondschein bestimmen die Dorfbewohner das man dieser Situation ein Ende setzen muss. ",
                                 true);
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht",
                                 true);
 
         }
 
         public static void firstNightAuto(Game game) {
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
                                 "In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren");
 
         }
 
-        public static void firstNightMod(Game game) {
+        public static void firstNightMod(Game game, ArrayList<Player> listRolesToBeCalled) {
                 // Nachricht an alle
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
                                 "`In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren. \n Tipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). `");
                 // der Moderator bekommt eine Liste mit allen Spielern und ihren Rollen, sowie
                 // eine Liste mit allen Rollen, welche aufgerufen werden müssen
 
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY, "Erste Nacht",
                                 "In der ersten Nacht kannst du dir einen Überblick über die Rollen jedes Spielers verschaffen. In der ersten Nacht töten die Werwölfe niemanden, der Seher darf allerdings eine Person überprüfen. \n Es folgt eine Liste mit den Rollen welche in dieser Nacht aufgerufen werden sollten.");
+                var mssg = "";
+                for (Player player : listRolesToBeCalled) {
+                        mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
+                }
+                mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
+                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
 
         }
 
         public static void onNightAuto(Game game) {
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Es wird Nacht...🌇",
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "Es wird Nacht...🌇",
                                 "`In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren`");
 
         }
 
         public static void onDayAuto(Game game) {
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "Es wird Tag...🌅",
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "Es wird Tag...🌅",
                                 "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
         }
 
         public static void semiOnNightStart(Game game, ArrayList<Player> sortedRoles) {
                 // Nachricht an alle
-                Globals.createEmbed(game.runningInChannel, Color.BLACK, "🌙Nacht🌙",
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Nacht🌙",
                                 "In dieser Phase des Spieles erwachen Spezoalkarten und die Werwölfe einigen sich auf ein Opfer.");
                 // Nachricht an Moderator
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY, "Nacht",
@@ -108,55 +118,55 @@ public class MessagesMain {
         }
 
         public static void deathByWW(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
+                Globals.createEmbed(game.mainChannel, Color.RED,
                                 player.user.getUsername() + " wird am Morgen halb zerfressen aufgefunden. ",
                                 revealId(player));
         }
 
         public static void deathByMagic(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
+                Globals.createEmbed(game.mainChannel, Color.RED,
                                 player.user.getUsername() + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
                                 revealId(player));
         }
 
         public static void deathByGunshot(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getUsername()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.getUsername()
                                 + " wurde von einem Schuss im Bein getroffen und verblutete daraufhin. ",
                                 revealId(player));
         }
 
         public static void deathByLynchen(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
+                Globals.createEmbed(game.mainChannel, Color.RED,
                                 player.user.getUsername() + " wird öffentlich hingerichtet. ", revealId(player));
         }
 
         public static void deathByLove(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED, player.user.getUsername()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.getUsername()
                                 + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
                                 revealId(player));
         }
 
         public static void deathByMartyrium(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
+                Globals.createEmbed(game.mainChannel, Color.RED,
                                 player.user.getUsername()
                                                 + " wirft sich freiwillig von der Brücke um ein Zeichen zu setzen. ",
                                 revealId(player));
         }
 
         public static void death(Game game, Player player) {
-                Globals.createEmbed(game.runningInChannel, Color.RED,
+                Globals.createEmbed(game.mainChannel, Color.RED,
                                 "Das Leben von " + player.user.getUsername() + " kam zu einem tragischen Ende. ",
                                 revealId(player));
         }
 
         public static void wwInfection(Game game) {
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Die Werwölfe wurden infiziert und dürfen in der nägsten Nacht niemanden töten", true);
 
         }
 
         public static void seherlehrlingWork(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel, "Bestürzt über den Tod seines Meisters, beschließt der "
+                Globals.createMessage(game.mainChannel, "Bestürzt über den Tod seines Meisters, beschließt der "
                                 + player.role.name
                                 + " die Sache selbst in die Hand zu nehmen. Fortan tritt er in die Fußstapfen seines Meisters und such jede Nacht nach den Werwölfen.",
                                 true);
@@ -164,21 +174,35 @@ public class MessagesMain {
         }
 
         public static void verfluchtenMutation(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Die Dorfbewohner finden zerfetzte Kleider im Wald und wissen, dass dies nur eines bedeuten kann: der Verfluchte ist mutiert!",
                                 true);
         }
 
         public static void wolfsjungesDeath(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
                                 true);
         }
 
         public static void jägerDeath(Game game, Player player) {
-                Globals.createMessage(game.runningInChannel,
+                Globals.createMessage(game.mainChannel,
                                 "Mit letzter kraft zückt der Jäger sein Gewehr. Er ist nun gebeten mir *privat* die Person zu nennen auf die er schießt.",
                                 true);
+        }
+
+        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles) {
+                var mssg = "";
+                mssg += "Die Werwölfe sind: ";
+                for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
+                    mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
+                }
+                if (mapExistingRoles.containsKey("Wolfsjunges")) {
+                    mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
+                }
+    
+                Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
+                
         }
 
         public static void suggestMostVoted(Game game, Player mostVoted) {
@@ -212,10 +236,8 @@ public class MessagesMain {
                 Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
-        public static void helpGame(MessageCreateEvent event) {
+        public static void helpLobbyPhase(MessageCreateEvent event) {
                 // help
-                event.getMessage().getChannel().block().createMessage("TODO: add help Command in Game").block();
-
                 Globals.createMessage(event.getMessage().getChannel().block(),
                                 "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
                                                 + "join\" eingebt. \nSobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit \""
@@ -225,7 +247,7 @@ public class MessagesMain {
                                                 + "removeCard <Karte>\" bearbeitet werden. \nMit \"" + prefix
                                                 + "gamerule manual\" und \"" + prefix
                                                 + "gamerule automatic\"(coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manaul\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein(Coming soon)\n*Wenn alle Spieler beigetretn und ein Deck registriert wurde, lasse das Spiel mit \""
-                                                + prefix + "startgame\" starten!*`",
+                                                + prefix + "start\" starten!*`",
                                 false);
         }
 

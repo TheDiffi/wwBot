@@ -92,7 +92,7 @@ public class MainGameState extends GameState {
                         person2.inLoveWith = person1;
                         Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + person1.user.getUsername() + " und "
                                 + person2.user.getUsername() + " haben sich unsterblich verliebt");
-                        game.runningInChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
+                        game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
                         person1.user.getPrivateChannel().block().createMessage("Du fällst mit **"
                                 + person2.user.getUsername()
                                 + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")

@@ -2,13 +2,15 @@ package wwBot.GameStates;
 
 import wwBot.Command;
 import wwBot.Game;
+import wwBot.Globals;
 
 public class PostGameState extends GameState {
 
     PostGameState(Game game, int winner){
         super(game);
         registerGameCommands();
-
+        Globals.createMessage(game.mainChannel, "Statistics Coming Soon " , false);
+        Globals.createMessage(game.mainChannel, "Vergiss nicht das Spiel mit \"&DeleteGame\" zu beenden ^^" , false);
     }
 
     
@@ -19,7 +21,7 @@ public class PostGameState extends GameState {
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
             
-            msgChannel.createMessage("TODO: add help Command in Main State").block();
+            msgChannel.createMessage("TODO: add help Command in Post Game State").block();
         };
         gameStateCommands.put("help", helpCommand);
 

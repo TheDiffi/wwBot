@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
@@ -24,17 +25,17 @@ public class Game {
     public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
     public List<Card> deck = new ArrayList<>();
     public GameState currentGameState;
-    public Snowflake runningInServer;
-    public MessageChannel runningInChannel;
+    public Guild server;
+    public MessageChannel mainChannel;
     public boolean gameRuleAutomatic = false;
     public User userModerator;
 
-    Game(Snowflake snowflakeServer, MessageChannel givenChannel) {
+    Game(Guild guild, MessageChannel givenChannel) {
 
-        runningInChannel = givenChannel;
-        runningInServer = snowflakeServer;
+        mainChannel = givenChannel;
+        server = guild;
         registerGameCommands();
-        MessagesMain.newGameStartMessage(runningInChannel);
+        MessagesMain.newGameStartMessage(mainChannel);
 
         // initializes the first game State
         currentGameState = new LobbyState(this);
@@ -49,18 +50,18 @@ public class Game {
         requestedCommand = requestedCommand.substring(1);
         boolean found = false;
 
-        if (currentGameState.handleCommand(requestedCommand, event, parameters, runningInChannel)) {
+        if (currentGameState.handleCommand(requestedCommand, event, parameters, mainChannel)) {
             found = true;
         }
 
         else if (gameCommands.containsKey(requestedCommand)) {
-            gameCommands.get(requestedCommand).execute(event, parameters, runningInChannel);
+            gameCommands.get(requestedCommand).execute(event, parameters, mainChannel);
             found = true;
         }
 
         // found überprüft ob der Command irgentwo gefunden wurde
         if (!found) {
-            runningInChannel.createMessage("Command Not Found").block();
+            mainChannel.createMessage("Command Not Found").block();
         }
 
     }
@@ -88,7 +89,7 @@ public class Game {
 
         // basically !help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.helpGame(event);
+            MessagesMain.helpLobbyPhase(event);
 
         };
         gameCommands.put("help", helpCommand);
@@ -96,8 +97,12 @@ public class Game {
         // prints a requested card
         Command showCardCommand = (event, parameters, msgChannel) -> {
             String cardName = parameters.get(0);
-
-            Globals.printCard(cardName, event.getMessage().getChannel().block());
+            if (cardName != null) {
+                Globals.printCard(cardName, event.getMessage().getChannel().block());
+            } else {
+                event.getMessage().getChannel().block()
+                        .createMessage("Sag mir welche Karte du sehen willst mit \"&ShowCard <Kartenname>\"").block();
+            }
         };
 
         gameCommands.put("showCard", showCardCommand);

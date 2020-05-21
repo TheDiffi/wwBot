@@ -58,11 +58,7 @@ public class LobbyState extends GameState {
         gameStateCommands.put("ping", pingCommand);
 
         Command helpCommand = (event, parameters, msgChannel) -> {
-            var mssg = "";
-            for (var command : gameStateCommands.entrySet()) {
-                mssg += "\n"+command.getKey();
-            }
-             msgChannel.createMessage(mssg).block();
+           MessagesMain.helpLobbyPhase(event);
         };
         gameStateCommands.put("help", helpCommand);
 
@@ -70,7 +66,7 @@ public class LobbyState extends GameState {
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";
             for (var command : gameStateCommands.entrySet()) {
-                mssg += "\n" + command.getKey();
+                mssg += "\n*&" + command.getKey() + "*";
             }
             msgChannel.createMessage(mssg).block();
         };
@@ -322,7 +318,7 @@ public class LobbyState extends GameState {
             if (checkMod) {
                 // first the programm checks if Deck is the same size as listJoinedPlayers, so
                 // that every Player gets a role, no more or less
-                if (deck == null) {
+                if (deck == null || deck.size() == 0) {
                     msgChannel.createMessage("How u gonna play with no Deck?").block();
                 } else if (deck.size() != listJoinedUsers.size()) {
                     msgChannel.createMessage("There are not as many Cards as there are registered Players").block();
@@ -368,7 +364,7 @@ public class LobbyState extends GameState {
 
             }
         };
-        gameStateCommands.put("startGame", startGameCommand);
+        gameStateCommands.put("start", startGameCommand);
 
     
     }
