@@ -141,6 +141,7 @@ public class SemiMainGameState extends GameState {
 
     // creates a private MessageChannel and puts all the WW and the Moderator ob the
     // Whitelist
+    @Override
     public void createWerwolfChat() {
         var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
                 .get();
@@ -163,6 +164,7 @@ public class SemiMainGameState extends GameState {
         }).block();
     }
 //if present, deletes the wwChat
+@Override
     public void deleteWerwolfChat() {
         if (game.server.getChannelById(wwChat.getId()).block() != null) {
             game.server.getChannelById(wwChat.getId()).block().delete();
@@ -178,6 +180,7 @@ public class SemiMainGameState extends GameState {
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                deleteWerwolfChat();
                 changeDayPhase();
                 return true;
 

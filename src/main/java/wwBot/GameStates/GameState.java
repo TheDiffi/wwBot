@@ -39,8 +39,9 @@ public class GameState {
 
     }
 
-    public void endMainGame(int winner) {
-
-    }
+    public void endMainGame(int winner) {}
+    public void createWerwolfChat() {}
+    public void deleteWerwolfChat() {}
+    
 
 }

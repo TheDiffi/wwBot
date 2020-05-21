@@ -26,12 +26,17 @@ public class Night {
 		initiateNight();
 
 		for (var player : game.livingPlayers.entrySet()) {
-			player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+			try {
+				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
 					a.setMute(true).setDeafen(false);
 				}).block();
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			
 		}
+		game.currentGameState.createWerwolfChat();
 
-		
 		// TODO: tell WW and mod about this channel
 		// TODO: fullmute all Players until sunrise
 
@@ -121,6 +126,7 @@ public class Night {
 			// checks if written by mod and if right command
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
 					&& event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				game.currentGameState.deleteWerwolfChat();
 				game.currentGameState.changeDayPhase();
 				// TODO: unmute all players
 				return true;
