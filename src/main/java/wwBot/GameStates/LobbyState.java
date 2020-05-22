@@ -370,18 +370,6 @@ public class LobbyState extends GameState {
     
     }
 
-    // TODO: create a method that prints images
-    /*
-     * public static void printCardImage(MessageChannel channel, Card card ){
-     * 
-     * try { Image image = ImageIO.read(new File("strawberry.jpg")); } catch
-     * (IOException e) { e.printStackTrace(); }
-     * 
-     * channel.createMessage(messageSpec -> { messageSpec.addFile("Card", image);
-     * }).block();
-     * 
-     * }
-     */
 
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules

@@ -79,22 +79,13 @@ public class MessagesMain {
         }
 
         public static void onNightAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "Es wird Nacht...🌇",
+                Globals.createEmbed(game.mainChannel, Color.BLUE, "Es wird NACHT...🌇",
                                 "```In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren```");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.BLUE, "NACHT", "");
 
         }
 
-        public static void onMorningAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der Morgen Bricht An...🌅",
-                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
-                                
-        }
-
-        public static void onDayPhase(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.YELLOW, "ES WIRD TAG ☀️", "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""+prefix+"vote <playername>\" füre eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Edne Des Tages gelyncht. Falls es zu keine Mehrheit kommt werden Sipeler gebeten ihre Stimme zu endern.");
-        }
-
-        public static void semiOnNightStart(Game game, ArrayList<Player> sortedRoles) {
+        public static void onNightSemi(Game game, ArrayList<Player> sortedRoles) {
                 // Nachricht an alle
                 Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Nacht🌙",
                                 "In dieser Phase des Spieles erwachen Spezoalkarten und die Werwölfe einigen sich auf ein Opfer.");
@@ -114,7 +105,37 @@ public class MessagesMain {
                 Globals.createMessage(game.userModerator.getPrivateChannel().block(),
                                 "Wichtig: töte die Player mit &kill <Opfer> <GetötetDurchRolle> erst wenn du deren Tod verkündest, also im Morgengrauen. Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgiebst.",
                                 false);
+        }
 
+        public static void onMorningAuto(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
+                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+        }
+
+        public static void onMorningSemi(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
+                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.ORANGE, "MORGEN",
+                                "```In dieser Phase tötest du die Spieler welche in der voherigen Nacht getötet wurden.```\nBeende diese Phase mit \""
+                                                + prefix + "endMorning\" ");
+        }
+
+        public static void onDayAuto(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG ☀️",
+                "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
+                                + prefix
+                                + "vote <playername>\" für eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");   
+        }
+
+
+        public static void onDaySemi(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG ☀️",
+                                "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
+                                                + prefix
+                                                + "vote <playername>\" für eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.YELLOW, "TAG ☀️",
+                                "In dieser Phase stimmen die Spieler ab. Der meistgewählte Spieler wird dir mitgeteilt. Du kannst dir jederzeit mit \""
+                                                + prefix + "showVotes\" einen Überblick verschaffen");
         }
 
         public static String revealId(Player player) {
@@ -258,32 +279,31 @@ public class MessagesMain {
 
         public static void helpNightPhase(MessageCreateEvent event) {
                 var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschalten.\n";
-                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);       
+                Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
         public static void helpFirstNightPhase(MessageCreateEvent event) {
                 var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschalten, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
-                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);
+                Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
         public static void helpDayPhase(MessageCreateEvent event) {
-                var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \"" + prefix
-                + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden. Dies ist die einzige Chance der Dorfbewohner die Werwölfe auszurotten, also wähle weise.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \"" + prefix
-                + "endDay\" kann der moderator das Spiel beenden.";
-                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);
+                var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+                                + prefix
+                                + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden. Dies ist die einzige Chance der Dorfbewohner die Werwölfe auszurotten, also wähle weise.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
+                                + prefix + "endDay\" kann der moderator das Spiel beenden.";
+                Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
-	public static void helpMorning(MessageCreateEvent event) {
+        public static void helpMorning(MessageCreateEvent event) {
                 var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die opfer der Nacht angekündigt.";
-                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false); 
-	}
+                Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+        }
 
-	public static void helpNightPhaseMod(MessageCreateEvent event) {
-	}
+        public static void helpNightPhaseMod(MessageCreateEvent event) {
+        }
 
-	public static void helpMorningMod(MessageCreateEvent event) {
-	}
-
-		
+        public static void helpMorningMod(MessageCreateEvent event) {
+        }
 
 }

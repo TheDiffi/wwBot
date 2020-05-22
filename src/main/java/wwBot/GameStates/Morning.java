@@ -1,19 +1,16 @@
 package wwBot.GameStates;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import wwBot.Command;
 import wwBot.Game;
-import wwBot.Player;
 
 public class Morning {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Game game;
 
-    // TODO: tell the mod about &votingPhase on DayStart
 
     Morning(Game getGame) {
         game = getGame;
@@ -47,7 +44,7 @@ public class Morning {
 
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                game.currentGameState.changeDayPhase();
+                game.gameState.changeDayPhase();
 
             } else {
                 msgChannel.createMessage("only the moderator can use this command");

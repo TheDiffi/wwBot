@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.util.Snowflake;
-import wwBot.Card;
+
 import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
@@ -21,7 +20,6 @@ public class Day {
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
     Game game;
 
-    // TODO: tell the mod about &votingPhase on DayStart
 
     Day(Game getGame) {
         game = getGame;
@@ -57,10 +55,10 @@ public class Day {
             var allowedToVote = false;
             var voter = new Player();
             // checks if the player calling this command lives
-            for (var player : game.livingPlayers.entrySet()) {
-                if (player.getValue().user.getUsername().equals(voterUser.getUsername())) {
+            for (var entry : game.livingPlayers.entrySet()) {
+                if (entry.getValue().user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
-                    voter = player.getValue();
+                    voter = entry.getValue();
                 }
             }
 
@@ -68,9 +66,9 @@ public class Day {
                 Player votedFor = null;
                 // checks the syntax and finds the wanted player
                 if (parameters != null && parameters.size() != 0) {
-                    for (var player : game.mapPlayers.entrySet()) {
-                        if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
-                            votedFor = player.getValue();
+                    for (var entry : game.mapPlayers.entrySet()) {
+                        if (entry.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
+                            votedFor = entry.getValue();
                         }
                     }
                 } else {
@@ -106,7 +104,7 @@ public class Day {
                 if (parameters != null && parameters.size() == 1) {
                     var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
                     if (unluckyPerson != null) {
-                        game.currentGameState.killPlayer(unluckyPerson, mapAvailableCards.get("Dorfbewohner"));
+                        game.gameState.killPlayer(unluckyPerson, mapAvailableCards.get("Dorfbewohner"));
                     } else {
                         msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
                                 .block();
@@ -118,7 +116,6 @@ public class Day {
         };
         mapCommands.put("lynch", lynchCommand);
 
-        
         // calls endDay()
         Command endDayCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
@@ -142,13 +139,13 @@ public class Day {
 
             // searches for the person with the highest votes. If there are more than one
             // hasMajority gets set to false
-            for (var player : mapAmountVotes.entrySet()) {
-                if (amount < player.getValue()) {
-                    mostVoted = player.getKey();
-                    hasMajority = true;
-                    amount = player.getValue();
-                } else if (amount == player.getValue()) {
+            for (var entry : mapAmountVotes.entrySet()) {
+                if (amount == entry.getValue()) {
                     hasMajority = false;
+                } else if (amount < entry.getValue()) {
+                    mostVoted = entry.getKey();
+                    hasMajority = true;
+                    amount = entry.getValue();
                 }
             }
 
@@ -161,7 +158,6 @@ public class Day {
             if (hasMajority && mostVoted != null) {
                 suggestMostVoted(mostVoted);
 
-                // TODO: überprüfe ob das Votingembed funktioniert
                 // gibt ein Embed mit den Votes aus
                 var mssg = "";
                 for (var entry : mapVotes.entrySet()) {
@@ -170,22 +166,25 @@ public class Day {
                 }
 
                 Globals.createEmbed(game.mainChannel, Color.WHITE,
-                        "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.user.getMention(), mssg);
+                        "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.user.getUsername(), mssg);
             }
         }
     }
 
     private void addVote(MessageCreateEvent event, Player voter, Player votedFor) {
 
-        // TODO: überprüfe ob pro spieler nur ein vote ist
-        mapVotes.put(voter, votedFor);
-
         var voteValue = 1d;
         // der Bürgermeister hat im Falle eines ausgleichs den entscheidenden Vorteil
         if (voter.role.name.equalsIgnoreCase("Bürgermeister")) {
             voteValue = 1.5d;
         }
-
+        //TODO: this dosnt work
+        //if the voter already voted once, the old voteAmount gets removed
+        if (mapVotes != null && mapVotes.containsKey(voter)) {
+            double lessVotes = mapAmountVotes.get(mapVotes.get(voter)) - 1d;
+            mapAmountVotes.put(votedFor, lessVotes);
+        }
+        //adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
         if (tempAmount != null) {
             tempAmount += voteValue;
@@ -193,10 +192,12 @@ public class Day {
         } else {
             mapAmountVotes.put(votedFor, voteValue);
         }
-        event.getMessage().getChannel().block()
-                .createMessage(
-                        voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!")
-                .block();
+
+        // registers who voted for who
+        mapVotes.put(voter, votedFor);
+        Globals.createMessage(game.mainChannel,
+                voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!", false);
+
     }
 
     private void suggestMostVoted(Player mostVoted) {
@@ -208,8 +209,8 @@ public class Day {
     }
 
     private void checkLynchConditions() {
-        for (var player : game.livingPlayers.entrySet()) {
-            if (player.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
+        for (var entry : game.livingPlayers.entrySet()) {
+            if (entry.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
                 Globals.createMessage(game.userModerator.getPrivateChannel().block(),
                         "Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.",
                         false);
@@ -217,7 +218,6 @@ public class Day {
             }
         }
     }
-
 
     private void endDay() {
         Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
@@ -227,7 +227,7 @@ public class Day {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
                     && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-                game.currentGameState.changeDayPhase();
+                game.gameState.changeDayPhase();
 
                 return true;
             } else {

@@ -53,9 +53,13 @@ public class SemiMainGameState extends GameState {
     }
 
     private void greetMod(Game game) {
+
         userModerator.getPrivateChannel().block().createMessage(
                 "Willkommen Moderator! \nDeine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
                 .block();
+
+        printLivingRoles(userModerator.getPrivateChannel().block());
+
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
                 initiateFirstNight();
@@ -126,168 +130,6 @@ public class SemiMainGameState extends GameState {
         return found;
     }
 
-    private void initiateFirstNight() {
-
-        setMuteAllPlayers(game.livingPlayers, true);
-
-        var listRolesToBeCalled = new ArrayList<Player>();
-        var uniqueRolesInThisPhase = new ArrayList<String>();
-
-        wwChat = createWerwolfChat();
-
-        // generates which Roles need to be called
-
-        uniqueRolesInThisPhase.add("Günstling");
-        uniqueRolesInThisPhase.add("Amor");
-        uniqueRolesInThisPhase.add("Doppelgängerin");
-        for (String role : uniqueRolesInThisPhase) {
-            if (mapExistingRoles.containsKey(role)) {
-                listRolesToBeCalled.add(mapExistingRoles.get(role).get(0));
-            }
-        }
-
-        if (mapExistingRoles.containsKey("Werwolf")) {
-            for (Player player : mapExistingRoles.get("Werwolf")) {
-                listRolesToBeCalled.add(player);
-                // Todo: create private messageChannel and add this player
-            }
-
-            
-        } else if (mapExistingRoles.containsKey("Seher")) {
-            for (Player player : mapExistingRoles.get("Seher")) {
-                listRolesToBeCalled.add(player);
-            }
-        }
-
-        MessagesMain.firstNightMod(game, listRolesToBeCalled);
-
-        if (mapExistingRoles.get("Günstling") != null) {
-            var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
-
-            MessagesMain.günstlingMessage(privateChannel, mapExistingRoles);
-        }
-
-        endFirstNight();
-
-    }
-
-    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-        // mutes all players at night
-        for (var player : mapPlayers.entrySet()) {
-            try {
-                player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-                    a.setMute(isMuted).setDeafen(false);
-                }).block();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // creates a private MessageChannel and puts all the WW and the Moderator ob the
-    // Whitelist
-    @Override
-    public TextChannel createWerwolfChat() {
-
-        if (wwChat != null) {
-            deleteWerwolfChat();
-        }
-
-        var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
-                .get();
-
-        var wwChat = game.server.createTextChannel(spec -> {
-            var overrides = new HashSet<PermissionOverwrite>();
-            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-                    PermissionSet.of(Permission.VIEW_CHANNEL)));
-            for (var player : mapExistingRoles.get("Werwolf")) {
-                overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
-                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-            }
-            if (!game.gameRuleAutomatic) {
-                overrides.add(
-                        PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
-                                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-            }
-
-            spec.setPermissionOverwrites(overrides);
-            spec.setName("Werwolf-Chat");
-        }).block();
-        return wwChat;
-    }
-
-    // if present, deletes the wwChat
-    @Override
-    public void deleteWerwolfChat() {
-
-        if (game.server.getChannelById(wwChat.getId()).block() != null) {
-            game.server.getChannelById(wwChat.getId()).block().delete();
-        }
-    }
-
-    private void endFirstNight() {
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
-                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
-                "PS: niemand stirbt in der ersten Nacht");
-
-        // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
-        PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
-                    && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                deleteWerwolfChat();
-                changeDayPhase();
-                return true;
-
-            } else {
-                return false;
-            }
-        };
-        setMuteAllPlayers(game.livingPlayers, false);
-        game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
-    }
-
-    private void reloadGameLists() {
-        // reloands the living Players
-        livingPlayers.clear();
-        for (var player : game.mapPlayers.entrySet()) {
-            if (player.getValue().alive) {
-                livingPlayers.put(player.getKey(), player.getValue());
-            }
-        }
-        game.livingPlayers = livingPlayers;
-
-        // läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
-        // mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle
-        // vorhanden sind)
-        mapExistingRoles.clear();
-        var listWerwölfe = new ArrayList<Player>();
-        var listDorfbewohner = new ArrayList<Player>();
-        var listSeher = new ArrayList<Player>();
-
-        for (var entry : livingPlayers.entrySet()) {
-            // prüft ob WW, Dorfbewohner oder Seher, falls nichts von dem bekommt die Rolle
-            // ihre eigene Liste
-            if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().alive) {
-                listWerwölfe.add(entry.getValue());
-            } else if (entry.getValue().role.name.equalsIgnoreCase("Seher")) {
-                listSeher.add(entry.getValue());
-            } else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner")) {
-                listDorfbewohner.add(entry.getValue());
-            } else {
-                var tempList = Arrays.asList(entry.getValue());
-                mapExistingRoles.put(entry.getValue().role.name, tempList);
-                // siehe kommentar unten
-            }
-        }
-        // für jede hinzugefügte Rolle wird auch ein Eintrag in nightRolesDone
-        // hinzugefügt, jeder Eintrag muss später auf true gesetzt werden, damit der
-        // Zykus fortfährt
-        mapExistingRoles.put("Werwolf", listWerwölfe);
-        mapExistingRoles.put("Seher", listSeher);
-        mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
-
-    }
-
     private void registerStateCommands() {
         var mapAvailableCards = Globals.mapAvailableCards;
 
@@ -298,7 +140,6 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
-
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";
@@ -308,6 +149,18 @@ public class SemiMainGameState extends GameState {
             msgChannel.createMessage(mssg).block();
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
+
+        // prints the living players and their role
+        Command listPlayersCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                printLivingRoles(userModerator.getPrivateChannel().block());
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("listPlayers", listPlayersCommand);
 
         // lets the moderator kill a person and checks the consequences
         Command killCommand = (event, parameters, msgChannel) -> {
@@ -341,7 +194,6 @@ public class SemiMainGameState extends GameState {
             }
         };
         gameStateCommands.put("kill", killCommand);
-
 
         // shows the current Deck to the user
         Command showDeckCommand = (event, parameters, msgChannel) -> {
@@ -467,6 +319,168 @@ public class SemiMainGameState extends GameState {
         }
     }
 
+    private void initiateFirstNight() {
+
+        setMuteAllPlayers(game.livingPlayers, true);
+
+        var listRolesToBeCalled = new ArrayList<Player>();
+        var uniqueRolesInThisPhase = new ArrayList<String>();
+
+        wwChat = createWerwolfChat();
+
+        // generates which Roles need to be called
+
+        uniqueRolesInThisPhase.add("Günstling");
+        uniqueRolesInThisPhase.add("Amor");
+        uniqueRolesInThisPhase.add("Doppelgängerin");
+        for (String role : uniqueRolesInThisPhase) {
+            if (mapExistingRoles.containsKey(role)) {
+                listRolesToBeCalled.add(mapExistingRoles.get(role).get(0));
+            }
+        }
+
+        if (mapExistingRoles.containsKey("Werwolf")) {
+            for (Player player : mapExistingRoles.get("Werwolf")) {
+                listRolesToBeCalled.add(player);
+            }
+        }
+
+        if (mapExistingRoles.containsKey("Seher")) {
+            for (Player player : mapExistingRoles.get("Seher")) {
+                listRolesToBeCalled.add(player);
+            }
+        }
+
+        MessagesMain.firstNightMod(game, listRolesToBeCalled);
+
+        if (mapExistingRoles.get("Günstling") != null) {
+            var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
+
+            MessagesMain.günstlingMessage(privateChannel, mapExistingRoles);
+        }
+
+        endFirstNight();
+
+    }
+
+    private void endFirstNight() {
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
+                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
+                "PS: niemand stirbt in der ersten Nacht");
+
+        // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
+        PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
+                    && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+
+                deleteWerwolfChat();
+                changeDayPhase();
+                return true;
+
+            } else {
+                return false;
+            }
+        };
+        
+        game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
+    }
+
+    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
+        // mutes all players at night
+        for (var player : mapPlayers.entrySet()) {
+            try {
+                player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+                    a.setMute(isMuted).setDeafen(false);
+                }).block();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // creates a private MessageChannel and puts all the WW and the Moderator ob the
+    // Whitelist
+    @Override
+    public TextChannel createWerwolfChat() {
+
+        if (wwChat != null) {
+            deleteWerwolfChat();
+        }
+
+        var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                .get();
+
+        var wwChat = game.server.createTextChannel(spec -> {
+            var overrides = new HashSet<PermissionOverwrite>();
+            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL)));
+            for (var player : mapExistingRoles.get("Werwolf")) {
+                overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
+                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+            if (!game.gameRuleAutomatic) {
+                overrides.add(
+                        PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
+                                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+
+            spec.setPermissionOverwrites(overrides);
+            spec.setName("Werwolf-Chat");
+        }).block();
+        return wwChat;
+    }
+
+    // if present, deletes the wwChat
+    @Override
+    public void deleteWerwolfChat() {
+
+        if (game.server.getChannelById(wwChat.getId()).block() != null) {
+            game.server.getChannelById(wwChat.getId()).block().delete();
+        }
+    }
+
+    private void reloadGameLists() {
+        // reloands the living Players
+        livingPlayers.clear();
+        for (var player : game.mapPlayers.entrySet()) {
+            if (player.getValue().alive) {
+                livingPlayers.put(player.getKey(), player.getValue());
+            }
+        }
+        game.livingPlayers = livingPlayers;
+
+        // läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
+        // mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle
+        // vorhanden sind)
+        mapExistingRoles.clear();
+        var listWerwölfe = new ArrayList<Player>();
+        var listDorfbewohner = new ArrayList<Player>();
+        var listSeher = new ArrayList<Player>();
+
+        for (var entry : livingPlayers.entrySet()) {
+            // prüft ob WW, Dorfbewohner oder Seher, falls nichts von dem bekommt die Rolle
+            // ihre eigene Liste
+            if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().alive) {
+                listWerwölfe.add(entry.getValue());
+            } else if (entry.getValue().role.name.equalsIgnoreCase("Seher")) {
+                listSeher.add(entry.getValue());
+            } else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner")) {
+                listDorfbewohner.add(entry.getValue());
+            } else {
+                var tempList = Arrays.asList(entry.getValue());
+                mapExistingRoles.put(entry.getValue().role.name, tempList);
+                // siehe kommentar unten
+            }
+        }
+        // für jede hinzugefügte Rolle wird auch ein Eintrag in nightRolesDone
+        // hinzugefügt, jeder Eintrag muss später auf true gesetzt werden, damit der
+        // Zykus fortfährt
+        mapExistingRoles.put("Werwolf", listWerwölfe);
+        mapExistingRoles.put("Seher", listSeher);
+        mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
+
+    }
+
     // collects every "good" and every "bad" role in a list and compares the size.
     // If the are equaly or less "good" than "bad" roles, the ww won
     private boolean checkIfGameEnds() {
@@ -484,10 +498,10 @@ public class SemiMainGameState extends GameState {
         }
         if (amountWW < 1) {
             // int winner: 1 = Dorfbewohner, 2 = Werwölfe
-            game.currentGameState.endMainGame(1);
+            game.gameState.endMainGame(1);
             return true;
         } else if (amountBadPlayers >= amountGoodPlayers) {
-            game.currentGameState.endMainGame(2);
+            game.gameState.endMainGame(2);
             return true;
         } else {
             return false;
@@ -542,27 +556,37 @@ public class SemiMainGameState extends GameState {
         Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
     }
 
+    private void printLivingRoles(MessageChannel channel) {
+        var mssgPlayerList = "";
+        for (var entry : game.livingPlayers.entrySet()) {
+
+            mssgPlayerList += entry.getValue().user.getUsername() + " ist ein/e " + entry.getValue().role.name + "\n";
+        }
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste", mssgPlayerList);
+    }
+
     @Override
     public void changeDayPhase() {
         reloadGameLists();
         // transitions to Night
         if (dayPhase == DayPhase.DAY) {
-            MessagesMain.onNightAuto(game);
+            setMuteAllPlayers(game.livingPlayers, true);
             dayPhase = DayPhase.NORMALE_NIGHT;
             night = new Night(game);
             createWerwolfChat();
 
             // transitions to Morning
         } else if (dayPhase == DayPhase.NORMALE_NIGHT) {
+            setMuteAllPlayers(game.livingPlayers, false);
             deleteWerwolfChat();
-            MessagesMain.onMorningAuto(game);
+            MessagesMain.onMorningSemi(game);
             dayPhase = DayPhase.MORNING;
             morning = new Morning(game);
 
             // transitions to Day
         } else if (dayPhase == DayPhase.MORNING || dayPhase == DayPhase.FIRST_NIGHT) {
-            MessagesMain.onDayPhase(game);
-            dayPhase = DayPhase.MORNING;
+            MessagesMain.onDaySemi(game);
+            dayPhase = DayPhase.DAY;
             day = new Day(game);
         }
 

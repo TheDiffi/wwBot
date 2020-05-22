@@ -26,8 +26,6 @@ public class Night {
 		// third: another message explaining how to kill someone
 		initiateNight();
 
-		setMuteAllPlayers(game.livingPlayers, true);
-		game.currentGameState.createWerwolfChat();
 
 		// TODO: tell WW and mod about this channel
 		// TODO: fullmute all Players until sunrise
@@ -60,9 +58,7 @@ public class Night {
 			}
 		}
 		if (sortedRoles != null || sortedRoles.size() < 1) {
-			MessagesMain.semiOnNightStart(game, sortedRoles);
-		} else {
-			game.userModerator.getPrivateChannel().block().createMessage("no Roles to call").block();
+			MessagesMain.onNightSemi(game, sortedRoles);
 		}
 	}
 
@@ -135,96 +131,17 @@ public class Night {
 			// checks if written by mod and if right command
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
 					&& event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				game.currentGameState.deleteWerwolfChat();
-				setMuteAllPlayers(game.livingPlayers, false);
-				game.currentGameState.changeDayPhase();
-				// TODO: unmute all players
+				game.gameState.changeDayPhase();
 				return true;
+				
 			} else {
 				return false;
 			}
 		};
 		game.addPrivateCommand(game.userModerator.getId(), endNightCommand);
+		
 	}
 
-	/*
-	 * private void killPlayer(Player unluckyPlayer, Card causedByRole) { var
-	 * mapAvailableCards = Globals.mapAvailableCards; var dies = true;
-	 * 
-	 * // checks if the player dies dies = checkIfDies(unluckyPlayer, causedByRole,
-	 * dies);
-	 * 
-	 * if (dies) { // kills player unluckyPlayer.alive = false;
-	 * game.deadPlayers.add(unluckyPlayer);
-	 * 
-	 * // reveals the players death and identity checkDeathMessages(unluckyPlayer,
-	 * causedByRole);
-	 * 
-	 * Globals.printCard(unluckyPlayer.role.name, game.runningInChannel);
-	 * 
-	 * // calculates the consequences
-	 * 
-	 * if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) { // looks if there is
-	 * a Zauberlehrling in the game for (var player : game.livingPlayers.entrySet())
-	 * { // if he finds a Lehrling he is the new Seher if
-	 * (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
-	 * player.getValue().role = mapAvailableCards.get("Seher");
-	 * MessagesMain.seherlehrlingWork(game, unluckyPlayer); } }
-	 * 
-	 * } else if (unluckyPlayer.role.name.equalsIgnoreCase("Aussätzige")) { // if
-	 * killed by Werwölfe if (causedByRole != null &&
-	 * causedByRole.name.equalsIgnoreCase("Werwolf")) { // if the dying player is
-	 * the Aussätzige, the Werwölfe kill noone the next night
-	 * MessagesMain.verfluchtenMutation(game, unluckyPlayer);
-	 * Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-	 * "Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten"
-	 * , false); }
-	 * 
-	 * } else if (unluckyPlayer.role.name.equalsIgnoreCase("Wolfsjunges")) { // if
-	 * not killed by Werwölfe (does not make sense but ok.) if (causedByRole != null
-	 * && !causedByRole.name.equalsIgnoreCase("Werwolf")) { // if the Wolfsjunges
-	 * dies, the WW can kill two players in the following night.
-	 * Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-	 * "Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten."
-	 * , false); } } else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
-	 * MessagesMain.jägerDeath(game, unluckyPlayer);
-	 * 
-	 * PrivateCommand jägerCommand = (event, parameters, msgChannel) -> { if
-	 * (parameters != null) { var player =
-	 * Globals.findPlayerByName(parameters.get(0), game.livingPlayers); // if a
-	 * player is found if (player != null) { killPlayer(unluckyPlayer,
-	 * mapAvailableCards.get("Jäger")); return true; } else {
-	 * event.getMessage().getChannel().block()
-	 * .createMessage("Ich konnte diesen Spieler leider nicht finden").block();
-	 * return false;
-	 * 
-	 * } } else { return false; } };
-	 * game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
-	 * 
-	 * } }
-	 * 
-	 * }
-	 * 
-	 * // checks the conditions if the player dies private boolean
-	 * checkIfDies(Player unluckyPlayer, Card causedByRole, Boolean dies) { if
-	 * (unluckyPlayer.role.name.equals("Verfluchter") &&
-	 * causedByRole.name.equals("Werwolf")) { dies = false;
-	 * Globals.createMessage(game.runningInChannel, "Der Verfluchte hat Mutiert",
-	 * true); } return dies; }
-	 * 
-	 * private void checkDeathMessages(Player player, Card cause) {
-	 * 
-	 * if (cause.name.equalsIgnoreCase("Werwolf")) { MessagesMain.deathByWW(game,
-	 * player); } else if (cause.name.equalsIgnoreCase("Hexe") ||
-	 * cause.name.equalsIgnoreCase("Magier")) { MessagesMain.deathByMagic(game,
-	 * player); } else if (cause.name.equalsIgnoreCase("Amor")) {
-	 * MessagesMain.deathByLove(game, player); } else if
-	 * (cause.name.equalsIgnoreCase("Jäger")) { MessagesMain.deathByGunshot(game,
-	 * player); } else if (cause.name.equalsIgnoreCase("Dorfbewohner")) {
-	 * MessagesMain.deathByLynchen(game, player); } else { MessagesMain.death(game,
-	 * player);
-	 * 
-	 * } }
-	 */
+	
 
 }

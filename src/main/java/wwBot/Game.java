@@ -24,7 +24,7 @@ public class Game {
     public List<Player> deadPlayers = new ArrayList<>();
     public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
     public List<Card> deck = new ArrayList<>();
-    public GameState currentGameState;
+    public GameState gameState;
     public Guild server;
     public MessageChannel mainChannel;
     public boolean gameRuleAutomatic = false;
@@ -38,7 +38,7 @@ public class Game {
         MessagesMain.newGameStartMessage(mainChannel);
 
         // initializes the first game State
-        currentGameState = new LobbyState(this);
+        gameState = new LobbyState(this);
 
     }
 
@@ -50,7 +50,7 @@ public class Game {
         requestedCommand = requestedCommand.substring(1);
         boolean found = false;
 
-        if (currentGameState.handleCommand(requestedCommand, event, parameters, mainChannel)) {
+        if (gameState.handleCommand(requestedCommand, event, parameters, mainChannel)) {
             found = true;
         }
 
@@ -110,8 +110,8 @@ public class Game {
     }
 
     public void changeGameState(GameState nextGameState) {
-        currentGameState.exit();
-        currentGameState = nextGameState;
+        gameState.exit();
+        gameState = nextGameState;
     }
 
     public void addPrivateCommand(Snowflake id, PrivateCommand lynchCommand) {
