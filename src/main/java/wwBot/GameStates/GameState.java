@@ -14,7 +14,8 @@ public class GameState {
     public Map<String, Command> gameStateCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
-    Game game;
+    public Game game;
+    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
     protected GameState(Game game2) {
         game = game2;
@@ -39,9 +40,13 @@ public class GameState {
 
     }
 
-    public void endMainGame(int winner) {}
-    public void createWerwolfChat() {}
-    public void deleteWerwolfChat() {}
-    
+    public void endMainGame(int winner) {
+    }
+
+    public void createWerwolfChat() {
+    }
+
+    public void deleteWerwolfChat() {
+    }
 
 }

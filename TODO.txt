@@ -131,11 +131,12 @@ WerWolfChat: wird in der ersten nacht erstellt.
 
 DEAD PLAYERS: muted, jedoch still in game, kein recht auf votes/ihre kartenfähigkeit, ww konmmen aus dem ww chat heraus, alle toden kommen in ein Höllenchatroom
 
-Part 3. Post-Game Infos?
+Part 3. custom messages
 
 
-Part 4. Music, custom messages and everything else
-
+Part 4. 
+Music 
+Card Images
 
 
 
@@ -145,7 +146,7 @@ NEW CARD IDEAS:
 
 LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
 THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
- 
+
 
 
 

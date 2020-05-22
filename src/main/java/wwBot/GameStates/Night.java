@@ -91,6 +91,8 @@ public class Night {
 		};
 		mapCommands.put("endNight", endNightCommand);
 
+		
+
 		/*
 		 * // lets the moderator kill a person and checks the consequences Command
 		 * killCommand = (event, parameters, msgChannel) -> { // only the moderator can

@@ -17,6 +17,7 @@ import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Command;
+import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 import wwBot.PrivateCommand;
@@ -45,6 +46,11 @@ public class SemiMainGameState extends GameState {
 
         MessagesMain.onGameStart(game);
 
+        greetMod(game);
+
+    }
+
+    private void greetMod(Game game) {
         userModerator.getPrivateChannel().block().createMessage(
                 "Willkommen Moderator! \nDeine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
                 .block();
@@ -58,7 +64,6 @@ public class SemiMainGameState extends GameState {
             }
         };
         game.addPrivateCommand(userModerator.getId(), readyCommand);
-
     }
 
     @Override
@@ -163,8 +168,9 @@ public class SemiMainGameState extends GameState {
             spec.setName("Werwolf-Chat");
         }).block();
     }
-//if present, deletes the wwChat
-@Override
+
+    // if present, deletes the wwChat
+    @Override
     public void deleteWerwolfChat() {
         if (game.server.getChannelById(wwChat.getId()).block() != null) {
             game.server.getChannelById(wwChat.getId()).block().delete();
@@ -175,7 +181,7 @@ public class SemiMainGameState extends GameState {
         Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
                 "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
                 "PS: niemand stirbt in der ersten Nacht");
-                
+
         // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
@@ -242,10 +248,18 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
-        // shows the available Commands in this Phase
         Command helpCommand = (event, parameters, msgChannel) -> {
+            if (dayPhase == DayPhase.NORMALE_NIGHT) {
+                MessagesMain.helpNightPhase(event);
+            } else if (dayPhase == DayPhase.DAY) {
+                MessagesMain.helpDayPhase(event);
 
-            msgChannel.createMessage("TODO: add help Command in Main State").block();
+            } else if (dayPhase == DayPhase.FIRST_NIGHT) {
+                MessagesMain.helpFirstNightPhase(event);
+
+            } else if (dayPhase == DayPhase.MORNING){
+                MessagesMain.helpMorning();
+            }
         };
         gameStateCommands.put("help", helpCommand);
 
@@ -253,7 +267,7 @@ public class SemiMainGameState extends GameState {
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";
             for (var command : gameStateCommands.entrySet()) {
-                mssg += "\n" + command.getKey();
+                mssg += "\n*&" + command.getKey() + "*";
             }
             msgChannel.createMessage(mssg).block();
         };
@@ -321,14 +335,16 @@ public class SemiMainGameState extends GameState {
     @Override
     public void changeDayPhase() {
         reloadGameLists();
+        //transitions to Night
         if (dayPhase == DayPhase.DAY) {
             MessagesMain.onNightAuto(game);
             dayPhase = DayPhase.NORMALE_NIGHT;
             night = new Night(game);
 
+            //transitions to Morning which transitions to Day
         } else if (dayPhase == DayPhase.NORMALE_NIGHT || dayPhase == DayPhase.FIRST_NIGHT) {
-            MessagesMain.onDayAuto(game);
-            dayPhase = DayPhase.DAY;
+            MessagesMain.onMorningAuto(game);
+            dayPhase = DayPhase.MORNING;
             day = new Day(game);
         }
 
@@ -339,7 +355,7 @@ public class SemiMainGameState extends GameState {
         // sends gameover message
         if (winner == 1) {
             Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
-        } else if(winner == 2){
+        } else if (winner == 2) {
             Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
         }
         // changes gamestate
@@ -349,5 +365,5 @@ public class SemiMainGameState extends GameState {
 }
 
 enum DayPhase {
-    FIRST_NIGHT, NORMALE_NIGHT, DAY
+    FIRST_NIGHT, NORMALE_NIGHT, DAY, MORNING
 }

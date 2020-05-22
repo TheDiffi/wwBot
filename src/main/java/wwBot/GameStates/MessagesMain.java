@@ -84,9 +84,13 @@ public class MessagesMain {
 
         }
 
-        public static void onDayAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "Es wird Tag...🌅",
+        public static void onMorningAuto(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der Morgen Bricht An...🌅",
                                 "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+        }
+
+        public static void onDayPhase(Game game) {
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "ES WIRD TAG ☀️", "Die Dorfbewohner versammeln sich auf dem Dorplatz und setzen ihre Besprechungen fort...");
         }
 
         public static void semiOnNightStart(Game game, ArrayList<Player> sortedRoles) {
@@ -195,14 +199,14 @@ public class MessagesMain {
                 var mssg = "";
                 mssg += "Die Werwölfe sind: ";
                 for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                    mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
                 }
                 if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                    mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
                 }
-    
+
                 Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
-                
+
         }
 
         public static void suggestMostVoted(Game game, Player mostVoted) {
@@ -250,5 +254,29 @@ public class MessagesMain {
                                                 + prefix + "start\" starten!*`",
                                 false);
         }
+
+        public static void helpNightPhase(MessageCreateEvent event) {
+                var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschalten.\n";
+                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);       
+        }
+
+        public static void helpFirstNightPhase(MessageCreateEvent event) {
+                var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschalten, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
+                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);
+        }
+
+        public static void helpDayPhase(MessageCreateEvent event) {
+                var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \"" + prefix
+                + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden. Dies ist die einzige Chance der Dorfbewohner die Werwölfe auszurotten, also wähle weise.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \"" + prefix
+                + "endDay\" kann der moderator das Spiel beenden.";
+                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false);
+        }
+
+	public static void helpMorning(MessageCreateEvent event) {
+                var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die opfer der Nacht angekündigt.";
+                Globals.createMessage(event.getMessage().getChannel().block(),mssg,false); 
+	}
+
+		
 
 }

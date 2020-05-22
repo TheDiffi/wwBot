@@ -44,12 +44,14 @@ public class Day {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 startVotingPhase();
+                MessagesMain.onDayPhase(game);
+                game.currentGameState.dayPhase = DayPhase.DAY;
 
             } else {
                 msgChannel.createMessage("only the moderator can use this command");
             }
         };
-        mapCommands.put("votingPhase", startVotingPhaseCommand);
+        mapCommands.put("endMorning", startVotingPhaseCommand);
 
         // lynch calls killPlayer() as killed by the villagers
         Command lynchCommand = (event, parameters, msgChannel) -> {
