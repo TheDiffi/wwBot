@@ -146,7 +146,25 @@ NEW CARD IDEAS:
 
 LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
 THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
+Stalker: kennt das liebespaar
 
 
 
 
+
+
+
+WICHTIG!!!! (de mit xx sein schun erledigt, ober no zu testn)
+
+        add command showjoinedplayers
+        show verfügbare karten
+        if not auto set Nikname to Moderator
+xx mute everyone in first NIGHT
+xx give info about voting 
+        give info about endMorning
+        CRITICAL: cant vote for players with whitespace
+        no morning after first night/straight to day 
+xx showvotes after all voted (embed)
+        show livingroles doesent work
+        CRITICAL: detect when game end doesent work 
+        add statusmeldung to majority 

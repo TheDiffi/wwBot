@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import discord4j.core.object.util.Snowflake;
 import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
@@ -25,21 +26,25 @@ public class Night {
 		// third: another message explaining how to kill someone
 		initiateNight();
 
-		for (var player : game.livingPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(true).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				//TODO: handle exception
-			}
-			
-		}
+		setMuteAllPlayers(game.livingPlayers, true);
 		game.currentGameState.createWerwolfChat();
 
 		// TODO: tell WW and mod about this channel
 		// TODO: fullmute all Players until sunrise
 
+	}
+
+	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
+		//mutes all players at night
+		for (var player : mapPlayers.entrySet()) {
+			try {
+				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+					a.setMute(isMuted).setDeafen(false);
+				}).block();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void initiateNight() {
@@ -71,9 +76,11 @@ public class Night {
 
 		// shows the available Commands in this Phase
 		Command helpCommand = (event, parameters, msgChannel) -> {
-			// replies only to the moderator
+			// replies to the moderator
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				msgChannel.createMessage("TODO: add help Command in NightPhase").block();
+				MessagesMain.helpNightPhaseMod(event);
+			} else {
+				MessagesMain.helpNightPhase(event);
 			}
 
 		};
@@ -129,6 +136,7 @@ public class Night {
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
 					&& event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				game.currentGameState.deleteWerwolfChat();
+				setMuteAllPlayers(game.livingPlayers, false);
 				game.currentGameState.changeDayPhase();
 				// TODO: unmute all players
 				return true;

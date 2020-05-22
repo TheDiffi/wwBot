@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.TextChannel;
+import wwBot.Card;
 import wwBot.Command;
 import wwBot.Game;
 import wwBot.Player;
@@ -15,7 +17,6 @@ public class GameState {
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
     public Game game;
-    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
     protected GameState(Game game2) {
         game = game2;
@@ -43,10 +44,16 @@ public class GameState {
     public void endMainGame(int winner) {
     }
 
-    public void createWerwolfChat() {
+    public TextChannel createWerwolfChat() {
+        return null;
     }
 
     public void deleteWerwolfChat() {
     }
+
+    public void killPlayer(Player unluckyPlayer, Card causedByRole) {
+
+    }
+
 
 }

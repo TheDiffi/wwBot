@@ -62,7 +62,7 @@ public class MessagesMain {
         public static void firstNightMod(Game game, ArrayList<Player> listRolesToBeCalled) {
                 // Nachricht an alle
                 Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
-                                "`In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren. \n Tipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). `");
+                                "```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren. \n Tipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). ```");
                 // der Moderator bekommt eine Liste mit allen Spielern und ihren Rollen, sowie
                 // eine Liste mit allen Rollen, welche aufgerufen werden müssen
 
@@ -80,17 +80,18 @@ public class MessagesMain {
 
         public static void onNightAuto(Game game) {
                 Globals.createEmbed(game.mainChannel, Color.BLACK, "Es wird Nacht...🌇",
-                                "`In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren`");
+                                "```In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren```");
 
         }
 
         public static void onMorningAuto(Game game) {
                 Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der Morgen Bricht An...🌅",
                                 "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+                                
         }
 
         public static void onDayPhase(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.YELLOW, "ES WIRD TAG ☀️", "Die Dorfbewohner versammeln sich auf dem Dorplatz und setzen ihre Besprechungen fort...");
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "ES WIRD TAG ☀️", "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""+prefix+"vote <playername>\" füre eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Edne Des Tages gelyncht. Falls es zu keine Mehrheit kommt werden Sipeler gebeten ihre Stimme zu endern.");
         }
 
         public static void semiOnNightStart(Game game, ArrayList<Player> sortedRoles) {
@@ -275,6 +276,12 @@ public class MessagesMain {
 	public static void helpMorning(MessageCreateEvent event) {
                 var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die opfer der Nacht angekündigt.";
                 Globals.createMessage(event.getMessage().getChannel().block(),mssg,false); 
+	}
+
+	public static void helpNightPhaseMod(MessageCreateEvent event) {
+	}
+
+	public static void helpMorningMod(MessageCreateEvent event) {
 	}
 
 		

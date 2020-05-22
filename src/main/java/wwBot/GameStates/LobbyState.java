@@ -110,6 +110,7 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("leave", leaveCommand);
 
+    
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
         Command buildDeckCommand = (event, parameters, msgChannel) -> {
 
@@ -327,7 +328,7 @@ public class LobbyState extends GameState {
                     // Game starts
                 } else if (deck.size() == listJoinedUsers.size()) {
 
-                    msgChannel.createMessage("Einen Moment Gedult...").block();
+                    msgChannel.createMessage("Einen Moment Geduld...").block();
                     // creates a temporary copy of the Deck
                     var tempDeck = new ArrayList<Card>(deck);
 
