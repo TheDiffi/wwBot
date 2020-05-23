@@ -344,4 +344,10 @@ public class MessagesMain {
                                 .block();
         }
 
+        public static void errorPlayerNotFound(MessageChannel msgChannel) {
+                msgChannel.createMessage(
+                                "Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)")
+                                .block();
+        }
+
 }

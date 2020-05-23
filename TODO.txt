@@ -168,6 +168,8 @@ WICHTIG!!!! (de mit xx sein schun erledigt, ober no zu testn)
         (set moderator to auto/manual cleanup)
         fill night help 
         fill morning help
+        fehlermeldung showCard CradNotFound
+        
 
 xx add message (on vote) dass bei einem namen ein - statt einem leerzeichen gemacht werden muss (check!)
 xx entMute players!! (check!)

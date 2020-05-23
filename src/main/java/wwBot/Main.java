@@ -67,28 +67,48 @@ public class Main {
             var defaultRole = guild.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
                     .get();
 
-            event.getMessage().getChannel().block().createMessage("test").block();
-            event.getGuild().block().createTextChannel(spec -> {
-                var overrides = new HashSet<PermissionOverwrite>();
-                overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-                        PermissionSet.of(Permission.VIEW_CHANNEL)));
-                overrides.add(PermissionOverwrite.forMember(event.getMember().get().getId(),
-                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-                spec.setPermissionOverwrites(overrides);
-                spec.setName("testchannel");
-            }).block();
+            /*
+             * event.getMessage().getChannel().block().createMessage("test").block();
+             * event.getGuild().block().createTextChannel(spec -> { var overrides = new
+             * HashSet<PermissionOverwrite>();
+             * overrides.add(PermissionOverwrite.forRole(defaultRole.getId(),
+             * PermissionSet.none(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+             * overrides.add(PermissionOverwrite.forMember(event.getMember().get().getId(),
+             * PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+             * spec.setPermissionOverwrites(overrides); spec.setName("testchannel");
+             * }).block()
+             */;
 
             event.getMember().get().edit(a -> a.setMute(true)).block();
             event.getMessage().getChannel().block().createEmbed(spec -> {
-                spec.setImage("https://cdn.discordapp.com/attachments/317717230081015809/711579726338326578/image0.jpg")
-                        .setFooter("test4",
-                                "https://cdn.discordapp.com/attachments/545307459691085828/709058905237356554/Werwolf.jpg")
+                spec.setImage("https://i.imgur.com/9aJeWxK.jpg").setFooter("test4",
+                        "https://cdn.discordapp.com/attachments/545307459691085828/709058905237356554/Werwolf.jpg")
                         .setTitle("title")
                         .setAuthor("by me",
                                 "https://discord.com/developers/docs/resources/channel#channel-object-channel-types",
                                 "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png")
                         .setThumbnail(
                                 "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
+            }).block();
+        }
+        // test (remove after)
+        if (parameters.get(0).equalsIgnoreCase("F")) {
+
+            event.getMember().get().edit(a -> a.setMute(true)).block();
+            event.getMessage().getChannel().block().createEmbed(spec -> {
+                spec.setImage("https://i.imgur.com/9aJeWxK.jpg");
+
+            }).block();
+
+        }
+
+        // test (remove after)
+        if (parameters.get(0).equalsIgnoreCase("WE")) {
+
+            event.getMember().get().edit(a -> a.setMute(true)).block();
+            event.getMessage().getChannel().block().createEmbed(spec -> {
+                spec.setImage("https://i.imgur.com/WKrn9GI.jpg");
+
             }).block();
 
         }
@@ -204,8 +224,8 @@ public class Main {
                                 }
                             }
                         } else {
-                            MessagesMain.errorNoAccessToCommand(game,  event.getMessage().getChannel().block());
-                            
+                            MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
+
                         }
                     }
                 }

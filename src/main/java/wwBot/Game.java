@@ -92,6 +92,7 @@ public class Game {
             msgChannel.createMessage(mssg).block();
         };
         gameCommands.put("showCommands", showCommandsCommand);
+        
 
         // basically !help
         Command helpCommand = (event, parameters, msgChannel) -> {

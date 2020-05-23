@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
@@ -42,6 +43,21 @@ public class Day {
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
 
+        // gibt ein Embed mit den Votes aus
+        Command listVotesCommand = (event, parameters, msgChannel) -> {
+
+            var mssg = "";
+            for (var entry : mapVotes.entrySet()) {
+                mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für "
+                        + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
+                        + " abgestimmt \n";
+            }
+            Globals.createEmbed(msgChannel, Color.WHITE,
+                    "Gewählt haben " , mssg);
+        };
+        mapCommands.put("votes", listVotesCommand);
+        mapCommands.put("listvotes", listVotesCommand);
+        mapCommands.put("showvotes", listVotesCommand);
 
         // registers the vote command
         Command voteCommand = (event, parameters, msgChannel) -> {
@@ -67,7 +83,7 @@ public class Day {
                 // checks the syntax and finds the wanted player
                 if (parameters != null && parameters.size() != 0) {
                     recievedName = Globals.removeDash(parameters.get(0));
-                    //finds the player
+                    // finds the player
                     votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
 
                 } else {
@@ -77,7 +93,8 @@ public class Day {
 
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
-                    event.getMessage().getChannel().block().createMessage("Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)").block();
+                    MessagesMain.errorPlayerNotFound(msgChannel);
+                   
                 } else if (!votedFor.alive) {
                     event.getMessage().getChannel().block()
                             .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
@@ -101,7 +118,8 @@ public class Day {
         Command lynchCommand = (event, parameters, msgChannel) -> {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters != null && parameters.size() == 1) {
-                    var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers, game);
+                    var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
+                            game.livingPlayers, game);
                     if (unluckyPerson != null) {
                         game.gameState.killPlayer(unluckyPerson, mapRegisteredCards.get("Dorfbewohner"));
                         msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden").block();
@@ -161,21 +179,21 @@ public class Day {
                 // gibt ein Embed mit den Votes aus
                 var mssg = "";
                 for (var entry : mapVotes.entrySet()) {
-                    mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für " + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
+                    mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für "
+                            + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
                             + " abgestimmt \n";
                 }
 
-                Globals.createEmbed(game.mainChannel, Color.WHITE,
-                        "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.user.asMember(game.server.getId()).block().getDisplayName(), mssg);
+                Globals.createEmbed(game.mainChannel, Color.WHITE, "Die Würfel sind gefallen \nAuf dem Schafott steht: "
+                        + mostVoted.user.asMember(game.server.getId()).block().getDisplayName(), mssg);
             }
         }
     }
 
     private void addVote(MessageCreateEvent event, Player voter, Player votedFor) {
         // der Vote des Bürgermeisters zählt mehr
-        var voteValue = voter.role.name.equalsIgnoreCase("Bürgermeister")? 1.5d : 1d;
-        
-       
+        var voteValue = voter.role.name.equalsIgnoreCase("Bürgermeister") ? 1.5d : 1d;
+
         // TODO: this dosnt work
         // if the voter already voted once, the old voteAmount gets removed
         if (mapVotes != null && mapVotes.containsKey(voter)) {
@@ -236,5 +254,18 @@ public class Day {
         };
         game.addPrivateCommand(game.userModerator.getId(), endDayCommand);
     }
+
+    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
+		//mutes all players at night
+		for (var player : mapPlayers.entrySet()) {
+			try {
+				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+					a.setMute(isMuted).setDeafen(false);
+				}).block();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

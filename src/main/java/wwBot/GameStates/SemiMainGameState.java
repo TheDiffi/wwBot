@@ -117,10 +117,10 @@ public class SemiMainGameState extends GameState {
                 }
             } else if (dayPhase == DayPhase.FIRST_NIGHT) {
                 // TODO: make first_night a class
-                if(event.getMessage().getContent().get().equalsIgnoreCase("&help")){
-                event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
-                        .block();
-                found = true;
+                if (event.getMessage().getContent().get().equalsIgnoreCase("&help")) {
+                    event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
+                            .block();
+                    found = true;
                 }
 
             }
@@ -159,7 +159,6 @@ public class SemiMainGameState extends GameState {
 
         // prints the living players and their role
         Command listPlayersCommand = (event, parameters, msgChannel) -> {
-
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 printLivingRoles(userModerator.getPrivateChannel().block());
@@ -168,6 +167,67 @@ public class SemiMainGameState extends GameState {
             }
         };
         gameStateCommands.put("listPlayers", listPlayersCommand);
+
+        // ummutes a specific player
+        Command muteCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                // finds the requested Player
+                var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
+                        game);
+                // mutes the found player
+                if (foundPlayer != null) {
+                    foundPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
+                } else {
+                    MessagesMain.errorPlayerNotFound(msgChannel);
+                }
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("mute", muteCommand);
+
+        // ummutes a specific player
+        Command unMuteCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                // finds the requested Player
+                var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
+                        game);
+                // mutes the found player
+                if (foundPlayer != null) {
+                    foundPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(false)).block();
+                } else {
+                    MessagesMain.errorPlayerNotFound(msgChannel);
+                }
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("unMute", unMuteCommand);
+
+        // shows the moderator the list of players
+        Command muteAllCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                setMuteAllPlayers(mapPlayers, true);
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("muteAll", muteAllCommand);
+
+        // shows the moderator the list of players
+        Command unMuteAllCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                setMuteAllPlayers(mapPlayers, false);
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("unMuteAll", unMuteAllCommand);
 
         // lets the moderator kill a person and checks the consequences
         Command killCommand = (event, parameters, msgChannel) -> {
@@ -186,7 +246,7 @@ public class SemiMainGameState extends GameState {
                         event.getMessage().getChannel().block().createMessage("Erfolg!").block();
                     } else {
                         MessagesMain.errorWrongSyntaxKill(game, event);
-                        
+
                     }
 
                 } else {
@@ -485,29 +545,19 @@ public class SemiMainGameState extends GameState {
     // collects every "good" and every "bad" role in a list and compares the size.
     // If the are equaly or less "good" than "bad" roles, the ww won
     private boolean checkIfGameEnds() {
-        /* var amountGoodPlayers = 0;
-        var amountBadPlayers = 0;
-        var amountWW = 0;
-        for (var playerEntry : game.livingPlayers.entrySet()) {
-            if (playerEntry.getValue().role.friendly) {
-                amountGoodPlayers++;
-            } else if (!playerEntry.getValue().role.friendly) {
-                amountBadPlayers++;
-                if (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
-                    amountWW++;
-                }
-            }
-
-        }        if (amountWW < 1) {
-            // int winner: 1 = Dorfbewohner, 2 = Werwölfe
-            game.gameState.endMainGame(1);
-            return true;
-        } else if (amountBadPlayers >= amountGoodPlayers) {
-            game.gameState.endMainGame(2);
-            return true;
-        } else {
-            return false;
-        } */
+        /*
+         * var amountGoodPlayers = 0; var amountBadPlayers = 0; var amountWW = 0; for
+         * (var playerEntry : game.livingPlayers.entrySet()) { if
+         * (playerEntry.getValue().role.friendly) { amountGoodPlayers++; } else if
+         * (!playerEntry.getValue().role.friendly) { amountBadPlayers++; if
+         * (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) { amountWW++;
+         * } }
+         * 
+         * } if (amountWW < 1) { // int winner: 1 = Dorfbewohner, 2 = Werwölfe
+         * game.gameState.endMainGame(1); return true; } else if (amountBadPlayers >=
+         * amountGoodPlayers) { game.gameState.endMainGame(2); return true; } else {
+         * return false; }
+         */
 
         var amountGoodPlayers = 0;
         var amountWW = 0;
@@ -596,7 +646,7 @@ public class SemiMainGameState extends GameState {
             setMuteAllPlayers(game.livingPlayers, true);
             createWerwolfChat();
             dayPhase = DayPhase.NORMALE_NIGHT;
-            night = new Night(game); 
+            night = new Night(game);
 
             // transitions to Morning
         } else if (dayPhase == DayPhase.NORMALE_NIGHT) {
