@@ -1,8 +1,8 @@
 package wwBot.GameStates;
 
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.Interfaces.Command;
 
 public class PostGameState extends GameState {
 
@@ -24,8 +24,9 @@ public class PostGameState extends GameState {
             msgChannel.createMessage("TODO: add help Command in Post Game State").block();
         };
         gameStateCommands.put("help", helpCommand);
+        gameStateCommands.put("hilfe", helpCommand);
 
-        
+
     }
     
 }

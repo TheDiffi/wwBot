@@ -1,4 +1,4 @@
-package wwBot;
+package wwBot.Interfaces;
 
 import java.util.List;
 

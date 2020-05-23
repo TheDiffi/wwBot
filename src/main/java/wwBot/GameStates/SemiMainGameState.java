@@ -18,11 +18,11 @@ import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Card;
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
-import wwBot.PrivateCommand;
+import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 
 public class SemiMainGameState extends GameState {
 
@@ -57,8 +57,6 @@ public class SemiMainGameState extends GameState {
         userModerator.getPrivateChannel().block().createMessage(
                 "Willkommen Moderator! \nDeine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
                 .block();
-
-        printLivingRoles(userModerator.getPrivateChannel().block());
 
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -131,7 +129,7 @@ public class SemiMainGameState extends GameState {
     }
 
     private void registerStateCommands() {
-        var mapAvailableCards = Globals.mapAvailableCards;
+        var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -172,7 +170,7 @@ public class SemiMainGameState extends GameState {
                     // gets the cause
                     var causedBy = parameters.get(1);
                     // finds the cause (role)
-                    var causedByRole = mapAvailableCards.get(causedBy);
+                    var causedByRole = mapRegisteredCards.get(causedBy);
                     if (unluckyPlayer != null && (causedByRole != null || causedBy.equalsIgnoreCase("null"))) {
                         killPlayer(unluckyPlayer, causedByRole);
                         event.getMessage().getChannel().block().createMessage("Erfolg!").block();
@@ -195,13 +193,7 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("kill", killCommand);
 
-        // shows the current Deck to the user
-        Command showDeckCommand = (event, parameters, msgChannel) -> {
-            // prints the deck
-            msgChannel.createMessage(Globals.cardListToString(game.deck, "Deck")).block();
 
-        };
-        gameStateCommands.put("showDeck", showDeckCommand);
 
         // shows the moderator the list of players (alive or all)
         Command printListCommand = (event, parameters, msgChannel) -> {
@@ -257,7 +249,7 @@ public class SemiMainGameState extends GameState {
     }
 
     private void checkConsequences(Player unluckyPlayer, Card causedByRole) {
-        var mapAvailableCards = Globals.mapAvailableCards;
+        var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // recieves true if the game ended
         var gameEnded = checkIfGameEnds();
@@ -270,7 +262,7 @@ public class SemiMainGameState extends GameState {
                 for (var player : game.livingPlayers.entrySet()) {
                     // if he finds a Lehrling he is the new Seher
                     if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
-                        player.getValue().role = mapAvailableCards.get("Seher");
+                        player.getValue().role = mapRegisteredCards.get("Seher");
                         MessagesMain.seherlehrlingWork(game, unluckyPlayer);
                     }
                 }
@@ -301,7 +293,7 @@ public class SemiMainGameState extends GameState {
                         var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),game.livingPlayers, game);
                         // if a player is found
                         if (player != null) {
-                            killPlayer(unluckyPlayer, mapAvailableCards.get("Jäger"));
+                            killPlayer(unluckyPlayer, mapRegisteredCards.get("Jäger"));
                             return true;
                         } else {
                             event.getMessage().getChannel().block()
@@ -327,6 +319,9 @@ public class SemiMainGameState extends GameState {
         var uniqueRolesInThisPhase = new ArrayList<String>();
 
         wwChat = createWerwolfChat();
+
+        printLivingRoles(userModerator.getPrivateChannel().block());
+
 
         // generates which Roles need to be called
 
@@ -559,12 +554,11 @@ public class SemiMainGameState extends GameState {
     }
 
     private void printLivingRoles(MessageChannel channel) {
-        var mssgPlayerList = "";
-        for (var entry : game.livingPlayers.entrySet()) {
-
-            mssgPlayerList += entry.getValue().user.asMember(game.server.getId()).block().getDisplayName() + " ist ein/e " + entry.getValue().role.name + "\n";
+        var tempList = new ArrayList<Player>();
+        for (var entry : game.mapPlayers.entrySet()) {
+            tempList.add(entry.getValue());
         }
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste", mssgPlayerList);
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste", Globals.playerListToString(tempList, "Alle Spieler", game));
     }
 
     @Override

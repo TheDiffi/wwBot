@@ -1,17 +1,17 @@
 package wwBot.GameStates;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.Color;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import wwBot.Card;
-import wwBot.Command;
 import wwBot.Deckbuilder;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
+import wwBot.Interfaces.Command;
 
 public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
@@ -46,8 +46,7 @@ public class LobbyState extends GameState {
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands() {
-
-        final var mapAvailableCards = Globals.mapAvailableCards;
+        final var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -58,9 +57,10 @@ public class LobbyState extends GameState {
         gameStateCommands.put("ping", pingCommand);
 
         Command helpCommand = (event, parameters, msgChannel) -> {
-           MessagesMain.helpLobbyPhase(event);
+            MessagesMain.helpLobbyPhase(event);
         };
         gameStateCommands.put("help", helpCommand);
+        gameStateCommands.put("hilfe", helpCommand);
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
@@ -71,6 +71,20 @@ public class LobbyState extends GameState {
             msgChannel.createMessage(mssg).block();
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
+
+        // lists all registered Cards
+        Command allCardsCommand = (event, parameters, msgChannel) -> {
+            //converts the map to a list
+            var tempList = new ArrayList<Card>();
+            for (var entry : mapRegisteredCards.entrySet()) {
+                tempList.add(entry.getValue());
+            }
+            // prints the list
+            Globals.cardListToString(tempList, "Alle Karten", false);
+
+        };
+        gameStateCommands.put("allCards", allCardsCommand);
+        gameStateCommands.put("listAllCards", allCardsCommand);
 
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
@@ -84,7 +98,10 @@ public class LobbyState extends GameState {
             // falls der User noch nicht registriert ist, wird er hinugefügt
             if (listJoinedUsers.indexOf(user) == -1 && bool) {
                 listJoinedUsers.add(user);
-                msgChannel.createMessage(user.asMember(game.server.getId()).block().getDisplayName() + " ist beigetreten!").block();
+                msgChannel
+                        .createMessage(
+                                user.asMember(game.server.getId()).block().getDisplayName() + " ist beigetreten!")
+                        .block();
             } else if (!bool) {
                 msgChannel.createMessage("You cannot join if you are the Moderator").block();
             } else {
@@ -102,7 +119,9 @@ public class LobbyState extends GameState {
             // falls der user in der liste ist, wird er entfernt
             if (listJoinedUsers.indexOf(user) != -1) {
                 listJoinedUsers.remove(user);
-                msgChannel.createMessage(user.asMember(game.server.getId()).block().getDisplayName() + " ist ausgetreten").block();
+                msgChannel
+                        .createMessage(user.asMember(game.server.getId()).block().getDisplayName() + " ist ausgetreten")
+                        .block();
             } else {
                 msgChannel.createMessage("looks like you're already not in the game").block();
             }
@@ -110,7 +129,14 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("leave", leaveCommand);
 
-    
+        Command listJoinedPlayersCommand = (event, parameters, msgChannel) -> {
+            var mssg = Globals.userListToString(listJoinedUsers, "beigetretene Spieler", game);
+            Globals.createMessage(game.mainChannel, mssg, false);
+
+        };
+        gameStateCommands.put("joinedPlayers", listJoinedPlayersCommand);
+        gameStateCommands.put("listJoinedPlayers", listJoinedPlayersCommand);
+
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
         Command buildDeckCommand = (event, parameters, msgChannel) -> {
 
@@ -125,7 +151,7 @@ public class LobbyState extends GameState {
 
                 // druckt das neue Deck aus
                 if (deck != null) {
-                    msgChannel.createMessage(Globals.cardListToString(deck, "AlgorithmDeck")).block();
+                    msgChannel.createMessage(Globals.cardListToString(deck, "AlgorithmDeck", true)).block();
                 } else {
                     msgChannel.createMessage("something went wrong").block();
                 }
@@ -153,11 +179,12 @@ public class LobbyState extends GameState {
         Command showDeckCommand = (event, parameters, msgChannel) -> {
 
             // prints the deck
-            msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+            msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
             // prints the moderator if there is one
             if (!gameRuleAutomatic && userModerator != null) {
-                msgChannel.createMessage("Moderator: " + userModerator.asMember(game.server.getId()).block().getDisplayName());
+                msgChannel.createMessage(
+                        "Moderator: " + userModerator.asMember(game.server.getId()).block().getDisplayName());
             } else if (!gameRuleAutomatic && userModerator == null) {
                 msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
             }
@@ -188,14 +215,14 @@ public class LobbyState extends GameState {
                 msgChannel.createMessage("syntax not correct").block();
             } else {
 
-                var requestedCard = mapAvailableCards.get(cardName);
+                var requestedCard = mapRegisteredCards.get(cardName);
 
                 // calls addCardToDeck and recieves the Status message back
                 String message = addCardToDeck(requestedCard, deck);
                 msgChannel.createMessage(message).block();
 
                 // shows new List with added Card
-                msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+                msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
@@ -217,14 +244,14 @@ public class LobbyState extends GameState {
             if (cardName == null) {
                 msgChannel.createMessage("syntax not correct").block();
             } else {
-                var requestedCard = mapAvailableCards.get(cardName);
+                var requestedCard = mapRegisteredCards.get(cardName);
 
                 // calls removeCardFromDeck and recieves the Status message back
                 String message = removeCardFromDeck(requestedCard, deck);
                 msgChannel.createMessage(message).block();
 
                 // shows new List without removed Card
-                msgChannel.createMessage(Globals.cardListToString(deck, "Deck")).block();
+                msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
@@ -278,14 +305,15 @@ public class LobbyState extends GameState {
 
         Command makeMeModeratorCommand = (event, parameters, msgChannel) -> {
             var isJoined = false;
-            if(listJoinedUsers.indexOf(event.getMessage().getAuthor().get()) != -1){
+            if (listJoinedUsers.indexOf(event.getMessage().getAuthor().get()) != -1) {
                 isJoined = true;
             }
 
             if (!gameRuleAutomatic && !isJoined) {
                 userModerator = event.getMessage().getAuthor().get();
-                Globals.createEmbed(msgChannel, Color.GREEN,
-                        " " + event.getMessage().getAuthor().get().asMember(game.server.getId()).block().getDisplayName() + " ist der Moderator", "");
+                Globals.createEmbed(msgChannel, Color.GREEN, " "
+                        + event.getMessage().getAuthor().get().asMember(game.server.getId()).block().getDisplayName()
+                        + " ist der Moderator", "");
             } else if (isJoined) {
                 msgChannel.createMessage(
                         "Es sieht aus als wärst du dem Spiel beigetreten, benutze den Command \"&leave\" um Moderator zu werden")
@@ -366,10 +394,9 @@ public class LobbyState extends GameState {
             }
         };
         gameStateCommands.put("start", startGameCommand);
+        gameStateCommands.put("startGame", startGameCommand);
 
-    
     }
-
 
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules

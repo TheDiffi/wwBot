@@ -12,10 +12,10 @@ public class ReadJSONCard {
 
     
     @SuppressWarnings("unchecked")
-    public static Map<String,Card> readAvailableCards() throws Exception {
+    public static Map<String,Card> readCards() throws Exception {
 
         //loads the available cads
-        var mapAvailableCards = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
+        var registeredCards = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
         
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
@@ -28,10 +28,10 @@ public class ReadJSONCard {
         //Iterate over card array
         JSONCardList.forEach( card -> {
             var parsedCard = parseCardObject((JSONObject) card); 
-            mapAvailableCards.put(parsedCard.name, parsedCard);
+            registeredCards.put(parsedCard.name, parsedCard);
         });
 
-        return mapAvailableCards;
+        return registeredCards;
     }
  
      

@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.object.util.Snowflake;
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
-import wwBot.PrivateCommand;
+import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 
 public class MainGameState extends GameState {
 
@@ -189,6 +189,8 @@ public class MainGameState extends GameState {
             msgChannel.createMessage("TODO: add help Command in Main State").block();
         };
         gameStateCommands.put("help", helpCommand);
+        gameStateCommands.put("hilfe", helpCommand);
+
 
     }
 

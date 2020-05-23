@@ -16,6 +16,8 @@ import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
 import wwBot.GameStates.MessagesMain;
+import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -93,6 +95,7 @@ public class Game {
 
         };
         gameCommands.put("help", helpCommand);
+        gameCommands.put("hilfe", helpCommand);
 
         // prints a requested card
         Command showCardCommand = (event, parameters, msgChannel) -> {
@@ -104,8 +107,18 @@ public class Game {
                         .createMessage("Sag mir welche Karte du sehen willst mit \"&ShowCard <Kartenname>\"").block();
             }
         };
-
+        gameCommands.put("Card", showCardCommand);
         gameCommands.put("showCard", showCardCommand);
+        gameCommands.put("findCard", showCardCommand);
+
+        // shows the current Deck to the user
+        Command showDeckCommand = (event, parameters, msgChannel) -> {
+            // prints the deck
+            msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
+
+        };
+        gameCommands.put("Deck", showDeckCommand);
+        gameCommands.put("showDeck", showDeckCommand);
 
     }
 
@@ -123,7 +136,5 @@ public class Game {
         tempList.add(lynchCommand);
         mapPrivateCommands.put(id, tempList);
     }
-
-    
 
 }

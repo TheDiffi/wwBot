@@ -3,8 +3,8 @@ package wwBot.GameStates;
 import java.util.Map;
 import java.util.TreeMap;
 
-import wwBot.Command;
 import wwBot.Game;
+import wwBot.Interfaces.Command;
 
 public class Morning {
 
@@ -37,6 +37,8 @@ public class Morning {
 
         };
         mapCommands.put("help", helpCommand);
+        mapCommands.put("hilfe", helpCommand);
+
 
 
         // ends the Morning and begins the Day

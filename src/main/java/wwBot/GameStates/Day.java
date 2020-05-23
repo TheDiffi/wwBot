@@ -6,12 +6,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
-import wwBot.PrivateCommand;
+import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 
 public class Day {
 
@@ -27,7 +26,7 @@ public class Day {
     }
 
     public void registerDayCommands() {
-        var mapAvailableCards = Globals.mapAvailableCards;
+        var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // replys with pong!
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -41,6 +40,8 @@ public class Day {
 
         };
         mapCommands.put("help", helpCommand);
+        mapCommands.put("hilfe", helpCommand);
+
 
         // registers the vote command
         Command voteCommand = (event, parameters, msgChannel) -> {
@@ -102,7 +103,7 @@ public class Day {
                 if (parameters != null && parameters.size() == 1) {
                     var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers, game);
                     if (unluckyPerson != null) {
-                        game.gameState.killPlayer(unluckyPerson, mapAvailableCards.get("Dorfbewohner"));
+                        game.gameState.killPlayer(unluckyPerson, mapRegisteredCards.get("Dorfbewohner"));
                     } else {
                         msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
                                 .block();

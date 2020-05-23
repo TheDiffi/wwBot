@@ -8,9 +8,9 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
 import wwBot.Card;
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Player;
+import wwBot.Interfaces.Command;
 
 public class GameState {
     public Map<String, Command> gameStateCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);

@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.object.util.Snowflake;
-import wwBot.Command;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
-import wwBot.PrivateCommand;
+import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 
 public class Night {
 	public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
@@ -81,6 +81,8 @@ public class Night {
 
 		};
 		mapCommands.put("help", helpCommand);
+		mapCommands.put("hilfe", helpCommand);
+
 
 		// shows the moderator the list of players
 		Command endNightCommand = (event, parameters, msgChannel) -> {
@@ -104,7 +106,7 @@ public class Night {
 		 * ())) { if (parameters.size() == 2) { // finds the requested Player var
 		 * unluckyPlayer = Globals.findPlayerByName(parameters.get(0),
 		 * game.livingPlayers); // gets the cause var causedBy = parameters.get(1); //
-		 * finds the cause (role) var causedByRole = mapAvailableCards.get(causedBy); if
+		 * finds the cause (role) var causedByRole = mapRegisteredCards.get(causedBy); if
 		 * (unluckyPlayer != null && (causedByRole != null ||
 		 * causedBy.equalsIgnoreCase("null"))) { killPlayer(unluckyPlayer,
 		 * causedByRole); } else {
