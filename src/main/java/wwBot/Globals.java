@@ -82,7 +82,7 @@ public class Globals {
 
 			for (var entry : game.livingPlayers.entrySet()) {
 				mssgPlayerList += entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
-						+ " ist ein/e " + entry.getValue().role.name + "\n";
+						+ " ---> " + entry.getValue().role.name + "\n";
 			}
 		}
 		

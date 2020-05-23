@@ -16,6 +16,8 @@ import wwBot.Player;
 public class MessagesMain {
         public static String prefix = Main.prefix;
 
+        // ---------ONSTART MESSAGES--------------------------------------------
+
         // erzeugt und sendet ein Embed und eine Nachricht. Wird zu spielstart
         // aufgerufen
         public static void newGameStartMessage(MessageChannel channel) {
@@ -54,57 +56,58 @@ public class MessagesMain {
         }
 
         public static void firstNightAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
+                Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
                                 "In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren");
 
         }
 
         public static void firstNightMod(Game game, ArrayList<Player> listRolesToBeCalled) {
                 // Nachricht an alle
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Die Erste Nacht🌙",
-                                "```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren. \n Tipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). ```");
+                Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
+                                "```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). ");
                 // der Moderator bekommt eine Liste mit allen Spielern und ihren Rollen, sowie
                 // eine Liste mit allen Rollen, welche aufgerufen werden müssen
 
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY, "Erste Nacht",
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
+                                "Erste Nacht",
                                 "In der ersten Nacht kannst du dir einen Überblick über die Rollen jedes Spielers verschaffen. In der ersten Nacht töten die Werwölfe niemanden, der Seher darf allerdings eine Person überprüfen. \n Es folgt eine Liste mit den Rollen welche in dieser Nacht aufgerufen werden sollten.");
                 var mssg = "";
                 for (Player player : listRolesToBeCalled) {
-                        mssg += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ist " + player.role.name + "\n";
+                        mssg += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ist "
+                                        + player.role.name + "\n";
                 }
                 mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
-                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
+                                "Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg);
 
         }
 
         public static void onNightAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.BLUE, "Es wird NACHT...🌇",
+                Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT...🌇",
                                 "```In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren```");
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.BLUE, "NACHT", "");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "NACHT",
+                                "");
 
         }
 
         public static void onNightSemi(Game game, ArrayList<Player> sortedRoles) {
                 // Nachricht an alle
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "🌙Nacht🌙",
-                                "In dieser Phase des Spieles erwachen Spezoalkarten und die Werwölfe einigen sich auf ein Opfer.");
+                Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT...🌇",
+                                "In dieser Phase des Spieles erwachen Spezialkarten und die Werwölfe einigen sich auf ein Opfer.");
                 // Nachricht an Moderator
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY, "Nacht",
-                                "Nachts einigen sich die werwölfe auf ein Opfer. In dieser Phase erwachen Spezialkarten, es folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Nacht",
+                                "```Nachts erwachen die Werwölfe und einigen Sich auf ein Opfer. Dazu steht ihnen sein geheimer Text-Kanal auf dem Server zur verfügung, auf den auch du Zugriff hast. \nEbenfalls erwachen in dieser Phase einige Spezialkarten.``` \nEs folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
                 var mssg = "";
                 for (int i = 0; i < sortedRoles.size(); i++) {
-                        mssg += Integer.toString(i) + ") " + sortedRoles.get(i).user.asMember(game.server.getId()).block().getDisplayName() + ": ist "
-                                        + sortedRoles.get(i).role.name + "\n";
+                        mssg += Integer.toString(i) + 1 + ") "
+                                        + sortedRoles.get(i).user.asMember(game.server.getId()).block().getDisplayName()
+                                        + ": ist " + sortedRoles.get(i).role.name + "\n";
                 }
                 mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
-                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
-                                "Diese Rollen müssen in dieser Nacht aufgerufen werden:", mssg);
-                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                                "Wichtig: töte die Player mit &kill <Opfer> <GetötetDurchRolle> erst wenn du deren Tod verkündest, also im Morgengrauen. Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgiebst.",
-                                false);
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
+                                "Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg);
+                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Wichtig!",
+                                "Töte die Player mit \"&kill\" erst im Morgengrauen! Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgiebst.");
         }
 
         public static void onMorningAuto(Game game) {
@@ -121,53 +124,63 @@ public class MessagesMain {
         }
 
         public static void onDayAuto(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG ☀️",
-                "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
-                                + prefix
-                                + "vote <playername>\" für eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");   
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG...☀️",
+                                "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
+                                                + prefix
+                                                + "vote <playername>\" für eine Person zu Stimmen. Falls der Name eine oder mehrere Personen ein Lehrzeichen beinhaltet, ist man gebeten dieses durch einen Bindestrich(-) zu ersetzen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
         }
 
-
         public static void onDaySemi(Game game) {
-                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG ☀️",
+                Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG...☀️",
                                 "Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
                                                 + prefix
                                                 + "vote <playername>\" für eine Person zu Stimmen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.YELLOW, "TAG ☀️",
-                                "In dieser Phase stimmen die Spieler ab. Der meistgewählte Spieler wird dir mitgeteilt. Du kannst dir jederzeit mit \""
-                                                + prefix + "showVotes\" einen Überblick verschaffen");
+                                "```In dieser Phase stimmen die Spieler ab. Der meistgewählte Spieler wird dir mitgeteilt. Du kannst dir jederzeit mit \""
+                                                + prefix
+                                                + "showVotes\" einen Überblick verschaffen``` \nBeende diese Phase mit\""
+                                                + prefix + "endDay\"");
         }
 
+        // ---------DEATH MESSAGES--------------------------------------------
+
         public static String revealId(Player player, Game game) {
-                var mssg = player.user.asMember(game.server.getId()).block().getDisplayName() + " war ein " + player.role.name;
+                var mssg = player.user.asMember(game.server.getId()).block().getDisplayName() + " war ein "
+                                + player.role.name;
                 return mssg;
         }
 
         public static void deathByWW(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.asMember(game.server.getId()).block().getDisplayName() + " wird am Morgen halb zerfressen aufgefunden. ",
+                                player.user.asMember(game.server.getId()).block().getDisplayName()
+                                                + " wird am Morgen halb zerfressen aufgefunden. ",
                                 revealId(player, game));
         }
 
         public static void deathByMagic(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.asMember(game.server.getId()).block().getDisplayName() + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
+                                player.user.asMember(game.server.getId()).block().getDisplayName()
+                                                + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
                                 revealId(player, game));
         }
 
         public static void deathByGunshot(Game game, Player player) {
-                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block().getDisplayName()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block()
+                                .getDisplayName()
                                 + " wurde von einem Schuss im Bein getroffen und verblutete daraufhin. ",
-                                revealId(player,game));
+                                revealId(player, game));
         }
 
         public static void deathByLynchen(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.asMember(game.server.getId()).block().getDisplayName() + " wird öffentlich hingerichtet. ", revealId(player, game));
+                                player.user.asMember(game.server.getId()).block().getDisplayName()
+                                                + " wird öffentlich hingerichtet. ",
+                                revealId(player, game));
         }
 
         public static void deathByLove(Game game, Player player) {
-                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block().getDisplayName()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block()
+                                .getDisplayName()
                                 + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
                                 revealId(player, game));
         }
@@ -181,7 +194,8 @@ public class MessagesMain {
 
         public static void death(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                "Das Leben von " + player.user.asMember(game.server.getId()).block().getDisplayName() + " kam zu einem tragischen Ende. ",
+                                "Das Leben von " + player.user.asMember(game.server.getId()).block().getDisplayName()
+                                                + " kam zu einem tragischen Ende. ",
                                 revealId(player, game));
         }
 
@@ -217,25 +231,32 @@ public class MessagesMain {
                                 true);
         }
 
-        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles, Game game) {
+        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
+                        Game game) {
                 var mssg = "";
                 mssg += "Die Werwölfe sind: ";
                 for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                        mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block()
+                                        .getDisplayName() + " ";
                 }
                 if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                        mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block()
+                                        .getDisplayName() + " ";
                 }
 
                 Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
 
         }
 
+        // ---------VOTE MESSAGES--------------------------------------------
+
         public static void suggestMostVoted(Game game, Player mostVoted) {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
                                 "Alle Spieler Haben Gewählt!", "Auf dem Schaffott steht *" + mostVoted.user.getMention()
-                                                + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. Mit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
+                                                + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nMit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
         }
+
+        // ---------HELP MESSAGES--------------------------------------------
 
         public static String getHelpInfo() {
                 var mssg = "*---------------------------*";
@@ -290,8 +311,8 @@ public class MessagesMain {
         public static void helpDayPhase(MessageCreateEvent event) {
                 var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
                                 + prefix
-                                + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden. Dies ist die einzige Chance der Dorfbewohner die Werwölfe auszurotten, also wähle weise.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
-                                + prefix + "endDay\" kann der moderator das Spiel beenden.";
+                                + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
+                                + prefix + "endDay\" kann der Moderator das Spiel beenden.";
                 Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
@@ -301,9 +322,26 @@ public class MessagesMain {
         }
 
         public static void helpNightPhaseMod(MessageCreateEvent event) {
+                Globals.createMessage(event.getMessage().getChannel().block(), "TODO: fill night help", false);
         }
 
         public static void helpMorningMod(MessageCreateEvent event) {
+                Globals.createMessage(event.getMessage().getChannel().block(), "TODO: fill morning help", false);
+
+        }
+
+        // ---------ERROR MESSAGES--------------------------------------------
+
+        public static void errorNoAccessToCommand(Game game, MessageChannel messageChannel) {
+                messageChannel.createMessage("you have no access to this command").block();
+        }
+
+        public static void errorWrongSyntaxKill(Game game, MessageCreateEvent event) {
+                event.getMessage().getChannel().block()
+                                .createMessage("Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\""
+                                                + prefix
+                                                + "&kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+                                .block();
         }
 
 }

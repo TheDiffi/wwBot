@@ -24,24 +24,6 @@ public class LobbyState extends GameState {
 
         registerGameCommands();
 
-        // simulates Users
-        /*
-         * User hannelore = null; User friedrich = null; User samuel = null; User
-         * raffael = null; User santa = null; User ente = null; User fanta = null; User
-         * hi = null; User ho = null; User hun = null; User huh = null; User damn =
-         * null; User oof2 = null; User oof = null; User one = null; User two = null;
-         * User sdfg = null; User tree = null;
-         * 
-         * listJoinedUsers.add(santa); listJoinedUsers.add(friedrich);
-         * listJoinedUsers.add(hannelore); listJoinedUsers.add(raffael);
-         * listJoinedUsers.add(samuel); listJoinedUsers.add(ente);
-         * listJoinedUsers.add(fanta); listJoinedUsers.add(hi); listJoinedUsers.add(ho);
-         * listJoinedUsers.add(hun); listJoinedUsers.add(huh);
-         * listJoinedUsers.add(damn); listJoinedUsers.add(oof2);
-         * listJoinedUsers.add(oof); listJoinedUsers.add(one); listJoinedUsers.add(two);
-         * listJoinedUsers.add(sdfg); listJoinedUsers.add(tree);
-         */
-
     }
 
     // loads the Commands available in this GameState into the map gameStateCommands
@@ -72,26 +54,16 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 
-        // lists all registered Cards
-        Command allCardsCommand = (event, parameters, msgChannel) -> {
-            //converts the map to a list
-            var tempList = new ArrayList<Card>();
-            for (var entry : mapRegisteredCards.entrySet()) {
-                tempList.add(entry.getValue());
-            }
-            // prints the list
-            Globals.cardListToString(tempList, "Alle Karten", false);
-
-        };
-        gameStateCommands.put("allCards", allCardsCommand);
-        gameStateCommands.put("listAllCards", allCardsCommand);
-
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
             User user = event.getMessage().getAuthor().get();
             var bool = true;
             // falls es einen moderator gibt darf dieser nicht joinen
             if (!gameRuleAutomatic && userModerator != null && user.getId().equals(userModerator.getId())) {
+                bool = false;
+                // mit einer DM soll man nicht joinen können
+            }
+            if (!event.getGuildId().isPresent()) {
                 bool = false;
             }
 
@@ -304,17 +276,22 @@ public class LobbyState extends GameState {
         gameStateCommands.put("gamerule", gameruleCommand);
 
         Command makeMeModeratorCommand = (event, parameters, msgChannel) -> {
-            var isJoined = false;
+            var bool = false;
             if (listJoinedUsers.indexOf(event.getMessage().getAuthor().get()) != -1) {
-                isJoined = true;
+                bool = true;
+
+                // mit einer DM soll man nicht joinen können
+            }
+            if (!event.getGuildId().isPresent()) {
+                bool = false;
             }
 
-            if (!gameRuleAutomatic && !isJoined) {
+            if (!gameRuleAutomatic && !bool) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN, " "
                         + event.getMessage().getAuthor().get().asMember(game.server.getId()).block().getDisplayName()
                         + " ist der Moderator", "");
-            } else if (isJoined) {
+            } else if (bool) {
                 msgChannel.createMessage(
                         "Es sieht aus als wärst du dem Spiel beigetreten, benutze den Command \"&leave\" um Moderator zu werden")
                         .block();
@@ -326,6 +303,8 @@ public class LobbyState extends GameState {
 
         };
         gameStateCommands.put("makeMeModerator", makeMeModeratorCommand);
+        gameStateCommands.put("makeMeMod", makeMeModeratorCommand);
+        gameStateCommands.put("setMod", makeMeModeratorCommand);
 
         // starts the game
         // cheks if there is a moderator or the gamerule is set to automatic

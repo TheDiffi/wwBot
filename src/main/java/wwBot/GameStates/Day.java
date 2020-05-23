@@ -77,7 +77,7 @@ public class Day {
 
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
-                    event.getMessage().getChannel().block().createMessage("Player not found.").block();
+                    event.getMessage().getChannel().block().createMessage("Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)").block();
                 } else if (!votedFor.alive) {
                     event.getMessage().getChannel().block()
                             .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
@@ -101,9 +101,10 @@ public class Day {
         Command lynchCommand = (event, parameters, msgChannel) -> {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters != null && parameters.size() == 1) {
-                    var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers, game);
+                    var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers, game);
                     if (unluckyPerson != null) {
                         game.gameState.killPlayer(unluckyPerson, mapRegisteredCards.get("Dorfbewohner"));
+                        msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden").block();
                     } else {
                         msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
                                 .block();
@@ -150,7 +151,7 @@ public class Day {
 
             if (!hasMajority && mostVoted != null) {
                 Globals.createMessage(game.mainChannel,
-                        "Alle Spieler haben abgestimmt, jedoch gibt es **keine klare Mehrheit**. Es werden solange Neuwahlen stattfinden, bis es zu einer klaren Mehrheit kommt.",
+                        "Alle Spieler haben abgestimmt, jedoch gibt es **keine klare Mehrheit**. Es wird gebete, dass wenigstens ein Spieler seine Stimme ändert, damit es zu einer klaren Mehrheit kommt.",
                         false);
             }
 
@@ -171,21 +172,21 @@ public class Day {
     }
 
     private void addVote(MessageCreateEvent event, Player voter, Player votedFor) {
-
-        var voteValue = 1d;
-        // der Bürgermeister hat im Falle eines ausgleichs den entscheidenden Vorteil
-        if (voter.role.name.equalsIgnoreCase("Bürgermeister")) {
-            voteValue = 1.5d;
-        }
+        // der Vote des Bürgermeisters zählt mehr
+        var voteValue = voter.role.name.equalsIgnoreCase("Bürgermeister")? 1.5d : 1d;
+        
+       
         // TODO: this dosnt work
         // if the voter already voted once, the old voteAmount gets removed
         if (mapVotes != null && mapVotes.containsKey(voter)) {
-            double lessVotes = mapAmountVotes.get(mapVotes.get(voter)) - 1d;
-            mapAmountVotes.put(votedFor, lessVotes);
+            var originallyVotedFor = mapVotes.get(voter);
+            var lessVotes = mapAmountVotes.get(originallyVotedFor) - 1d;
+            mapAmountVotes.put(originallyVotedFor, lessVotes);
+
         }
         // adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
-        if (tempAmount != null) {
+        if (tempAmount != null && tempAmount > 0) {
             tempAmount += voteValue;
             mapAmountVotes.put(votedFor, tempAmount);
         } else {

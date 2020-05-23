@@ -159,12 +159,24 @@ WICHTIG!!!! (de mit xx sein schun erledigt, ober no zu testn)
         !!CRITICAL: cant vote for players with whitespace (mby fixed)
         !!CRITICAL: detect when game end doesent work (mby fixed)
 
-        add message (on vote) dass bei einem namen ein - statt einem leerzeichen gemacht werden muss
-
-        add command showjoinedplayers
-        add command list verfügbare karten in deckbuilder
+        
+        count votes in player object
+        add Showvotes
         (if not auto set Nickname to Moderator) 
         give info about endMorning
         show livingroles doesent work
-        set moderator to auto/manual cleanup
+        (set moderator to auto/manual cleanup)
+        fill night help 
+        fill morning help
 
+xx add message (on vote) dass bei einem namen ein - statt einem leerzeichen gemacht werden muss (check!)
+xx entMute players!! (check!)
+xx mute everyone in first NIGHT (CHECK!)
+xx add command showjoinedplayers (CHECK!)
+add command list verfügbare karten in deckbuilder (CHECK!)
+xx give info about voting (check!)
+       
+xx no morning after first night/straight to day (check!)
+xx showvotes after all voted (embed)
+xx fixing player roles display to moderator (check!)
+        

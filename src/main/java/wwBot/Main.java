@@ -83,9 +83,12 @@ public class Main {
                 spec.setImage("https://cdn.discordapp.com/attachments/317717230081015809/711579726338326578/image0.jpg")
                         .setFooter("test4",
                                 "https://cdn.discordapp.com/attachments/545307459691085828/709058905237356554/Werwolf.jpg")
-                        .setTitle("title").setAuthor("by me",
+                        .setTitle("title")
+                        .setAuthor("by me",
                                 "https://discord.com/developers/docs/resources/channel#channel-object-channel-types",
-                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png").setThumbnail("https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
+                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png")
+                        .setThumbnail(
+                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
             }).block();
 
         }
@@ -142,7 +145,7 @@ public class Main {
                 else if (mapRunningGames.containsKey(serverId)) {
                     var game = mapRunningGames.get(serverId);
 
-                    game.handleCommands(event);
+                    game.handleCommands(event, event.getMessage().getChannel().block());
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)
                 else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
@@ -186,7 +189,7 @@ public class Main {
                     // falls der spieler in einem Spiel ist
                 } else if (game != null && isInGame == 1) {
                     if (messageContent.startsWith(prefix)) {
-                        game.handleCommands(event);
+                        game.handleCommands(event, event.getMessage().getChannel().block());
                     } else {
                         // überprüft, ob in der map dieser User ist, d.h. ob das programm auf eine
                         // Antwort "wartet"
@@ -201,8 +204,8 @@ public class Main {
                                 }
                             }
                         } else {
-                            event.getMessage().getChannel().block().createMessage("you have no access to this command")
-                                    .block();
+                            MessagesMain.errorNoAccessToCommand(game,  event.getMessage().getChannel().block());
+                            
                         }
                     }
                 }

@@ -53,10 +53,11 @@ public class SemiMainGameState extends GameState {
     }
 
     private void greetMod(Game game) {
-
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.GREEN, "Willkommen Moderator!", "");
         userModerator.getPrivateChannel().block().createMessage(
-                "Willkommen Moderator! \nDeine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command \"Ready\" die erste Nacht Starten.")
+                "Deine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command **\"Ready\"** die erste Nacht Starten.")
                 .block();
+        printLivingRoles(userModerator.getPrivateChannel().block());
 
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -114,6 +115,14 @@ public class SemiMainGameState extends GameState {
                 } else {
                     found = false;
                 }
+            } else if (dayPhase == DayPhase.FIRST_NIGHT) {
+                // TODO: make first_night a class
+                if(event.getMessage().getContent().get().equalsIgnoreCase("&help")){
+                event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
+                        .block();
+                found = true;
+                }
+
             }
 
             if (!found) {
@@ -166,7 +175,8 @@ public class SemiMainGameState extends GameState {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters.size() == 2) {
                     // finds the requested Player
-                    var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers, game);
+                    var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
+                            game.livingPlayers, game);
                     // gets the cause
                     var causedBy = parameters.get(1);
                     // finds the cause (role)
@@ -175,15 +185,12 @@ public class SemiMainGameState extends GameState {
                         killPlayer(unluckyPlayer, causedByRole);
                         event.getMessage().getChannel().block().createMessage("Erfolg!").block();
                     } else {
-                        event.getMessage().getChannel().block().createMessage(
-                                "Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
-                                .block();
+                        MessagesMain.errorWrongSyntaxKill(game, event);
+                        
                     }
 
                 } else {
-                    event.getMessage().getChannel().block().createMessage(
-                            "Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
-                            .block();
+                    MessagesMain.errorWrongSyntaxKill(game, event);
 
                 }
             } else {
@@ -192,8 +199,6 @@ public class SemiMainGameState extends GameState {
             }
         };
         gameStateCommands.put("kill", killCommand);
-
-
 
         // shows the moderator the list of players (alive or all)
         Command printListCommand = (event, parameters, msgChannel) -> {
@@ -290,7 +295,8 @@ public class SemiMainGameState extends GameState {
 
                 PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
                     if (parameters != null) {
-                        var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),game.livingPlayers, game);
+                        var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers,
+                                game);
                         // if a player is found
                         if (player != null) {
                             killPlayer(unluckyPlayer, mapRegisteredCards.get("Jäger"));
@@ -319,9 +325,6 @@ public class SemiMainGameState extends GameState {
         var uniqueRolesInThisPhase = new ArrayList<String>();
 
         wwChat = createWerwolfChat();
-
-        printLivingRoles(userModerator.getPrivateChannel().block());
-
 
         // generates which Roles need to be called
 
@@ -367,7 +370,7 @@ public class SemiMainGameState extends GameState {
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-
+                setMuteAllPlayers(game.livingPlayers, false);
                 deleteWerwolfChat();
                 changeDayPhase();
                 return true;
@@ -376,7 +379,7 @@ public class SemiMainGameState extends GameState {
                 return false;
             }
         };
-        
+
         game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
     }
 
@@ -405,7 +408,7 @@ public class SemiMainGameState extends GameState {
         var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
                 .get();
 
-        var wwChat = game.server.createTextChannel(spec -> {
+        wwChat = game.server.createTextChannel(spec -> {
             var overrides = new HashSet<PermissionOverwrite>();
             overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
                     PermissionSet.of(Permission.VIEW_CHANNEL)));
@@ -429,8 +432,11 @@ public class SemiMainGameState extends GameState {
     @Override
     public void deleteWerwolfChat() {
 
-        if (game.server.getChannelById(wwChat.getId()).block() != null) {
-            game.server.getChannelById(wwChat.getId()).block().delete();
+        if (wwChat != null) {
+            game.server.getChannelById(wwChat.getId()).block().delete().block();
+            wwChat = null;
+        } else {
+            game.mainChannel.createMessage("No Channel Found").block();
         }
     }
 
@@ -479,7 +485,7 @@ public class SemiMainGameState extends GameState {
     // collects every "good" and every "bad" role in a list and compares the size.
     // If the are equaly or less "good" than "bad" roles, the ww won
     private boolean checkIfGameEnds() {
-        var amountGoodPlayers = 0;
+        /* var amountGoodPlayers = 0;
         var amountBadPlayers = 0;
         var amountWW = 0;
         for (var playerEntry : game.livingPlayers.entrySet()) {
@@ -490,14 +496,34 @@ public class SemiMainGameState extends GameState {
                 if (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
                     amountWW++;
                 }
-            } 
-            
+            }
+
+        }        if (amountWW < 1) {
+            // int winner: 1 = Dorfbewohner, 2 = Werwölfe
+            game.gameState.endMainGame(1);
+            return true;
+        } else if (amountBadPlayers >= amountGoodPlayers) {
+            game.gameState.endMainGame(2);
+            return true;
+        } else {
+            return false;
+        } */
+
+        var amountGoodPlayers = 0;
+        var amountWW = 0;
+        for (var playerEntry : game.livingPlayers.entrySet()) {
+            if (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
+                amountWW++;
+            } else {
+                amountGoodPlayers++;
+            }
+
         }
         if (amountWW < 1) {
             // int winner: 1 = Dorfbewohner, 2 = Werwölfe
             game.gameState.endMainGame(1);
             return true;
-        } else if (amountBadPlayers >= amountGoodPlayers) {
+        } else if (amountWW >= amountGoodPlayers) {
             game.gameState.endMainGame(2);
             return true;
         } else {
@@ -558,7 +584,8 @@ public class SemiMainGameState extends GameState {
         for (var entry : game.mapPlayers.entrySet()) {
             tempList.add(entry.getValue());
         }
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste", Globals.playerListToString(tempList, "Alle Spieler", game));
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste",
+                Globals.playerListToString(tempList, "Alle Spieler", game));
     }
 
     @Override
@@ -567,9 +594,9 @@ public class SemiMainGameState extends GameState {
         // transitions to Night
         if (dayPhase == DayPhase.DAY) {
             setMuteAllPlayers(game.livingPlayers, true);
-            dayPhase = DayPhase.NORMALE_NIGHT;
-            night = new Night(game);
             createWerwolfChat();
+            dayPhase = DayPhase.NORMALE_NIGHT;
+            night = new Night(game); 
 
             // transitions to Morning
         } else if (dayPhase == DayPhase.NORMALE_NIGHT) {

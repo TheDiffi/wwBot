@@ -44,32 +44,36 @@ public class Game {
 
     }
 
-    public void handleCommands(MessageCreateEvent event) {
+    public void handleCommands(MessageCreateEvent event, MessageChannel msgChannel) {
 
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = new LinkedList<>(Arrays.asList(messageContent.split(" ")));
         var requestedCommand = parameters.remove(0);
         requestedCommand = requestedCommand.substring(1);
         boolean found = false;
+        if(msgChannel == null){
+            msgChannel = mainChannel;
+        }
 
-        if (gameState.handleCommand(requestedCommand, event, parameters, mainChannel)) {
+        if (gameState.handleCommand(requestedCommand, event, parameters, msgChannel)) {
             found = true;
         }
 
         else if (gameCommands.containsKey(requestedCommand)) {
-            gameCommands.get(requestedCommand).execute(event, parameters, mainChannel);
+            gameCommands.get(requestedCommand).execute(event, parameters, msgChannel);
             found = true;
         }
 
         // found überprüft ob der Command irgentwo gefunden wurde
         if (!found) {
-            mainChannel.createMessage("Command Not Found").block();
+            event.getMessage().getChannel().block().createMessage("Command Not Found").block();
         }
 
     }
 
     // loads the Commands available throughout the game into the map gameCommands
     private void registerGameCommands() {
+        final var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -104,7 +108,7 @@ public class Game {
                 Globals.printCard(cardName, event.getMessage().getChannel().block());
             } else {
                 event.getMessage().getChannel().block()
-                        .createMessage("Sag mir welche Karte du sehen willst mit \"&ShowCard <Kartenname>\"").block();
+                        .createMessage("Ich verstehe dich nicht. Benutze \"&ShowCard <Kartenname>\"").block();
             }
         };
         gameCommands.put("Card", showCardCommand);
@@ -119,6 +123,20 @@ public class Game {
         };
         gameCommands.put("Deck", showDeckCommand);
         gameCommands.put("showDeck", showDeckCommand);
+
+        // lists all registered Cards
+        Command allCardsCommand = (event, parameters, msgChannel) -> {
+            // converts the map to a list
+            var tempList = new ArrayList<Card>();
+            for (var entry : mapRegisteredCards.entrySet()) {
+                tempList.add(entry.getValue());
+            }
+            // prints the list
+            msgChannel.createMessage(Globals.cardListToString(tempList, "Alle Karten", false)).block();
+
+        };
+        gameCommands.put("allCards", allCardsCommand);
+        gameCommands.put("listAllCards", allCardsCommand);
 
     }
 
