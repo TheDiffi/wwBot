@@ -70,7 +70,7 @@ public class MessagesMain {
                                 "In der ersten Nacht kannst du dir einen Überblick über die Rollen jedes Spielers verschaffen. In der ersten Nacht töten die Werwölfe niemanden, der Seher darf allerdings eine Person überprüfen. \n Es folgt eine Liste mit den Rollen welche in dieser Nacht aufgerufen werden sollten.");
                 var mssg = "";
                 for (Player player : listRolesToBeCalled) {
-                        mssg += player.user.getUsername() + ": ist " + player.role.name + "\n";
+                        mssg += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ist " + player.role.name + "\n";
                 }
                 mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.DARK_GRAY,
@@ -94,7 +94,7 @@ public class MessagesMain {
                                 "Nachts einigen sich die werwölfe auf ein Opfer. In dieser Phase erwachen Spezialkarten, es folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
                 var mssg = "";
                 for (int i = 0; i < sortedRoles.size(); i++) {
-                        mssg += Integer.toString(i) + ") " + sortedRoles.get(i).user.getUsername() + ": ist "
+                        mssg += Integer.toString(i) + ") " + sortedRoles.get(i).user.asMember(game.server.getId()).block().getDisplayName() + ": ist "
                                         + sortedRoles.get(i).role.name + "\n";
                 }
                 mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
@@ -138,51 +138,51 @@ public class MessagesMain {
                                                 + prefix + "showVotes\" einen Überblick verschaffen");
         }
 
-        public static String revealId(Player player) {
-                var mssg = player.user.getUsername() + " war ein " + player.role.name;
+        public static String revealId(Player player, Game game) {
+                var mssg = player.user.asMember(game.server.getId()).block().getDisplayName() + " war ein " + player.role.name;
                 return mssg;
         }
 
         public static void deathByWW(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.getUsername() + " wird am Morgen halb zerfressen aufgefunden. ",
-                                revealId(player));
+                                player.user.asMember(game.server.getId()).block().getDisplayName() + " wird am Morgen halb zerfressen aufgefunden. ",
+                                revealId(player, game));
         }
 
         public static void deathByMagic(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.getUsername() + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
-                                revealId(player));
+                                player.user.asMember(game.server.getId()).block().getDisplayName() + "wird Tod neben einer leeren Trankflasche aufgefunden. ",
+                                revealId(player, game));
         }
 
         public static void deathByGunshot(Game game, Player player) {
-                Globals.createEmbed(game.mainChannel, Color.RED, player.user.getUsername()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block().getDisplayName()
                                 + " wurde von einem Schuss im Bein getroffen und verblutete daraufhin. ",
-                                revealId(player));
+                                revealId(player,game));
         }
 
         public static void deathByLynchen(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.getUsername() + " wird öffentlich hingerichtet. ", revealId(player));
+                                player.user.asMember(game.server.getId()).block().getDisplayName() + " wird öffentlich hingerichtet. ", revealId(player, game));
         }
 
         public static void deathByLove(Game game, Player player) {
-                Globals.createEmbed(game.mainChannel, Color.RED, player.user.getUsername()
+                Globals.createEmbed(game.mainChannel, Color.RED, player.user.asMember(game.server.getId()).block().getDisplayName()
                                 + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
-                                revealId(player));
+                                revealId(player, game));
         }
 
         public static void deathByMartyrium(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                player.user.getUsername()
+                                player.user.asMember(game.server.getId()).block().getDisplayName()
                                                 + " wirft sich freiwillig von der Brücke um ein Zeichen zu setzen. ",
-                                revealId(player));
+                                revealId(player, game));
         }
 
         public static void death(Game game, Player player) {
                 Globals.createEmbed(game.mainChannel, Color.RED,
-                                "Das Leben von " + player.user.getUsername() + " kam zu einem tragischen Ende. ",
-                                revealId(player));
+                                "Das Leben von " + player.user.asMember(game.server.getId()).block().getDisplayName() + " kam zu einem tragischen Ende. ",
+                                revealId(player, game));
         }
 
         public static void wwInfection(Game game) {
@@ -217,14 +217,14 @@ public class MessagesMain {
                                 true);
         }
 
-        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles) {
+        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles, Game game) {
                 var mssg = "";
                 mssg += "Die Werwölfe sind: ";
                 for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                        mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName() + " ";
                 }
                 if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                        mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
+                        mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName() + " ";
                 }
 
                 Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);

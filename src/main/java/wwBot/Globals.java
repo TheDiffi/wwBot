@@ -93,12 +93,16 @@ public class Globals {
 
 	// finds a player in a Map by Username. Returns null if it finds noone or
 	// multiple Players
-	public static Player findPlayerByName(String name, Map<Snowflake, Player> map) {
+	public static Player findPlayerByName(String name, Map<Snowflake, Player> map, Game game) {
 		Player foundPlayer = null;
 		var found = 0;
-		for (var player : map.entrySet()) {
-			if (player.getValue().user.getUsername().equalsIgnoreCase(name)) {
-				foundPlayer = player.getValue();
+		for (var entry : map.entrySet()) {
+
+			var displayName = entry.getValue().user.asMember(game.server.getId()).block().getDisplayName();
+			var userName = entry.getValue().user.getUsername();
+
+			if (displayName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name)) {
+				foundPlayer = entry.getValue();
 				found++;
 			}
 
@@ -107,6 +111,11 @@ public class Globals {
 			foundPlayer = null;
 		}
 		return foundPlayer;
+	}
+
+	public static String removeDash(String rawName) {
+		var name = rawName.replaceAll("-", " ");
+		return name;
 	}
 
 }

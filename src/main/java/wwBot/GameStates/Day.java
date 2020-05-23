@@ -20,7 +20,6 @@ public class Day {
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
     Game game;
 
-
     Day(Game getGame) {
         game = getGame;
         registerDayCommands();
@@ -47,14 +46,13 @@ public class Day {
         Command voteCommand = (event, parameters, msgChannel) -> {
 
             // if &vote is called, the programm saves a map with the person who voted for as
-            // key
-            // and the person voted for as value
-            // before that, it checks if the person already voted and if true changes the
-            // Vote
+            // key and the person voted for as value
+            // checks if the person already voted and if true changes the Vote
             var voterUser = event.getMessage().getAuthor().get();
             var allowedToVote = false;
             var voter = new Player();
-            // checks if the player calling this command lives
+
+            // checks if the player calling this command is allowed to vote
             for (var entry : game.livingPlayers.entrySet()) {
                 if (entry.getValue().user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
@@ -64,13 +62,13 @@ public class Day {
 
             if (allowedToVote) {
                 Player votedFor = null;
+                var recievedName = "";
                 // checks the syntax and finds the wanted player
                 if (parameters != null && parameters.size() != 0) {
-                    for (var entry : game.mapPlayers.entrySet()) {
-                        if (entry.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
-                            votedFor = entry.getValue();
-                        }
-                    }
+                    recievedName = Globals.removeDash(parameters.get(0));
+                    //finds the player
+                    votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
+
                 } else {
                     // wrong syntax
                     event.getMessage().getChannel().block().createMessage("Wrong syntax").block();
@@ -102,7 +100,7 @@ public class Day {
         Command lynchCommand = (event, parameters, msgChannel) -> {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters != null && parameters.size() == 1) {
-                    var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                    var unluckyPerson = Globals.findPlayerByName(parameters.get(0), game.livingPlayers, game);
                     if (unluckyPerson != null) {
                         game.gameState.killPlayer(unluckyPerson, mapAvailableCards.get("Dorfbewohner"));
                     } else {
@@ -161,12 +159,12 @@ public class Day {
                 // gibt ein Embed mit den Votes aus
                 var mssg = "";
                 for (var entry : mapVotes.entrySet()) {
-                    mssg += entry.getKey().user.getUsername() + " hat für " + entry.getValue().user.getUsername()
+                    mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für " + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
                             + " abgestimmt \n";
                 }
 
                 Globals.createEmbed(game.mainChannel, Color.WHITE,
-                        "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.user.getUsername(), mssg);
+                        "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.user.asMember(game.server.getId()).block().getDisplayName(), mssg);
             }
         }
     }
@@ -178,13 +176,13 @@ public class Day {
         if (voter.role.name.equalsIgnoreCase("Bürgermeister")) {
             voteValue = 1.5d;
         }
-        //TODO: this dosnt work
-        //if the voter already voted once, the old voteAmount gets removed
+        // TODO: this dosnt work
+        // if the voter already voted once, the old voteAmount gets removed
         if (mapVotes != null && mapVotes.containsKey(voter)) {
             double lessVotes = mapAmountVotes.get(mapVotes.get(voter)) - 1d;
             mapAmountVotes.put(votedFor, lessVotes);
         }
-        //adds the Vote to the vote Amount
+        // adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
         if (tempAmount != null) {
             tempAmount += voteValue;

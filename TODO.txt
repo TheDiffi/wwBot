@@ -156,18 +156,19 @@ Stalker: kennt das liebespaar
 
 WICHTIG!!!! (de mit xx sein schun erledigt, ober no zu testn)
 
+        !!CRITICAL: cant vote for players with whitespace
+        !!CRITICAL: detect when game end doesent work (mby fixed)
+
+
         add command showjoinedplayers
         add command show verfügbare karten in deckbuilder
-        if not auto set Nickname to Moderator
+        (if not auto set Nickname to Moderator)
 xx mute everyone in first NIGHT
 xx give info about voting 
         give info about endMorning
-        !!CRITICAL: cant vote for players with whitespace
 xx no morning after first night/straight to day 
 xx showvotes after all voted (embed)
         show livingroles doesent work
-        !!CRITICAL: detect when game end doesent work 
-        (it never does)
 xx add statusmeldung to majority 
 xx fixing player roles display to moderator
         set moderator to auto/manual cleanup

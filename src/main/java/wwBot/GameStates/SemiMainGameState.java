@@ -168,7 +168,7 @@ public class SemiMainGameState extends GameState {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 if (parameters.size() == 2) {
                     // finds the requested Player
-                    var unluckyPlayer = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                    var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers, game);
                     // gets the cause
                     var causedBy = parameters.get(1);
                     // finds the cause (role)
@@ -243,6 +243,7 @@ public class SemiMainGameState extends GameState {
             // kills player
             unluckyPlayer.alive = false;
             game.deadPlayers.add(unluckyPlayer);
+            reloadGameLists();
 
             // reveals the players death and identity
             checkDeathMessages(unluckyPlayer, causedByRole);
@@ -250,7 +251,6 @@ public class SemiMainGameState extends GameState {
             Globals.printCard(unluckyPlayer.role.name, game.mainChannel);
 
             // calculates the consequences
-
             checkConsequences(unluckyPlayer, causedByRole);
         }
 
@@ -298,7 +298,7 @@ public class SemiMainGameState extends GameState {
 
                 PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
                     if (parameters != null) {
-                        var player = Globals.findPlayerByName(parameters.get(0), game.livingPlayers);
+                        var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),game.livingPlayers, game);
                         // if a player is found
                         if (player != null) {
                             killPlayer(unluckyPlayer, mapAvailableCards.get("Jäger"));
@@ -356,7 +356,7 @@ public class SemiMainGameState extends GameState {
         if (mapExistingRoles.get("Günstling") != null) {
             var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
 
-            MessagesMain.günstlingMessage(privateChannel, mapExistingRoles);
+            MessagesMain.günstlingMessage(privateChannel, mapExistingRoles, game);
         }
 
         endFirstNight();
@@ -492,9 +492,11 @@ public class SemiMainGameState extends GameState {
                 amountGoodPlayers++;
             } else if (!playerEntry.getValue().role.friendly) {
                 amountBadPlayers++;
-            } else if (!playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
-                amountWW++;
-            }
+                if (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
+                    amountWW++;
+                }
+            } 
+            
         }
         if (amountWW < 1) {
             // int winner: 1 = Dorfbewohner, 2 = Werwölfe
@@ -539,7 +541,7 @@ public class SemiMainGameState extends GameState {
         var mssgList = "";
         for (var playerset : map.entrySet()) {
             var player = playerset.getValue();
-            mssgList += "*" + player.user.getUsername() + "*  ";
+            mssgList += "*" + player.user.asMember(game.server.getId()).block().getDisplayName() + "*  ";
             mssgList += "ist ->  " + player.role.name;
             mssgList += "   am Leben: " + Boolean.toString(player.alive) + "\n";
         }
@@ -549,7 +551,7 @@ public class SemiMainGameState extends GameState {
     public void printPlayers(MessageChannel msgChannel, List<Player> list) {
         var mssgList = "";
         for (var player : list) {
-            mssgList += player.user.getUsername() + ": ";
+            mssgList += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ";
             mssgList += "ROLE(" + player.role.name + ") ";
             mssgList += Boolean.toString(player.alive) + "\n";
         }
@@ -560,7 +562,7 @@ public class SemiMainGameState extends GameState {
         var mssgPlayerList = "";
         for (var entry : game.livingPlayers.entrySet()) {
 
-            mssgPlayerList += entry.getValue().user.getUsername() + " ist ein/e " + entry.getValue().role.name + "\n";
+            mssgPlayerList += entry.getValue().user.asMember(game.server.getId()).block().getDisplayName() + " ist ein/e " + entry.getValue().role.name + "\n";
         }
         Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste", mssgPlayerList);
     }

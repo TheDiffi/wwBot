@@ -84,7 +84,7 @@ public class LobbyState extends GameState {
             // falls der User noch nicht registriert ist, wird er hinugefügt
             if (listJoinedUsers.indexOf(user) == -1 && bool) {
                 listJoinedUsers.add(user);
-                msgChannel.createMessage(user.getUsername() + " ist beigetreten!").block();
+                msgChannel.createMessage(user.asMember(game.server.getId()).block().getDisplayName() + " ist beigetreten!").block();
             } else if (!bool) {
                 msgChannel.createMessage("You cannot join if you are the Moderator").block();
             } else {
@@ -102,7 +102,7 @@ public class LobbyState extends GameState {
             // falls der user in der liste ist, wird er entfernt
             if (listJoinedUsers.indexOf(user) != -1) {
                 listJoinedUsers.remove(user);
-                msgChannel.createMessage(user.getUsername() + " ist ausgetreten").block();
+                msgChannel.createMessage(user.asMember(game.server.getId()).block().getDisplayName() + " ist ausgetreten").block();
             } else {
                 msgChannel.createMessage("looks like you're already not in the game").block();
             }
@@ -157,7 +157,7 @@ public class LobbyState extends GameState {
 
             // prints the moderator if there is one
             if (!gameRuleAutomatic && userModerator != null) {
-                msgChannel.createMessage("Moderator: " + userModerator.getUsername());
+                msgChannel.createMessage("Moderator: " + userModerator.asMember(game.server.getId()).block().getDisplayName());
             } else if (!gameRuleAutomatic && userModerator == null) {
                 msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
             }
@@ -285,7 +285,7 @@ public class LobbyState extends GameState {
             if (!gameRuleAutomatic && !isJoined) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN,
-                        " " + event.getMessage().getAuthor().get().getUsername() + " ist der Moderator", "");
+                        " " + event.getMessage().getAuthor().get().asMember(game.server.getId()).block().getDisplayName() + " ist der Moderator", "");
             } else if (isJoined) {
                 msgChannel.createMessage(
                         "Es sieht aus als wärst du dem Spiel beigetreten, benutze den Command \"&leave\" um Moderator zu werden")

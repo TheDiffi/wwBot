@@ -48,10 +48,10 @@ public class MainGameState extends GameState {
             var mssg = "";
             mssg += "Die Werwölfe sind: ";
             for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                mssg += mapExistingRoles.get("Werwolf").get(i).user.getUsername() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName() + " ";
             }
             if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                mssg += mapExistingRoles.get("Werwolf").get(0).user.getUsername() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName() + " ";
             }
 
             Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
@@ -68,37 +68,30 @@ public class MainGameState extends GameState {
 
             PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
                 var succsess = false;
+               
                 if (parameters != null && parameters.size() == 2 && parameters.get(0) != parameters.get(1)) {
-                    Player person1 = null;
-                    Player person2 = null;
-                    int found = 0;
+                    var person1 = Globals.removeDash(parameters.get(0));
+                    var person2 = Globals.removeDash(parameters.get(1));
+                    Player firstLover = null;
+                    Player secondLover = null;
 
-                    for (var player : mapPlayers.entrySet()) {
-                        if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(0))) {
-                            person1 = player.getValue();
-                            found++;
-                        }
-                    }
-                    for (var player : mapPlayers.entrySet()) {
-                        if (player.getValue().user.getUsername().equalsIgnoreCase(parameters.get(1))) {
-                            person2 = player.getValue();
-                            found++;
+                    firstLover = Globals.findPlayerByName(person1, mapPlayers, game);
+                    secondLover = Globals.findPlayerByName(person2, mapPlayers, game);
 
-                        }
-                    }
-                    if (found == 2 && person1 != null && person2 != null) {
+                 
+                    if (firstLover != null && secondLover != null) {
                         succsess = true;
-                        person1.inLoveWith = person2;
-                        person2.inLoveWith = person1;
-                        Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + person1.user.getUsername() + " und "
-                                + person2.user.getUsername() + " haben sich unsterblich verliebt");
+                        firstLover.inLoveWith = secondLover;
+                        secondLover.inLoveWith = firstLover;
+                        Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername() + " und "
+                                + secondLover.user.getUsername() + " haben sich unsterblich verliebt");
                         game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-                        person1.user.getPrivateChannel().block().createMessage("Du fällst mit **"
-                                + person2.user.getUsername()
+                        firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **"
+                                + secondLover.user.getUsername()
                                 + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
-                        person2.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
-                                + person1.user.getUsername()
+                                secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
+                                + firstLover.user.getUsername()
                                 + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
 
