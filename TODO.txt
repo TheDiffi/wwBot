@@ -147,7 +147,7 @@ NEW CARD IDEAS:
 LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
 THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
 Stalker: kennt das liebespaar
-
+Friedhofwächter, kann jede Nacht einem toden eine (ja/nein/ich kann deine frage nicht antworten) frage stellen. (tode müssen die warheis sagen) (+3)
 
 
 
@@ -156,10 +156,10 @@ Stalker: kennt das liebespaar
 
 WICHTIG!!!! (de mit xx sein schun erledigt, ober no zu testn)
 
-        !!CRITICAL: cant vote for players with whitespace (mby fixed)
-        !!CRITICAL: detect when game end doesent work (mby fixed)
+!!CRITICAL: cant vote for players with whitespace (mby fixed)
+!!CRITICAL: detect when game end doesent work (mby fixed)
 
-        
+        add vote none
         count votes in player object
         add Showvotes
         (if not auto set Nickname to Moderator) 
