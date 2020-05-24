@@ -83,7 +83,7 @@ public class Globals {
 			for (var entry : game.livingPlayers.entrySet()) {
 				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
 
-				mssgPlayerList += entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
+				mssgPlayerList += entry.getValue().name
 						+ " ---> " + entry.getValue().role.name + "\n";
 
 				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
@@ -143,7 +143,7 @@ public class Globals {
 		var found = 0;
 		for (var entry : map.entrySet()) {
 
-			var displayName = entry.getValue().user.asMember(game.server.getId()).block().getDisplayName();
+			var displayName = entry.getValue().name;
 			var userName = entry.getValue().user.getUsername();
 
 			if (displayName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name)) {

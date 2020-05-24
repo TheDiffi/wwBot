@@ -3,12 +3,16 @@ package wwBot;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.PermissionOverwrite;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.MessagesMain;
 
@@ -31,9 +35,8 @@ public class Main {
 
         // looks at every message and calls "handleCommands"
 
-        client.getEventDispatcher().on(MessageCreateEvent.class)
-                .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false))
-                .subscribe(event -> {
+        client.getEventDispatcher().on(MessageCreateEvent.class).filter(message -> message.getMessage().getAuthor()
+                .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
                     try {
                         handleCommands(event);
                     } catch (Exception ex) {
@@ -60,8 +63,36 @@ public class Main {
 
         // test (remove after)
         if (parameters.get(0).equalsIgnoreCase(prefix + "test")) {
+            event.getMessage().getChannel().block().createMessage("test").block();
 
-            
+
+
+
+            var guild = event.getGuild().block();
+            var defaultRole = guild.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                    .get();
+
+            var overrides = new HashSet<PermissionOverwrite>();
+            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL)));
+            overrides.add(PermissionOverwrite.forMember(event.getMember().get().getId(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+
+            var channel = event.getGuild().block().createTextChannel(spec -> {
+
+                spec.setPermissionOverwrites(overrides);
+                spec.setName("testchannel");
+            }).block();
+
+            channel.edit(spec->{
+                spec.setPermissionOverwrites(overrides);
+            });
+
+
+
+
+
+
             event.getMember().get().edit(a -> a.setMute(true)).block();
             event.getMessage().getChannel().block().createEmbed(spec -> {
                 spec.setImage("https://i.imgur.com/9aJeWxK.jpg").setFooter("test4",
@@ -74,7 +105,6 @@ public class Main {
                                 "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
             }).block();
         }
-        
 
         // prüft ob die Nachricht keine DM(DirectMessage) ist
         if (event.getGuildId().isPresent()) {
@@ -202,9 +232,14 @@ public class Main {
     }
 
     private static void handleMemes(MessageCreateEvent event, List<String> parameters) {
+        var content = event.getMessage().getContent().get();
+        if (event.getMessage().getContent().get().contains("Hey @WerwolfBot! lets do this game together, shall we?")) {
+            event.getMessage().getChannel().block().createMessage("Oh, Heeey " + event.getMember().get().getMention()
+                    + "! Didiididn't see you the-re 😳. Yeah.. let's do this~! *blushes*").block();
+        }
+
         if (parameters.get(0).equalsIgnoreCase("F")) {
 
-            event.getMember().get().edit(a -> a.setMute(true)).block();
             event.getMessage().getChannel().block().createEmbed(spec -> {
                 spec.setImage("https://i.imgur.com/9aJeWxK.jpg");
 
@@ -213,12 +248,18 @@ public class Main {
         }
 
         // test (remove after)
-        if (parameters.get(0).equalsIgnoreCase("WE")) {
+        if (event.getMessage().getContent().get().indexOf("I ") != -1) {
 
-            event.getMember().get().edit(a -> a.setMute(true)).block();
-            event.getMessage().getChannel().block().createEmbed(spec -> {
-                spec.setImage("https://i.imgur.com/WKrn9GI.jpg");
+            event.getMessage().getChannel().block().createMessage(spec -> {
+                var mssg = "> ..." + content.substring(content.indexOf("I") / 2);
+                var youmeanttosay = content.substring(content.indexOf("I"), content.length());
+                mssg += "\nI think you meant to say: " + youmeanttosay.replace("I", "WE");
+                spec.setContent(mssg);
+                spec.setEmbed(b -> {
+                    b.setImage(
+                            "https://cdn.discordapp.com/attachments/545307459691085828/714142918226477136/download.jpg");
 
+                });
             }).block();
 
         }

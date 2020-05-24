@@ -15,6 +15,8 @@ import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 
+// ! WORK IN PROGRESS !
+
 public class MainGameState extends GameState {
 
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
@@ -48,10 +50,10 @@ public class MainGameState extends GameState {
             var mssg = "";
             mssg += "Die Werwölfe sind: ";
             for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(i).name + " ";
             }
             if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(0).name + " ";
             }
 
             Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
@@ -84,14 +86,14 @@ public class MainGameState extends GameState {
                         firstLover.inLoveWith = secondLover;
                         secondLover.inLoveWith = firstLover;
                         Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername() + " und "
-                                + secondLover.user.getUsername() + " haben sich unsterblich verliebt");
+                                + secondLover.name + " haben sich unsterblich verliebt");
                         game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
                         firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **"
-                                + secondLover.user.getUsername()
+                                + secondLover.name
                                 + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
                                 secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
-                                + firstLover.user.getUsername()
+                                + firstLover.name
                                 + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
 

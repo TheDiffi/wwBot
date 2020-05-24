@@ -11,7 +11,6 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
-import wwBot.Interfaces.PrivateCommand;
 
 public class Day {
 
@@ -23,12 +22,19 @@ public class Day {
 
     Day(Game getGame) {
         game = getGame;
+
+        // loads all Commands into the mapCommands
         registerDayCommands();
+
+        // registers an empty Player; neccessary for the voting system
         emptyPlayer = new Player();
         emptyPlayer.name = "Nobody";
 
     }
 
+//--------------------- Commands ------------------------
+
+    // loads all of the following Commands into mapCommands
     public void registerDayCommands() {
         var mapRegisteredCards = Globals.mapRegisteredCards;
 
@@ -51,9 +57,7 @@ public class Day {
 
             var mssg = "";
             for (var entry : mapVotes.entrySet()) {
-                mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für "
-                        + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
-                        + " abgestimmt \n";
+                mssg += entry.getKey().name + " hat für " + entry.getValue().name + " abgestimmt \n";
             }
             Globals.createEmbed(msgChannel, Color.WHITE, "Gewählt haben ", mssg);
         };
@@ -61,12 +65,12 @@ public class Day {
         mapCommands.put("listvotes", listVotesCommand);
         mapCommands.put("showvotes", listVotesCommand);
 
-        // registers the vote command
+
+        // if &vote is called, the programm saves a map with the person who voted for as
+        // key and the person voted for as value
+        // an previous vote by the same person gets overwritten
         Command voteCommand = (event, parameters, msgChannel) -> {
 
-            // if &vote is called, the programm saves a map with the person who voted for as
-            // key and the person voted for as value
-            // checks if the person already voted and if true changes the Vote
             var voterUser = event.getMessage().getAuthor().get();
             var allowedToVote = false;
             var voter = new Player();
@@ -76,19 +80,21 @@ public class Day {
                 if (entry.getValue().user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
                     voter = entry.getValue();
+                    break;
                 }
             }
 
             if (allowedToVote) {
+                // finds the wanted player
                 Player votedFor = null;
                 var recievedName = "";
-                // checks the syntax and finds the wanted player
+                // checks the syntax
                 if (parameters != null && parameters.size() != 0) {
                     recievedName = Globals.removeDash(parameters.get(0));
                     // if the user votes for no one
                     if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
-                            || recievedName.equalsIgnoreCase("null")|| recievedName.equalsIgnoreCase("nobody")) {
-                                votedFor = emptyPlayer; 
+                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody")) {
+                        votedFor = emptyPlayer;
                     } else {
                         // finds the player
                         votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
@@ -96,51 +102,71 @@ public class Day {
 
                 } else {
                     // wrong syntax
-                    event.getMessage().getChannel().block().createMessage("Wrong syntax").block();
+                    MessagesMain.errorWrongSyntax(game, msgChannel);
                 }
 
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-
                 } else if (!votedFor.alive) {
                     event.getMessage().getChannel().block()
                             .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
                             .block();
-                    // if the player is alive, he and the voter get put into a map (Key = voter,
-                    // Value = votedFor)
-                } else if (votedFor.alive) {
-                    // if the same key gets put in a second time, the first value is dropped
+
+                // if the player is alive, calls addVote
+                // if the same key gets put in a second time, the first value is dropped
+                } else if (votedFor.alive) { 
                     addVote(event, voter, votedFor);
                 }
+
                 // counts the votes: checks if all players have voted and if there is a mojority
                 countVotes();
+
             } else if (!allowedToVote) {
-                event.getMessage().getChannel().block().createMessage("You are not allowed to vote!").block();
+                MessagesMain.errorNotAllowedToVote(game, msgChannel);
 
             }
         };
         mapCommands.put("vote", voteCommand);
 
+
         // lynch calls killPlayer() as killed by the villagers
         Command lynchCommand = (event, parameters, msgChannel) -> {
+            //checks if the moderator called this command
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                //checks the syntax
                 if (parameters != null && parameters.size() == 1) {
+                    //finds the wanted player by name
+                    var causedByRole = mapRegisteredCards.get("Dorfbewohner");
                     var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
                             game.livingPlayers, game);
                     if (unluckyPerson != null) {
-                        game.gameState.killPlayer(unluckyPerson, mapRegisteredCards.get("Dorfbewohner"));
-                        msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden").block();
+                        //checks if the player is alive
+                        if (unluckyPerson.alive) {
+                            //calls check if dies to consider special roles
+                            if (game.gameState.checkIfDies(unluckyPerson, causedByRole)) {
+                                //lynch kills the player with "Dorfbewohner" being the cause
+                                game.gameState.killPlayer(unluckyPerson, causedByRole);
+                                //checks if the conditions for GameOver are met
+                                game.gameState.checkIfGameEnds();
+                                msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden")
+                                        .block();
+                            }
+                        } else {
+                            MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+                        }
+
                     } else {
-                        msgChannel.createMessage("Player konnte nicht gefunden werden, probiere es noch einmal.")
-                                .block();
+                        MessagesMain.errorPlayerNotFound(msgChannel);
                     }
+
                 } else {
-                    msgChannel.createMessage("wrong syntax, try again").block();
+                    MessagesMain.errorWrongSyntax(game, msgChannel);
                 }
             }
         };
         mapCommands.put("lynch", lynchCommand);
+
 
         // calls endDay()
         Command endDayCommand = (event, parameters, msgChannel) -> {
@@ -148,12 +174,14 @@ public class Day {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 endDay();
             } else {
-                msgChannel.createMessage("only the moderator may use this command").block();
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         mapCommands.put("endDay", endDayCommand);
 
     }
+
+    //--------------------- Voting System ------------------------
 
     // counts the votes and lynchs the player with the most
     private void countVotes() {
@@ -166,16 +194,16 @@ public class Day {
             // searches for the person with the highest votes. If there are more than one
             // hasMajority gets set to false
             for (var entry : mapAmountVotes.entrySet()) {
-                // 
-                if(!entry.getKey().name.equals("Nobody")){
-                if (amount == entry.getValue()) {
-                    hasMajority = false;
-                } else if (amount < entry.getValue()) {
-                    mostVoted = entry.getKey();
-                    hasMajority = true;
-                    amount = entry.getValue();
+                //
+                if (!entry.getKey().name.equals("Nobody")) {
+                    if (amount == entry.getValue()) {
+                        hasMajority = false;
+                    } else if (amount < entry.getValue()) {
+                        mostVoted = entry.getKey();
+                        hasMajority = true;
+                        amount = entry.getValue();
+                    }
                 }
-            }
             }
 
             if (!hasMajority && mostVoted != null) {
@@ -186,17 +214,6 @@ public class Day {
 
             if (hasMajority && mostVoted != null) {
                 suggestMostVoted(mostVoted);
-
-                // gibt ein Embed mit den Votes aus
-                var mssg = "";
-                for (var entry : mapVotes.entrySet()) {
-                    mssg += entry.getKey().user.asMember(game.server.getId()).block().getDisplayName() + " hat für "
-                            + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
-                            + " abgestimmt \n";
-                }
-
-                Globals.createEmbed(game.mainChannel, Color.WHITE, "Die Würfel sind gefallen \nAuf dem Schafott steht: "
-                        + mostVoted.user.asMember(game.server.getId()).block().getDisplayName(), mssg);
             }
         }
     }
@@ -213,7 +230,6 @@ public class Day {
 
         }
 
-
         // adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
         if (tempAmount != null && tempAmount > 0) {
@@ -225,19 +241,34 @@ public class Day {
 
         // registers who voted for who
         mapVotes.put(voter, votedFor);
-        Globals.createMessage(game.mainChannel,
-                voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!", false);
+        if (votedFor.name.equals("Nobody")) {
+            Globals.createMessage(game.mainChannel, voter.user.getMention() + " will niemanden lynchen.", false);
+        } else {
+            Globals.createMessage(game.mainChannel,
+                    voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!", false);
+        }
 
     }
 
     private void suggestMostVoted(Player mostVoted) {
         // suggests the most Voted Player to the Mod
         MessagesMain.suggestMostVoted(game, mostVoted);
+        // gibt ein Embed mit den Votes aus
+        var mssg = "";
+        for (var entry : mapVotes.entrySet()) {
+            mssg += entry.getKey().name + " hat für " + entry.getValue().name + " abgestimmt \n";
+        }
+
+        Globals.createEmbed(game.mainChannel, Color.WHITE,
+                "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.name, mssg);
         // some cards can interfere in this stage (Prinz, Märtyrerin)
         checkLynchConditions();
 
     }
 
+//--------------------- Other ------------------------
+
+    
     private void checkLynchConditions() {
         for (var entry : game.livingPlayers.entrySet()) {
             if (entry.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
@@ -249,12 +280,7 @@ public class Day {
         }
     }
 
-    private void endDay() {
 
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-        game.gameState.changeDayPhase();
-
-    }
 
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
         // mutes all players at night
@@ -267,6 +293,13 @@ public class Day {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void endDay() {
+
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
+        game.gameState.changeDayPhase();
+
     }
 
 }

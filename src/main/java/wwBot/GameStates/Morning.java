@@ -49,7 +49,7 @@ public class Morning {
                 game.gameState.changeDayPhase();
 
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         mapCommands.put("endMorning", startVotingPhaseCommand);

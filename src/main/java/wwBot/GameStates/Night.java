@@ -10,7 +10,6 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
-import wwBot.Interfaces.PrivateCommand;
 
 public class Night {
 	public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
@@ -20,27 +19,11 @@ public class Night {
 	public Night(Game getGame) {
 		game = getGame;
 		registerNightCommands();
-
-		// first: Informatial message
-		// second: sorted list of who tp call
-		// third: another message explaining how to kill someone
 		initiateNight();
 
-
 	}
 
-	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		// mutes all players at night
-		for (var player : mapPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(isMuted).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+
 
 	private void initiateNight() {
 		// sorts all roles by when they wake up in a list (i starts at 0 => all Roles
@@ -58,6 +41,8 @@ public class Night {
 			MessagesMain.onNightSemi(game, sortedRoles);
 		}
 	}
+
+	//--------------- Commands -------------------
 
 	public void registerNightCommands() {
 
@@ -87,36 +72,30 @@ public class Night {
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				endNight();
 			} else {
-				msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
 			}
 		};
 		mapCommands.put("endNight", endNightCommand);
+		mapCommands.put("next", endNightCommand);
+		mapCommands.put("end", endNightCommand);
 
-		/*
-		 * // lets the moderator kill a person and checks the consequences Command
-		 * killCommand = (event, parameters, msgChannel) -> { // only the moderator can
-		 * use this command if
-		 * (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId
-		 * ())) { if (parameters.size() == 2) { // finds the requested Player var
-		 * unluckyPlayer = Globals.findPlayerByName(parameters.get(0),
-		 * game.livingPlayers); // gets the cause var causedBy = parameters.get(1); //
-		 * finds the cause (role) var causedByRole = mapRegisteredCards.get(causedBy);
-		 * if (unluckyPlayer != null && (causedByRole != null ||
-		 * causedBy.equalsIgnoreCase("null"))) { killPlayer(unluckyPlayer,
-		 * causedByRole); } else {
-		 * event.getMessage().getChannel().block().createMessage(
-		 * "Ich verstehe dich nicht :/ Dein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)"
-		 * ) .block(); }
-		 * 
-		 * } else { event.getMessage().getChannel().block().createMessage(
-		 * "Ich verstehe dich nicht :/ Dein Command sollte so aussehen: \n&kill <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)"
-		 * ) .block();
-		 * 
-		 * } } else { event.getMessage().getChannel().block().
-		 * createMessage("You have no permission for this command") .block(); } };
-		 * mapCommands.put("kill", killCommand);
-		 */
+		
 
+	}
+
+	//--------------- Other -------------------
+
+	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
+		// mutes all players at night
+		for (var player : mapPlayers.entrySet()) {
+			try {
+				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+					a.setMute(isMuted).setDeafen(false);
+				}).block();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void endNight() {
