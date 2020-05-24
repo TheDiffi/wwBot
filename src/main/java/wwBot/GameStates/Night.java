@@ -28,7 +28,6 @@ public class Night {
 
 
 		// TODO: tell WW and mod about this channel
-		// TODO: fullmute all Players until sunrise
 
 	}
 
