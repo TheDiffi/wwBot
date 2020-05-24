@@ -51,7 +51,7 @@ public class Game {
         var requestedCommand = parameters.remove(0);
         requestedCommand = requestedCommand.substring(1);
         boolean found = false;
-        if(msgChannel == null){
+        if (msgChannel == null) {
             msgChannel = mainChannel;
         }
 
@@ -92,7 +92,6 @@ public class Game {
             msgChannel.createMessage(mssg).block();
         };
         gameCommands.put("showCommands", showCommandsCommand);
-        
 
         // basically !help
         Command helpCommand = (event, parameters, msgChannel) -> {

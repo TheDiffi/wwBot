@@ -81,15 +81,18 @@ public class Globals {
 			mssgPlayerList += "-----------------" + title + "----------------------  \n";
 
 			for (var entry : game.livingPlayers.entrySet()) {
-				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
+				if (!entry.getValue().alive) {
+					mssgPlayerList += "~~";
+				}
 
-				mssgPlayerList += entry.getValue().name
-						+ " ---> " + entry.getValue().role.name + "\n";
+				mssgPlayerList += entry.getValue().name + " ---> " + entry.getValue().role.name + "\n";
 
-				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
+				if (!entry.getValue().alive) {
+					mssgPlayerList += "~~";
+				}
 			}
 		}
-		
+
 		return mssgPlayerList;
 
 	}

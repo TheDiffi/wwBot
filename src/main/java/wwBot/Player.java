@@ -1,4 +1,5 @@
 package wwBot;
+
 import discord4j.core.object.entity.User;
 
 public class Player {
@@ -8,9 +9,8 @@ public class Player {
     public boolean alive = true;
     public Player inLoveWith;
 
-    public Player(){
-        
+    public Player() {
+
     }
-    
-  
-} 
+
+}

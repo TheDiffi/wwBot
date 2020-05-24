@@ -112,8 +112,6 @@ public class LobbyState extends GameState {
         gameStateCommands.put("joinedUsers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoined", listJoinedPlayersCommand);
 
-        
-
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
         Command buildDeckCommand = (event, parameters, msgChannel) -> {
 

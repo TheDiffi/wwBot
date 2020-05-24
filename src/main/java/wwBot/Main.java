@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        // inizialisiert die Global klasse
+        // initialisiert die Global klasse
         Globals.loadGlobals();
 
         // speichert den Prefix in einer Variable
@@ -59,52 +59,8 @@ public class Main {
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = Arrays.asList(messageContent.split(" "));
 
+        // handles the Memes ^.^
         handleMemes(event, parameters);
-
-        // test (remove after)
-        if (parameters.get(0).equalsIgnoreCase(prefix + "test")) {
-            event.getMessage().getChannel().block().createMessage("test").block();
-
-
-
-
-            var guild = event.getGuild().block();
-            var defaultRole = guild.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
-                    .get();
-
-            var overrides = new HashSet<PermissionOverwrite>();
-            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-                    PermissionSet.of(Permission.VIEW_CHANNEL)));
-            overrides.add(PermissionOverwrite.forMember(event.getMember().get().getId(),
-                    PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-
-            var channel = event.getGuild().block().createTextChannel(spec -> {
-
-                spec.setPermissionOverwrites(overrides);
-                spec.setName("testchannel");
-            }).block();
-
-            channel.edit(spec->{
-                spec.setPermissionOverwrites(overrides);
-            });
-
-
-
-
-
-
-            event.getMember().get().edit(a -> a.setMute(true)).block();
-            event.getMessage().getChannel().block().createEmbed(spec -> {
-                spec.setImage("https://i.imgur.com/9aJeWxK.jpg").setFooter("test4",
-                        "https://cdn.discordapp.com/attachments/545307459691085828/709058905237356554/Werwolf.jpg")
-                        .setTitle("title")
-                        .setAuthor("by me",
-                                "https://discord.com/developers/docs/resources/channel#channel-object-channel-types",
-                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png")
-                        .setThumbnail(
-                                "https://cdn.discordapp.com/attachments/545307459691085828/708094976990642326/Werwolf_bild.png");
-            }).block();
-        }
 
         // prüft ob die Nachricht keine DM(DirectMessage) ist
         if (event.getGuildId().isPresent()) {

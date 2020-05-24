@@ -32,7 +32,7 @@ public class Day {
 
     }
 
-//--------------------- Commands ------------------------
+    // --------------------- Commands ------------------------
 
     // loads all of the following Commands into mapCommands
     public void registerDayCommands() {
@@ -64,7 +64,6 @@ public class Day {
         mapCommands.put("votes", listVotesCommand);
         mapCommands.put("listvotes", listVotesCommand);
         mapCommands.put("showvotes", listVotesCommand);
-
 
         // if &vote is called, the programm saves a map with the person who voted for as
         // key and the person voted for as value
@@ -113,9 +112,9 @@ public class Day {
                             .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
                             .block();
 
-                // if the player is alive, calls addVote
-                // if the same key gets put in a second time, the first value is dropped
-                } else if (votedFor.alive) { 
+                    // if the player is alive, calls addVote
+                    // if the same key gets put in a second time, the first value is dropped
+                } else if (votedFor.alive) {
                     addVote(event, voter, votedFor);
                 }
 
@@ -129,25 +128,24 @@ public class Day {
         };
         mapCommands.put("vote", voteCommand);
 
-
         // lynch calls killPlayer() as killed by the villagers
         Command lynchCommand = (event, parameters, msgChannel) -> {
-            //checks if the moderator called this command
+            // checks if the moderator called this command
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                //checks the syntax
+                // checks the syntax
                 if (parameters != null && parameters.size() == 1) {
-                    //finds the wanted player by name
+                    // finds the wanted player by name
                     var causedByRole = mapRegisteredCards.get("Dorfbewohner");
                     var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
                             game.livingPlayers, game);
                     if (unluckyPerson != null) {
-                        //checks if the player is alive
+                        // checks if the player is alive
                         if (unluckyPerson.alive) {
-                            //calls check if dies to consider special roles
+                            // calls check if dies to consider special roles
                             if (game.gameState.checkIfDies(unluckyPerson, causedByRole)) {
-                                //lynch kills the player with "Dorfbewohner" being the cause
+                                // lynch kills the player with "Dorfbewohner" being the cause
                                 game.gameState.killPlayer(unluckyPerson, causedByRole);
-                                //checks if the conditions for GameOver are met
+                                // checks if the conditions for GameOver are met
                                 game.gameState.checkIfGameEnds();
                                 msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden")
                                         .block();
@@ -167,7 +165,6 @@ public class Day {
         };
         mapCommands.put("lynch", lynchCommand);
 
-
         // calls endDay()
         Command endDayCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
@@ -181,7 +178,7 @@ public class Day {
 
     }
 
-    //--------------------- Voting System ------------------------
+    // --------------------- Voting System ------------------------
 
     // counts the votes and lynchs the player with the most
     private void countVotes() {
@@ -266,9 +263,8 @@ public class Day {
 
     }
 
-//--------------------- Other ------------------------
+    // --------------------- Other ------------------------
 
-    
     private void checkLynchConditions() {
         for (var entry : game.livingPlayers.entrySet()) {
             if (entry.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
@@ -279,8 +275,6 @@ public class Day {
             }
         }
     }
-
-
 
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
         // mutes all players at night

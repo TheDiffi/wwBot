@@ -28,7 +28,7 @@ public class MessagesMain {
                                                 + prefix
                                                 + "join\" dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit \""
                                                 + prefix
-                                                + "Start\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benüzt oder du nicht weißt was du tun sollst, tippe \""
+                                                + "Start\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benutzt oder du nicht weißt was du tun sollst, tippe \""
                                                 + prefix + "help\".",
                                 false);
 
@@ -45,7 +45,7 @@ public class MessagesMain {
         public static void onGameStart(Game game) {
 
                 // verkündet den Start der ersten Nacht
-                Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werölfe von Düsterwald", "");
+                Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald", "");
 
                 Globals.createMessage(game.mainChannel,
                                 "Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.",
@@ -109,19 +109,19 @@ public class MessagesMain {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
                                 "Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg);
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Wichtig!",
-                                "Töte die Player mit \"&kill\" erst im Morgengrauen! Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgiebst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
+                                "Töte die Player mit \"&kill\" erst im Morgengrauen! Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
         }
 
         public static void onMorningAuto(Game game) {
                 Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
-                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnen gegangen sein?");
         }
 
         public static void onMorningSemi(Game game) {
                 Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
-                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnenen gegangen sein?");
+                                "Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnen gegangen sein?");
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.ORANGE, "MORGEN",
-                                "```In dieser Phase tötest du die Spieler welche in der voherigen Nacht getötet wurden.```\nBeende diese Phase mit \""
+                                "```In dieser Phase tötest du die Spieler welche in der vorherigen Nacht getötet wurden.```\nBeende diese Phase mit \""
                                                 + prefix + "endMorning\" ");
         }
 
@@ -194,7 +194,7 @@ public class MessagesMain {
 
         public static void wwInfection(Game game) {
                 Globals.createMessage(game.mainChannel,
-                                "Die Werwölfe wurden infiziert und dürfen in der nägsten Nacht niemanden töten", true);
+                                "Die Werwölfe wurden infiziert und dürfen in der nächsten Nacht niemanden töten", true);
 
         }
 
@@ -245,8 +245,8 @@ public class MessagesMain {
 
         public static void suggestMostVoted(Game game, Player mostVoted) {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
-                                "Alle Spieler Haben Gewählt!", "Auf dem Schaffott steht *" + mostVoted.user.getMention()
-                                                + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nMit \"&endDay\" kanns du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du acuh gleich mit &endDay fortfahren)");
+                                "Alle Spieler Haben Gewählt!", "Auf dem Schafott steht *" + mostVoted.user.getMention()
+                                                + "* \nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nMit \"&endDay\" kannst du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du auch gleich mit &endDay fortfahren)");
         }
 
         // ---------HELP MESSAGES--------------------------------------------
@@ -255,7 +255,7 @@ public class MessagesMain {
                 var mssg = "*---------------------------*";
                 mssg += "\n*" + prefix + "help*: TODO: finde gute formulierung";
                 mssg += "\n*" + prefix + "showCommands*: zeigt dir die Liste mit den zurzeit verfügbaren Commands";
-                mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obrigen Commands nach hilfe wenn du nicht weiter weißt🙂";
+                mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obigen Commands nach hilfe wenn du nicht weiter weißt🙂";
                 return mssg;
         }
 
@@ -282,27 +282,27 @@ public class MessagesMain {
                                 "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
                                                 + "join\" eingebt. \nSobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit \""
                                                 + prefix
-                                                + "buildDeck\" generiert mein algorythmus automatisch ein faires Deck. \n Dieses kann anschließend mit \""
+                                                + "buildDeck\" generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit \""
                                                 + prefix + "addCard <Karte>\" und \"" + prefix
                                                 + "removeCard <Karte>\" bearbeitet werden. \nMit \"" + prefix
                                                 + "gamerule manual\" und \"" + prefix
-                                                + "gamerule automatic\"(coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manaul\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein(Coming soon)\n*Wenn alle Spieler beigetretn und ein Deck registriert wurde, lasse das Spiel mit \""
+                                                + "gamerule automatic\"(coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein(Coming soon)\n*Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit \""
                                                 + prefix + "start\" starten!*`",
                                 false);
         }
 
         public static void helpNightPhase(MessageCreateEvent event) {
-                var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschalten.\n";
+                var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschaltet.\n";
                 Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
         public static void helpFirstNightPhase(MessageCreateEvent event) {
-                var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschalten, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
+                var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschaltet, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
                 Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
         }
 
         public static void helpDayPhase(MessageCreateEvent event) {
-                var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+                var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
                                 + prefix
                                 + "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
                                 + prefix + "endDay\" kann der Moderator das Spiel beenden.";
@@ -339,7 +339,7 @@ public class MessagesMain {
                 event.getMessage().getChannel().block()
                                 .createMessage("Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\""
                                                 + prefix
-                                                + "kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verntwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
+                                                + "kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verantwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
                                 .block();
         }
 

@@ -23,8 +23,6 @@ public class Night {
 
 	}
 
-
-
 	private void initiateNight() {
 		// sorts all roles by when they wake up in a list (i starts at 0 => all Roles
 		// that dont wanke up are not added)
@@ -42,7 +40,7 @@ public class Night {
 		}
 	}
 
-	//--------------- Commands -------------------
+	// --------------- Commands -------------------
 
 	public void registerNightCommands() {
 
@@ -72,18 +70,16 @@ public class Night {
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				endNight();
 			} else {
-                MessagesMain.errorModOnlyCommand(msgChannel);
+				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
 		};
 		mapCommands.put("endNight", endNightCommand);
 		mapCommands.put("next", endNightCommand);
 		mapCommands.put("end", endNightCommand);
 
-		
-
 	}
 
-	//--------------- Other -------------------
+	// --------------- Other -------------------
 
 	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
 		// mutes all players at night

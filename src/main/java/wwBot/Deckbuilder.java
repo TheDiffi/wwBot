@@ -12,7 +12,6 @@ public class Deckbuilder {
 
         final var mapRegisteredCards = Globals.mapRegisteredCards;
 
-
         var totalValue = 0;
         var listDeck = new ArrayList<Card>();
 
@@ -54,10 +53,11 @@ public class Deckbuilder {
             var tempCardList = new ArrayList<Card>();
 
             // kalkuliert die differenz jeder Karte. Falls die differenz der Karte kleiner
-            // ist als die differenz der bisherigen wird sie in smallestDifferenceCard gespeichert.
+            // ist als die differenz der bisherigen wird sie in smallestDifferenceCard
+            // gespeichert.
 
             for (var card : mapRegisteredCards.values()) {
-                if (card.unique && !listDeck.contains(card)){
+                if (card.unique && !listDeck.contains(card)) {
                     if (smallestDifferenceCard == null || Math.abs(totalValue + card.value) < Math
                             .abs(totalValue + smallestDifferenceCard.value)) {
                         smallestDifferenceCard = card;
@@ -71,7 +71,6 @@ public class Deckbuilder {
                     tempCardList.add(card);
                 }
             }
-            
 
             // aus der liste wird zufällig ein Element ausgewählt und dem Deck hinzugefügt
             var rand = (int) (Math.random() * (tempCardList.size()));
@@ -83,7 +82,8 @@ public class Deckbuilder {
         return listDeck;
     }
 
-        //nimmt mit Berücksichtigung auf die Häufigkeit der Karten eine zufällige Karte und fügt sie dem Deck hinzu, falls sie noch nicht im Deck ist
+    // nimmt mit Berücksichtigung auf die Häufigkeit der Karten eine zufällige Karte
+    // und fügt sie dem Deck hinzu, falls sie noch nicht im Deck ist
     public static Card getRandomUniqueCard(int amount, Map<String, Card> mapRegisteredCards, List<Card> listDeck) {
 
         var probabilityMap = new ArrayList<Card>();

@@ -68,10 +68,10 @@ public class SemiMainGameState extends GameState {
             }
         };
         game.addPrivateCommand(userModerator.getId(), readyCommand);
-        
+
     }
 
-    //--------------------- Commands ----------------------------
+    // --------------------- Commands ----------------------------
 
     @Override
     public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
@@ -131,7 +131,7 @@ public class SemiMainGameState extends GameState {
             }
 
         } else {
-            event.getMessage().getChannel().block().createMessage("Only living Players have accssess to this Command")
+            event.getMessage().getChannel().block().createMessage("Only living Players have accesses to this Command")
                     .block();
             found = true;
         }
@@ -313,9 +313,7 @@ public class SemiMainGameState extends GameState {
 
     }
 
-
-
-    //-------------------- Kill System --------------------------
+    // -------------------- Kill System --------------------------
 
     public void killPlayer(Player unluckyPlayer, Card causedByRole) {
 
@@ -432,8 +430,7 @@ public class SemiMainGameState extends GameState {
         }
     }
 
-
-    //-------------------- First Night --------------------------
+    // -------------------- First Night --------------------------
 
     private void initiateFirstNight() {
 
@@ -501,8 +498,7 @@ public class SemiMainGameState extends GameState {
         game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
     }
 
-
-    //-------------------- Utility --------------------------
+    // -------------------- Utility --------------------------
 
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
         // mutes all players at night
@@ -546,7 +542,7 @@ public class SemiMainGameState extends GameState {
             spec.setPermissionOverwrites(overrides);
             spec.setName("Werwolf-Chat");
         }).block();
-        Globals.createEmbed(wwChat, Color.decode("#5499C7"), "Wilkommen im Werwolf-Chat",
+        Globals.createEmbed(wwChat, Color.decode("#5499C7"), "Willkommen im Werwolf-Chat",
                 "Dies ist ein Ort in dem die Werwölfe ungestört ihre Diskussionen durchführen können.");
         return wwChat;
     }
@@ -588,7 +584,7 @@ public class SemiMainGameState extends GameState {
         }).block();
 
         // Sends the first messages, explaining this Chat
-        Globals.createEmbed(deathChat, Color.decode("#5499C7"), "Wilkommen im Friedhof-Chat",
+        Globals.createEmbed(deathChat, Color.decode("#5499C7"), "Willkommen im Friedhof-Chat",
                 "Dies ist ein Ort um ungestört über das Spiel zu diskutieren.");
         printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler");
         return deathChat;
@@ -630,7 +626,7 @@ public class SemiMainGameState extends GameState {
     }
 
     private void reloadGameLists() {
-        // reloands the living Players
+        // reloads the living Players
         livingPlayers.clear();
         for (var player : game.mapPlayers.entrySet()) {
             if (player.getValue().alive) {
@@ -664,7 +660,7 @@ public class SemiMainGameState extends GameState {
         }
         // für jede hinzugefügte Rolle wird auch ein Eintrag in nightRolesDone
         // hinzugefügt, jeder Eintrag muss später auf true gesetzt werden, damit der
-        // Zykus fortfährt
+        // Zyklus fortfährt
         mapExistingRoles.put("Werwolf", listWerwölfe);
         mapExistingRoles.put("Seher", listSeher);
         mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
