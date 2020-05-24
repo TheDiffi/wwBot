@@ -3,16 +3,12 @@ package wwBot;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.PermissionOverwrite;
-import discord4j.core.object.util.Permission;
-import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.MessagesMain;
 
