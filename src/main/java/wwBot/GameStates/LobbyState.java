@@ -108,6 +108,11 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("joinedPlayers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedPlayers", listJoinedPlayersCommand);
+        gameStateCommands.put("listJoinedUsers", listJoinedPlayersCommand);
+        gameStateCommands.put("joinedUsers", listJoinedPlayersCommand);
+        gameStateCommands.put("listJoined", listJoinedPlayersCommand);
+
+        
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
         Command buildDeckCommand = (event, parameters, msgChannel) -> {
@@ -345,6 +350,7 @@ public class LobbyState extends GameState {
 
                         // creates a new player and fills the object
                         Player player = new Player();
+                        player.name = user.asMember(game.server.getId()).block().getDisplayName();
                         player.user = user;
                         var rand = (int) (Math.random() * tempDeck.size());
                         player.role = tempDeck.get(rand);

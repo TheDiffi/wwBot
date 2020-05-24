@@ -81,8 +81,12 @@ public class Globals {
 			mssgPlayerList += "-----------------" + title + "----------------------  \n";
 
 			for (var entry : game.livingPlayers.entrySet()) {
+				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
+
 				mssgPlayerList += entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
 						+ " ---> " + entry.getValue().role.name + "\n";
+
+				if(!entry.getValue().alive){mssgPlayerList+= "~~";}
 			}
 		}
 		
@@ -109,7 +113,7 @@ public class Globals {
 
 			}).block();
 		} else {
-			channel.createMessage("card not found").block();
+			channel.createMessage("Card not found").block();
 		}
 	}
 

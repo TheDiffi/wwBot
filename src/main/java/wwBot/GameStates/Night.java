@@ -27,13 +27,10 @@ public class Night {
 		initiateNight();
 
 
-		// TODO: tell WW and mod about this channel
-		// TODO: fullmute all Players until sunrise
-
 	}
 
 	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		//mutes all players at night
+		// mutes all players at night
 		for (var player : mapPlayers.entrySet()) {
 			try {
 				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
@@ -83,7 +80,6 @@ public class Night {
 		mapCommands.put("help", helpCommand);
 		mapCommands.put("hilfe", helpCommand);
 
-
 		// shows the moderator the list of players
 		Command endNightCommand = (event, parameters, msgChannel) -> {
 
@@ -96,8 +92,6 @@ public class Night {
 		};
 		mapCommands.put("endNight", endNightCommand);
 
-		
-
 		/*
 		 * // lets the moderator kill a person and checks the consequences Command
 		 * killCommand = (event, parameters, msgChannel) -> { // only the moderator can
@@ -106,8 +100,8 @@ public class Night {
 		 * ())) { if (parameters.size() == 2) { // finds the requested Player var
 		 * unluckyPlayer = Globals.findPlayerByName(parameters.get(0),
 		 * game.livingPlayers); // gets the cause var causedBy = parameters.get(1); //
-		 * finds the cause (role) var causedByRole = mapRegisteredCards.get(causedBy); if
-		 * (unluckyPlayer != null && (causedByRole != null ||
+		 * finds the cause (role) var causedByRole = mapRegisteredCards.get(causedBy);
+		 * if (unluckyPlayer != null && (causedByRole != null ||
 		 * causedBy.equalsIgnoreCase("null"))) { killPlayer(unluckyPlayer,
 		 * causedByRole); } else {
 		 * event.getMessage().getChannel().block().createMessage(
@@ -126,24 +120,9 @@ public class Night {
 	}
 
 	private void endNight() {
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
-				"Um zu bestätigen, dass bu bereit bist die Nacht zu beenden, tippe \"confirm\"", "");
-		//
-		PrivateCommand endNightCommand = (event, parameters, msgChannel) -> {
-			// checks if written by mod and if right command
-			if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
-					&& event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				game.gameState.changeDayPhase();
-				return true;
-				
-			} else {
-				return false;
-			}
-		};
-		game.addPrivateCommand(game.userModerator.getId(), endNightCommand);
-		
-	}
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
+		game.gameState.changeDayPhase();
 
-	
+	}
 
 }

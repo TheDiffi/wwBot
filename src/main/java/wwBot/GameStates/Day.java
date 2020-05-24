@@ -18,11 +18,14 @@ public class Day {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Player, Player> mapVotes = new HashMap<>();
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
+    Player emptyPlayer;
     Game game;
 
     Day(Game getGame) {
         game = getGame;
         registerDayCommands();
+        emptyPlayer = new Player();
+        emptyPlayer.name = "Nobody";
 
     }
 
@@ -52,8 +55,7 @@ public class Day {
                         + entry.getValue().user.asMember(game.server.getId()).block().getDisplayName()
                         + " abgestimmt \n";
             }
-            Globals.createEmbed(msgChannel, Color.WHITE,
-                    "Gewählt haben " , mssg);
+            Globals.createEmbed(msgChannel, Color.WHITE, "Gewählt haben ", mssg);
         };
         mapCommands.put("votes", listVotesCommand);
         mapCommands.put("listvotes", listVotesCommand);
@@ -83,8 +85,14 @@ public class Day {
                 // checks the syntax and finds the wanted player
                 if (parameters != null && parameters.size() != 0) {
                     recievedName = Globals.removeDash(parameters.get(0));
-                    // finds the player
-                    votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
+                    // if the user votes for no one
+                    if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
+                            || recievedName.equalsIgnoreCase("null")|| recievedName.equalsIgnoreCase("nobody")) {
+                                votedFor = emptyPlayer; 
+                    } else {
+                        // finds the player
+                        votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
+                    }
 
                 } else {
                     // wrong syntax
@@ -94,7 +102,7 @@ public class Day {
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-                   
+
                 } else if (!votedFor.alive) {
                     event.getMessage().getChannel().block()
                             .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
@@ -158,6 +166,8 @@ public class Day {
             // searches for the person with the highest votes. If there are more than one
             // hasMajority gets set to false
             for (var entry : mapAmountVotes.entrySet()) {
+                // 
+                if(!entry.getKey().name.equals("Nobody")){
                 if (amount == entry.getValue()) {
                     hasMajority = false;
                 } else if (amount < entry.getValue()) {
@@ -165,6 +175,7 @@ public class Day {
                     hasMajority = true;
                     amount = entry.getValue();
                 }
+            }
             }
 
             if (!hasMajority && mostVoted != null) {
@@ -194,7 +205,6 @@ public class Day {
         // der Vote des Bürgermeisters zählt mehr
         var voteValue = voter.role.name.equalsIgnoreCase("Bürgermeister") ? 1.5d : 1d;
 
-        // TODO: this dosnt work
         // if the voter already voted once, the old voteAmount gets removed
         if (mapVotes != null && mapVotes.containsKey(voter)) {
             var originallyVotedFor = mapVotes.get(voter);
@@ -202,6 +212,8 @@ public class Day {
             mapAmountVotes.put(originallyVotedFor, lessVotes);
 
         }
+
+
         // adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
         if (tempAmount != null && tempAmount > 0) {
@@ -238,34 +250,23 @@ public class Day {
     }
 
     private void endDay() {
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN,
-                "Wenn bu bereit bist, den Tag zu beenden tippe den Command \"confirm\"", "");
-        //
-        PrivateCommand endDayCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")
-                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-                game.gameState.changeDayPhase();
 
-                return true;
-            } else {
-                return false;
-            }
-        };
-        game.addPrivateCommand(game.userModerator.getId(), endDayCommand);
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
+        game.gameState.changeDayPhase();
+
     }
 
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		//mutes all players at night
-		for (var player : mapPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(isMuted).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+        // mutes all players at night
+        for (var player : mapPlayers.entrySet()) {
+            try {
+                player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
+                    a.setMute(isMuted).setDeafen(false);
+                }).block();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

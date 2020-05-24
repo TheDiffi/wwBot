@@ -57,7 +57,7 @@ public class SemiMainGameState extends GameState {
         userModerator.getPrivateChannel().block().createMessage(
                 "Deine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command **\"Ready\"** die erste Nacht Starten.")
                 .block();
-        printLivingRoles(userModerator.getPrivateChannel().block());
+        printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
 
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -157,16 +157,57 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 
+        // shows the moderator the list of players (alive or all)
+        Command printListCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                // checks if the syntax is correct
+                if (parameters != null && parameters.size() != 0) {
+                    var param = parameters.get(0);
+                    // if the user typed "Players" it prints a list of all players, if he typed
+                    // "Living" it prints only the living players
+                    if (param.equalsIgnoreCase("Players")) {
+                        printPlayersMap(userModerator.getPrivateChannel().block(), mapPlayers, "Spieler");
+                    } else if (param.equalsIgnoreCase("Living")) {
+                        printPlayersMap(userModerator.getPrivateChannel().block(), livingPlayers, "Noch Lebend");
+                    }
+                } else {
+                    userModerator.getPrivateChannel().block()
+                            .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\"").block();
+
+                }
+            } else {
+                event.getMessage().getChannel().block().createMessage("only the moderator can use this command")
+                        .block();
+            }
+
+        };
+        gameStateCommands.put("printList", printListCommand);
+        gameStateCommands.put("showList", printListCommand);
+
         // prints the living players and their role
         Command listPlayersCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                printLivingRoles(userModerator.getPrivateChannel().block());
+                printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
             } else {
                 msgChannel.createMessage("only the moderator can use this command");
             }
         };
         gameStateCommands.put("listPlayers", listPlayersCommand);
+
+        // prints the living players and their role
+        Command listLivingCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                printPlayersMap(userModerator.getPrivateChannel().block(), game.livingPlayers, "Alle Spieler");
+            } else {
+                msgChannel.createMessage("only the moderator can use this command");
+            }
+        };
+        gameStateCommands.put("listliving", listLivingCommand);
+        gameStateCommands.put("listlivingPlayers", listLivingCommand);
 
         // ummutes a specific player
         Command muteCommand = (event, parameters, msgChannel) -> {
@@ -259,34 +300,6 @@ public class SemiMainGameState extends GameState {
             }
         };
         gameStateCommands.put("kill", killCommand);
-
-        // shows the moderator the list of players (alive or all)
-        Command printListCommand = (event, parameters, msgChannel) -> {
-
-            // compares the Snowflake of the Author to the Snowflake of the Moderator
-            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                // checks if the syntax is correct
-                if (parameters != null && parameters.size() != 0) {
-                    var param = parameters.get(0);
-                    // if the user typed "Players" it prints a list of all players, if he typed
-                    // "Living" it prints only the living players
-                    if (param.equalsIgnoreCase("Players")) {
-                        printPlayers(userModerator.getPrivateChannel().block(), mapPlayers);
-                    } else if (param.equalsIgnoreCase("Living")) {
-                        printPlayers(userModerator.getPrivateChannel().block(), livingPlayers);
-                    }
-                } else {
-                    userModerator.getPrivateChannel().block()
-                            .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\"").block();
-
-                }
-            } else {
-                event.getMessage().getChannel().block().createMessage("only the moderator can use this command")
-                        .block();
-            }
-
-        };
-        gameStateCommands.put("printList", printListCommand);
 
     }
 
@@ -608,34 +621,13 @@ public class SemiMainGameState extends GameState {
         }
     }
 
-    public void printPlayers(MessageChannel msgChannel, Map<Snowflake, Player> map) {
-        var mssgList = "";
-        for (var playerset : map.entrySet()) {
-            var player = playerset.getValue();
-            mssgList += "*" + player.user.asMember(game.server.getId()).block().getDisplayName() + "*  ";
-            mssgList += "ist ->  " + player.role.name;
-            mssgList += "   am Leben: " + Boolean.toString(player.alive) + "\n";
-        }
-        Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
-    }
-
-    public void printPlayers(MessageChannel msgChannel, List<Player> list) {
-        var mssgList = "";
-        for (var player : list) {
-            mssgList += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ";
-            mssgList += "ROLE(" + player.role.name + ") ";
-            mssgList += Boolean.toString(player.alive) + "\n";
-        }
-        Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
-    }
-
-    private void printLivingRoles(MessageChannel channel) {
+    private void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title) {
         var tempList = new ArrayList<Player>();
-        for (var entry : game.mapPlayers.entrySet()) {
+        for (var entry : map.entrySet()) {
             tempList.add(entry.getValue());
         }
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste",
-                Globals.playerListToString(tempList, "Alle Spieler", game));
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "",
+                Globals.playerListToString(tempList, title, game));
     }
 
     @Override

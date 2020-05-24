@@ -26,7 +26,7 @@ public class MessagesMain {
 
                 Globals.createMessage(channel,
                                 "Guten Abend liebe Dorfbewohner. \nIch, euer Moderator, werde euch helfen die Werwolfinvasion zu stoppen.",
-                                true);
+                                false);
                 Globals.createMessage(channel,
                                 "Ihr befindet euch nun in der Lobby Phase. Hier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit \""
                                                 + prefix
@@ -45,13 +45,13 @@ public class MessagesMain {
 
                 Globals.createMessage(game.mainChannel,
                                 "Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.",
-                                true);
+                                false);
                 Globals.createMessage(game.mainChannel,
                                 "Im Mondschein bestimmen die Dorfbewohner das man dieser Situation ein Ende setzen muss. ",
-                                true);
+                                false);
                 Globals.createMessage(game.mainChannel,
                                 "Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht",
-                                true);
+                                false);
 
         }
 
@@ -322,11 +322,11 @@ public class MessagesMain {
         }
 
         public static void helpNightPhaseMod(MessageCreateEvent event) {
-                Globals.createMessage(event.getMessage().getChannel().block(), "TODO: fill night help", false);
+                Globals.createMessage(event.getMessage().getChannel().block(), "Es ist Nacht. In dieser Phase schlafen alle Spieler und der Moderator lässt nach und nach Spezialkarten aufwachen, welche einen einfluss auf den ablauf der Nacht haben. Die Werwölfe einigen sich mittels Werwolf-Chat auf das heutige Opfer.", false);
         }
 
         public static void helpMorningMod(MessageCreateEvent event) {
-                Globals.createMessage(event.getMessage().getChannel().block(), "TODO: fill morning help", false);
+                Globals.createMessage(event.getMessage().getChannel().block(), "Es ist Tag. In dieser Phase wird auf dem Dorfplatz diskutiert welcher Spieler am ende des Tages öffentlich Hingerichtet werden soll. mit dem Command "+prefix+"vote <Spielernamen> können alle Lebenden Spieler für eine Person abstimmen.", false);
 
         }
 
