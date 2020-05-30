@@ -15,6 +15,8 @@ import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 
+// ! WORK IN PROGRESS !
+
 public class MainGameState extends GameState {
 
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
@@ -48,10 +50,10 @@ public class MainGameState extends GameState {
             var mssg = "";
             mssg += "Die Werwölfe sind: ";
             for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(i).name + " ";
             }
             if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName() + " ";
+                mssg += mapExistingRoles.get("Werwolf").get(0).name + " ";
             }
 
             Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
@@ -67,8 +69,8 @@ public class MainGameState extends GameState {
                     "Es kitzelt dich in den Fingern und du weißt, es ist Zeit deinen Bogen auszupacken ", mssg);
 
             PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
-                var succsess = false;
-               
+                var success = false;
+
                 if (parameters != null && parameters.size() == 2 && parameters.get(0) != parameters.get(1)) {
                     var person1 = Globals.removeDash(parameters.get(0));
                     var person2 = Globals.removeDash(parameters.get(1));
@@ -78,37 +80,35 @@ public class MainGameState extends GameState {
                     firstLover = Globals.findPlayerByName(person1, mapPlayers, game);
                     secondLover = Globals.findPlayerByName(person2, mapPlayers, game);
 
-                 
                     if (firstLover != null && secondLover != null) {
-                        succsess = true;
+                        success = true;
                         firstLover.inLoveWith = secondLover;
                         secondLover.inLoveWith = firstLover;
-                        Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername() + " und "
-                                + secondLover.user.getUsername() + " haben sich unsterblich verliebt");
+                        Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername()
+                                + " und " + secondLover.name + " haben sich unsterblich verliebt");
                         game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-                        firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **"
-                                + secondLover.user.getUsername()
-                                + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
+                        firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
+                                + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
-                                secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
-                                + firstLover.user.getUsername()
-                                + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstllen könnt und deshalb sterbt sobald euer Partner stirbt")
+                        secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
+                                + firstLover.name
+                                + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
                                 .block();
 
                     } else {
                         Globals.createEmbed(msgChannel, Color.RED, "Error: Zwei identische Usernames gefunden",
-                                "Tut mir leid, ich verstehe dich nicht. \n Deine Nachricht sollte aussehen: \n<Username> <Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal!");
-                        succsess = false;
+                                "Tut mir leid, ich verstehe dich nicht. \n Deine Nachricht sollte aussehen: \n<Username> <Username> \n Achte darauf, dass du die Namen der Spieler richtig geschrieben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal!");
+                        success = false;
 
                     }
 
                 } else {
                     msgChannel.createMessage(
-                            "Tut mir leid ich verstehe dich nicht \n Deine Nachricht sollte aussehen \n<Username>LEERZEICHEN<Username> \n Achte darauf, dass du die Namen der Spieler richtig geschriben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal")
+                            "Tut mir leid ich verstehe dich nicht \n Deine Nachricht sollte aussehen \n<Username>LEERZEICHEN<Username> \n Achte darauf, dass du die Namen der Spieler richtig geschrieben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal")
                             .block();
-                    succsess = false;
+                    success = false;
                 }
-                return succsess;
+                return success;
 
             };
             game.addPrivateCommand(playerWithThisRole.user.getId(), amorCommand);
@@ -155,7 +155,7 @@ public class MainGameState extends GameState {
         }
         // für jede hinzugefügte Rolle wird auch ein Eintrag in nightRolesDone
         // hinzugefügt, jeder Eintrag muss später auf true gesetzt werden, damit der
-        // Zykus fortfährt
+        // Zyklus fortfährt
         mapExistingRoles.put("Werwolf", listWerwölfe);
         mapExistingRoles.put("Seher", listSeher);
         mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
@@ -173,13 +173,13 @@ public class MainGameState extends GameState {
         };
         gameStateCommands.put("ping", pingCommand);
 
-        //zeigt die verfügbaren commands
+        // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
             var mssg = "";
             for (var command : gameStateCommands.entrySet()) {
-                mssg+= "\n"+command.getKey();
+                mssg += "\n" + command.getKey();
             }
-             msgChannel.createMessage(mssg).block();
+            msgChannel.createMessage(mssg).block();
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 
@@ -190,7 +190,6 @@ public class MainGameState extends GameState {
         };
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
-
 
     }
 

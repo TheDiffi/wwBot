@@ -51,9 +51,24 @@ public class GameState {
     public void deleteWerwolfChat() {
     }
 
+    public TextChannel createDeathChat() {
+        return null;
+    }
+
+    public void deleteDeathChat() {
+    }
+
     public void killPlayer(Player unluckyPlayer, Card causedByRole) {
 
     }
 
+    // checks the conditions if the player dies
+    public boolean checkIfDies(Player unluckyPlayer, Card causedByRole) {
+        return false;
+    }
+
+    public boolean checkIfGameEnds() {
+        return false;
+    }
 
 }

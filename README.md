@@ -1,7 +1,6 @@
 # wwBot
 Werwolf Discord Bot 
-Ahh yes very nice you have found this Bot.
-First things first, how did you get here?!?
-This is set to prive gtfo!
-test abc 
-test push 
+
+Sadly there is nothing to see here.
+
+Go [here](https://drive.google.com/file/d/1RH-vaYxO6bVfrTO0R0NmXcFU46JSwxEx/view?usp=sharing) to learn more about this project.

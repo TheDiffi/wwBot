@@ -30,20 +30,21 @@ public class SemiMainGameState extends GameState {
     public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
-    // -1 = 1stNight; 0 = Day; 1 = Night;
-    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
     public Day day = null;
     public Night night = null;
     public Morning morning = null;
     public TextChannel wwChat = null;
     public User userModerator;
+    public TextChannel deathChat = null;
+    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
-    SemiMainGameState(wwBot.Game game) {
+    SemiMainGameState(Game game) {
         super(game);
         registerStateCommands();
         mapPlayers = game.mapPlayers;
         userModerator = game.userModerator;
 
+        createDeathChat();
         reloadGameLists();
 
         MessagesMain.onGameStart(game);
@@ -52,12 +53,10 @@ public class SemiMainGameState extends GameState {
 
     }
 
+    // greets the mod and waits for the mod to start the first night
     private void greetMod(Game game) {
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.GREEN, "Willkommen Moderator!", "");
-        userModerator.getPrivateChannel().block().createMessage(
-                "Deine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command **\"Ready\"** die erste Nacht Starten.")
-                .block();
-        printLivingRoles(userModerator.getPrivateChannel().block());
+        MessagesMain.greetMod(game);
+        printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
 
         PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -69,7 +68,10 @@ public class SemiMainGameState extends GameState {
             }
         };
         game.addPrivateCommand(userModerator.getId(), readyCommand);
+
     }
+
+    // --------------------- Commands ----------------------------
 
     @Override
     public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
@@ -116,7 +118,6 @@ public class SemiMainGameState extends GameState {
                     found = false;
                 }
             } else if (dayPhase == DayPhase.FIRST_NIGHT) {
-                // TODO: make first_night a class
                 if (event.getMessage().getContent().get().equalsIgnoreCase("&help")) {
                     event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
                             .block();
@@ -130,8 +131,9 @@ public class SemiMainGameState extends GameState {
             }
 
         } else {
-            event.getMessage().getChannel().block().createMessage("Only living Players have accssess to this Command")
+            event.getMessage().getChannel().block().createMessage("Only living Players have accesses to this Command")
                     .block();
+            found = true;
         }
 
         return found;
@@ -157,16 +159,56 @@ public class SemiMainGameState extends GameState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 
+        // shows the moderator the list of players (alive or all)
+        Command printListCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                // checks if the syntax is correct
+                if (parameters != null && parameters.size() != 0) {
+                    var param = parameters.get(0);
+                    // if the user typed "Players" it prints a list of all players, if he typed
+                    // "Living" it prints only the living players
+                    if (param.equalsIgnoreCase("Players")) {
+                        printPlayersMap(userModerator.getPrivateChannel().block(), mapPlayers, "Spieler");
+                    } else if (param.equalsIgnoreCase("Living")) {
+                        printPlayersMap(userModerator.getPrivateChannel().block(), livingPlayers, "Noch Lebend");
+                    }
+                } else {
+                    userModerator.getPrivateChannel().block()
+                            .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\"").block();
+
+                }
+            } else {
+                MessagesMain.errorModOnlyCommand(msgChannel);
+            }
+
+        };
+        gameStateCommands.put("printList", printListCommand);
+        gameStateCommands.put("showList", printListCommand);
+
         // prints the living players and their role
         Command listPlayersCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                printLivingRoles(userModerator.getPrivateChannel().block());
+                printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         gameStateCommands.put("listPlayers", listPlayersCommand);
+
+        // prints the living players and their role
+        Command listLivingCommand = (event, parameters, msgChannel) -> {
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+                printPlayersMap(userModerator.getPrivateChannel().block(), game.livingPlayers, "Alle Spieler");
+            } else {
+                MessagesMain.errorModOnlyCommand(msgChannel);
+            }
+        };
+        gameStateCommands.put("listliving", listLivingCommand);
+        gameStateCommands.put("listlivingPlayers", listLivingCommand);
 
         // ummutes a specific player
         Command muteCommand = (event, parameters, msgChannel) -> {
@@ -183,10 +225,11 @@ public class SemiMainGameState extends GameState {
                     MessagesMain.errorPlayerNotFound(msgChannel);
                 }
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         gameStateCommands.put("mute", muteCommand);
+        gameStateCommands.put("stfu", muteCommand);
 
         // ummutes a specific player
         Command unMuteCommand = (event, parameters, msgChannel) -> {
@@ -202,7 +245,7 @@ public class SemiMainGameState extends GameState {
                     MessagesMain.errorPlayerNotFound(msgChannel);
                 }
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         gameStateCommands.put("unMute", unMuteCommand);
@@ -213,10 +256,11 @@ public class SemiMainGameState extends GameState {
             if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 setMuteAllPlayers(mapPlayers, true);
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         gameStateCommands.put("muteAll", muteAllCommand);
+        gameStateCommands.put("stfuAll", muteAllCommand);
 
         // shows the moderator the list of players
         Command unMuteAllCommand = (event, parameters, msgChannel) -> {
@@ -224,7 +268,7 @@ public class SemiMainGameState extends GameState {
             if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
                 setMuteAllPlayers(mapPlayers, false);
             } else {
-                msgChannel.createMessage("only the moderator can use this command");
+                MessagesMain.errorModOnlyCommand(msgChannel);
             }
         };
         gameStateCommands.put("unMuteAll", unMuteAllCommand);
@@ -242,8 +286,15 @@ public class SemiMainGameState extends GameState {
                     // finds the cause (role)
                     var causedByRole = mapRegisteredCards.get(causedBy);
                     if (unluckyPlayer != null && (causedByRole != null || causedBy.equalsIgnoreCase("null"))) {
-                        killPlayer(unluckyPlayer, causedByRole);
-                        event.getMessage().getChannel().block().createMessage("Erfolg!").block();
+                        if (unluckyPlayer.alive) {
+                            if (checkIfDies(unluckyPlayer, causedByRole)) {
+                                killPlayer(unluckyPlayer, causedByRole);
+                                event.getMessage().getChannel().block().createMessage("Erfolg!").block();
+                            }
+                        } else {
+                            MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+
+                        }
                     } else {
                         MessagesMain.errorWrongSyntaxKill(game, event);
 
@@ -254,128 +305,132 @@ public class SemiMainGameState extends GameState {
 
                 }
             } else {
-                event.getMessage().getChannel().block().createMessage("You have no permission for this command")
-                        .block();
+                MessagesMain.errorModOnlyCommand(msgChannel);
+
             }
         };
         gameStateCommands.put("kill", killCommand);
 
-        // shows the moderator the list of players (alive or all)
-        Command printListCommand = (event, parameters, msgChannel) -> {
-
-            // compares the Snowflake of the Author to the Snowflake of the Moderator
-            if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-                // checks if the syntax is correct
-                if (parameters != null && parameters.size() != 0) {
-                    var param = parameters.get(0);
-                    // if the user typed "Players" it prints a list of all players, if he typed
-                    // "Living" it prints only the living players
-                    if (param.equalsIgnoreCase("Players")) {
-                        printPlayers(userModerator.getPrivateChannel().block(), mapPlayers);
-                    } else if (param.equalsIgnoreCase("Living")) {
-                        printPlayers(userModerator.getPrivateChannel().block(), livingPlayers);
-                    }
-                } else {
-                    userModerator.getPrivateChannel().block()
-                            .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\"").block();
-
-                }
-            } else {
-                event.getMessage().getChannel().block().createMessage("only the moderator can use this command")
-                        .block();
-            }
-
-        };
-        gameStateCommands.put("printList", printListCommand);
-
     }
 
+    // -------------------- Kill System --------------------------
+
     public void killPlayer(Player unluckyPlayer, Card causedByRole) {
-        var dies = true;
 
-        // checks if the player dies
-        dies = checkIfDies(unluckyPlayer, causedByRole, dies);
+        // kills player
+        unluckyPlayer.alive = false;
+        game.deadPlayers.add(unluckyPlayer);
 
-        if (dies) {
-            // kills player
-            unluckyPlayer.alive = false;
-            game.deadPlayers.add(unluckyPlayer);
-            reloadGameLists();
+        updateDeathChat();
 
-            // reveals the players death and identity
-            checkDeathMessages(unluckyPlayer, causedByRole);
-
-            Globals.printCard(unluckyPlayer.role.name, game.mainChannel);
-
-            // calculates the consequences
-            checkConsequences(unluckyPlayer, causedByRole);
+        try {
+            unluckyPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
+        } catch (Exception e) {
         }
 
+        reloadGameLists();
+
+        // reveals the players death and identity
+        checkDeathMessages(unluckyPlayer, causedByRole);
+
+        Globals.printCard(unluckyPlayer.role.name, game.mainChannel);
+
+        // calculates the consequences
+        checkConsequences(unluckyPlayer, causedByRole);
     }
 
     private void checkConsequences(Player unluckyPlayer, Card causedByRole) {
         var mapRegisteredCards = Globals.mapRegisteredCards;
 
-        // recieves true if the game ended
-        var gameEnded = checkIfGameEnds();
-
-        // if the game did not end, checkConsequences continues
-        if (!gameEnded) {
-
-            if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) {
-                // looks if there is a Zauberlehrling in the game
-                for (var player : game.livingPlayers.entrySet()) {
-                    // if he finds a Lehrling he is the new Seher
-                    if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
-                        player.getValue().role = mapRegisteredCards.get("Seher");
-                        MessagesMain.seherlehrlingWork(game, unluckyPlayer);
-                    }
+        if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) {
+            // looks if there is a Zauberlehrling in the game
+            for (var player : game.livingPlayers.entrySet()) {
+                // if he finds a Lehrling he is the new Seher
+                if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
+                    player.getValue().role = mapRegisteredCards.get("Seher");
+                    MessagesMain.seherlehrlingWork(game, unluckyPlayer);
                 }
-
-            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Aussätzige")) {
-                // if killed by Werwölfe
-                if (causedByRole != null && causedByRole.name.equalsIgnoreCase("Werwolf")) {
-                    // if the dying player is the Aussätzige, the Werwölfe kill noone the next night
-                    MessagesMain.verfluchtenMutation(game, unluckyPlayer);
-                    Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                            "Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten",
-                            false);
-                }
-
-            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Wolfsjunges")) {
-                // if not killed by Werwölfe (does not make sense but ok.)
-                if (causedByRole != null && !causedByRole.name.equalsIgnoreCase("Werwolf")) {
-                    // if the Wolfsjunges dies, the WW can kill two players in the following night.
-                    Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                            "Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
-                            false);
-                }
-            } else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
-                MessagesMain.jägerDeath(game, unluckyPlayer);
-
-                PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
-                    if (parameters != null) {
-                        var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.livingPlayers,
-                                game);
-                        // if a player is found
-                        if (player != null) {
-                            killPlayer(unluckyPlayer, mapRegisteredCards.get("Jäger"));
-                            return true;
-                        } else {
-                            event.getMessage().getChannel().block()
-                                    .createMessage("Ich konnte diesen Spieler leider nicht finden").block();
-                            return false;
-
-                        }
-                    } else {
-                        return false;
-                    }
-                };
-                game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
-
             }
+
+        } else if (unluckyPlayer.role.name.equalsIgnoreCase("Aussätzige")) {
+            // if killed by Werwölfe
+            if (causedByRole != null && causedByRole.name.equalsIgnoreCase("Werwolf")) {
+                // if the dying player is the Aussätzige, the Werwölfe kill noone the next night
+                MessagesMain.verfluchtenMutation(game, unluckyPlayer);
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                        "Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten",
+                        false);
+            }
+
+        } else if (unluckyPlayer.role.name.equalsIgnoreCase("Wolfsjunges")) {
+            // if not killed by Werwölfe (does not make sense but ok.)
+            if (causedByRole != null && !causedByRole.name.equalsIgnoreCase("Werwolf")) {
+                // if the Wolfsjunges dies, the WW can kill two players in the following night.
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                        "Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
+                        false);
+            }
+        } else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
+            MessagesMain.jägerDeath(game, unluckyPlayer);
+
+        }
+
+    }
+
+    // checks the conditions if the player dies
+    @Override
+    public boolean checkIfDies(Player unluckyPlayer, Card causedByRole) {
+        var dies = true;
+        // VERFLUCHTER
+        if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.name.equals("Werwolf")) {
+            dies = false;
+            Globals.createMessage(game.mainChannel, "Der Verfluchte hat Mutiert", true);
+        }
+        // HARTER BURSCHE
+        if (unluckyPlayer.role.name.equals("Harter-Bursche")) {
+            dies = false;
+            Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                    "Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"",
+                    false);
+
+            PrivateCommand confirmCommand = (event, parameters, msgChannel) -> {
+                if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")) {
+                    killPlayer(unluckyPlayer, causedByRole);
+                    msgChannel.createMessage("confirmed!").block();
+                    return true;
+                } else if (parameters != null && parameters.get(0).equalsIgnoreCase("cancel")) {
+                    Globals.createMessage(game.userModerator.getPrivateChannel().block(), "Canceled", false);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            game.addPrivateCommand(game.userModerator.getId(), confirmCommand);
+
+        }
+
+        return dies;
+    }
+
+    private void checkDeathMessages(Player player, Card cause) {
+
+        if (cause.name.equalsIgnoreCase("Werwolf")) {
+            MessagesMain.deathByWW(game, player);
+        } else if (cause.name.equalsIgnoreCase("Hexe") || cause.name.equalsIgnoreCase("Magier")) {
+            MessagesMain.deathByMagic(game, player);
+        } else if (cause.name.equalsIgnoreCase("Amor")) {
+            MessagesMain.deathByLove(game, player);
+        } else if (cause.name.equalsIgnoreCase("Jäger")) {
+            MessagesMain.deathByGunshot(game, player);
+        } else if (cause.name.equalsIgnoreCase("Dorfbewohner")) {
+            MessagesMain.deathByLynchen(game, player);
+        } else {
+            MessagesMain.death(game, player);
+
         }
     }
+
+    // -------------------- First Night --------------------------
 
     private void initiateFirstNight() {
 
@@ -443,6 +498,8 @@ public class SemiMainGameState extends GameState {
         game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand);
     }
 
+    // -------------------- Utility --------------------------
+
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
         // mutes all players at night
         for (var player : mapPlayers.entrySet()) {
@@ -485,6 +542,8 @@ public class SemiMainGameState extends GameState {
             spec.setPermissionOverwrites(overrides);
             spec.setName("Werwolf-Chat");
         }).block();
+        Globals.createEmbed(wwChat, Color.decode("#5499C7"), "Willkommen im Werwolf-Chat",
+                "Dies ist ein Ort in dem die Werwölfe ungestört ihre Diskussionen durchführen können.");
         return wwChat;
     }
 
@@ -500,8 +559,74 @@ public class SemiMainGameState extends GameState {
         }
     }
 
+    @Override
+    public TextChannel createDeathChat() {
+
+        if (deathChat != null) {
+            deleteDeathChat();
+        }
+
+        var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                .get();
+        deathChat = game.server.createTextChannel(spec -> {
+            var overrides = new HashSet<PermissionOverwrite>();
+            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL)));
+
+            if (!game.gameRuleAutomatic) {
+                overrides.add(
+                        PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
+                                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+
+            spec.setPermissionOverwrites(overrides);
+            spec.setName("Friedhof-Chat");
+        }).block();
+
+        // Sends the first messages, explaining this Chat
+        Globals.createEmbed(deathChat, Color.decode("#5499C7"), "Willkommen im Friedhof-Chat",
+                "Dies ist ein Ort um ungestört über das Spiel zu diskutieren.");
+        printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler");
+        return deathChat;
+    }
+
+    private void updateDeathChat() {
+        // adds him to the deathChat and mutes him
+        var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
+                .get();
+
+        deathChat.edit(spec -> {
+            var overrides = new HashSet<PermissionOverwrite>();
+            overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
+                    PermissionSet.of(Permission.VIEW_CHANNEL)));
+            for (var player : game.deadPlayers) {
+                overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
+                        PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+            if (!game.gameRuleAutomatic) {
+                overrides.add(
+                        PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
+                                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
+            }
+
+            spec.setPermissionOverwrites(overrides);
+        }).block();
+    }
+
+    // if present, deletes the deathChat
+    @Override
+    public void deleteDeathChat() {
+
+        if (deathChat != null) {
+            game.server.getChannelById(deathChat.getId()).block().delete().block();
+            deathChat = null;
+        } else {
+            game.mainChannel.createMessage("No Channel Found").block();
+        }
+    }
+
     private void reloadGameLists() {
-        // reloands the living Players
+        // reloads the living Players
         livingPlayers.clear();
         for (var player : game.mapPlayers.entrySet()) {
             if (player.getValue().alive) {
@@ -535,7 +660,7 @@ public class SemiMainGameState extends GameState {
         }
         // für jede hinzugefügte Rolle wird auch ein Eintrag in nightRolesDone
         // hinzugefügt, jeder Eintrag muss später auf true gesetzt werden, damit der
-        // Zykus fortfährt
+        // Zyklus fortfährt
         mapExistingRoles.put("Werwolf", listWerwölfe);
         mapExistingRoles.put("Seher", listSeher);
         mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
@@ -544,20 +669,8 @@ public class SemiMainGameState extends GameState {
 
     // collects every "good" and every "bad" role in a list and compares the size.
     // If the are equaly or less "good" than "bad" roles, the ww won
-    private boolean checkIfGameEnds() {
-        /*
-         * var amountGoodPlayers = 0; var amountBadPlayers = 0; var amountWW = 0; for
-         * (var playerEntry : game.livingPlayers.entrySet()) { if
-         * (playerEntry.getValue().role.friendly) { amountGoodPlayers++; } else if
-         * (!playerEntry.getValue().role.friendly) { amountBadPlayers++; if
-         * (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) { amountWW++;
-         * } }
-         * 
-         * } if (amountWW < 1) { // int winner: 1 = Dorfbewohner, 2 = Werwölfe
-         * game.gameState.endMainGame(1); return true; } else if (amountBadPlayers >=
-         * amountGoodPlayers) { game.gameState.endMainGame(2); return true; } else {
-         * return false; }
-         */
+    @Override
+    public boolean checkIfGameEnds() {
 
         var amountGoodPlayers = 0;
         var amountWW = 0;
@@ -581,61 +694,13 @@ public class SemiMainGameState extends GameState {
         }
     }
 
-    // checks the conditions if the player dies
-    private boolean checkIfDies(Player unluckyPlayer, Card causedByRole, Boolean dies) {
-        if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.name.equals("Werwolf")) {
-            dies = false;
-            Globals.createMessage(game.mainChannel, "Der Verfluchte hat Mutiert", true);
-        }
-        return dies;
-    }
-
-    private void checkDeathMessages(Player player, Card cause) {
-
-        if (cause.name.equalsIgnoreCase("Werwolf")) {
-            MessagesMain.deathByWW(game, player);
-        } else if (cause.name.equalsIgnoreCase("Hexe") || cause.name.equalsIgnoreCase("Magier")) {
-            MessagesMain.deathByMagic(game, player);
-        } else if (cause.name.equalsIgnoreCase("Amor")) {
-            MessagesMain.deathByLove(game, player);
-        } else if (cause.name.equalsIgnoreCase("Jäger")) {
-            MessagesMain.deathByGunshot(game, player);
-        } else if (cause.name.equalsIgnoreCase("Dorfbewohner")) {
-            MessagesMain.deathByLynchen(game, player);
-        } else {
-            MessagesMain.death(game, player);
-
-        }
-    }
-
-    public void printPlayers(MessageChannel msgChannel, Map<Snowflake, Player> map) {
-        var mssgList = "";
-        for (var playerset : map.entrySet()) {
-            var player = playerset.getValue();
-            mssgList += "*" + player.user.asMember(game.server.getId()).block().getDisplayName() + "*  ";
-            mssgList += "ist ->  " + player.role.name;
-            mssgList += "   am Leben: " + Boolean.toString(player.alive) + "\n";
-        }
-        Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
-    }
-
-    public void printPlayers(MessageChannel msgChannel, List<Player> list) {
-        var mssgList = "";
-        for (var player : list) {
-            mssgList += player.user.asMember(game.server.getId()).block().getDisplayName() + ": ";
-            mssgList += "ROLE(" + player.role.name + ") ";
-            mssgList += Boolean.toString(player.alive) + "\n";
-        }
-        Globals.createEmbed(msgChannel, Color.DARK_GRAY, "Liste aller Spieler", mssgList);
-    }
-
-    private void printLivingRoles(MessageChannel channel) {
+    private void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title) {
         var tempList = new ArrayList<Player>();
-        for (var entry : game.mapPlayers.entrySet()) {
+        for (var entry : map.entrySet()) {
             tempList.add(entry.getValue());
         }
-        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "Spielerliste",
-                Globals.playerListToString(tempList, "Alle Spieler", game));
+        Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "",
+                Globals.playerListToString(tempList, title, game));
     }
 
     @Override
@@ -643,6 +708,7 @@ public class SemiMainGameState extends GameState {
         reloadGameLists();
         // transitions to Night
         if (dayPhase == DayPhase.DAY) {
+            checkIfGameEnds();
             setMuteAllPlayers(game.livingPlayers, true);
             createWerwolfChat();
             dayPhase = DayPhase.NORMALE_NIGHT;
@@ -658,6 +724,7 @@ public class SemiMainGameState extends GameState {
 
             // transitions to Day
         } else if (dayPhase == DayPhase.MORNING || dayPhase == DayPhase.FIRST_NIGHT) {
+            checkIfGameEnds();
             MessagesMain.onDaySemi(game);
             dayPhase = DayPhase.DAY;
             day = new Day(game);
@@ -667,6 +734,10 @@ public class SemiMainGameState extends GameState {
 
     @Override
     public void endMainGame(int winner) {
+        // unmutes all players
+        setMuteAllPlayers(mapPlayers, false);
+        // deletes deathChat
+        deleteDeathChat();
         // sends gameover message
         if (winner == 1) {
             Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");

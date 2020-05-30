@@ -140,10 +140,9 @@ Card Images
 
 
 
-NEW CARD IDEAS:
-// fake jobs/identities fir jeden Spieler 
-// renames nach den jobs/identities
+https://trello.com/b/2U8GlUBQ/werwolf-bot
 
+<<<<<<< HEAD
 LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
 THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
 Stalker: kennt das liebespaar
@@ -185,3 +184,5 @@ xx fixing player roles display to moderator (check!)
         
 !!CRITICAL: cant vote for players with whitespace (mby fixed)
 !!CRITICAL: detect when game end doesent work (mby fixed)
+=======
+>>>>>>> c4d200f4ec6813238e448acda34801b29565c2ea
