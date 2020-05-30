@@ -84,16 +84,7 @@ public class MainGameState extends GameState {
                         success = true;
                         firstLover.inLoveWith = secondLover;
                         secondLover.inLoveWith = firstLover;
-                        Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername()
-                                + " und " + secondLover.name + " haben sich unsterblich verliebt");
-                        game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-                        firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
-                                + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-                                .block();
-                        secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **"
-                                + firstLover.name
-                                + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-                                .block();
+                        MessagesMain.amorSuccess(game, msgChannel, firstLover, secondLover);
 
                     } else {
                         Globals.createEmbed(msgChannel, Color.RED, "Error: Zwei identische Usernames gefunden",

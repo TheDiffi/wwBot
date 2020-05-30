@@ -13,7 +13,6 @@ import wwBot.Interfaces.Command;
 
 public class Night {
 	public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
-
 	Game game;
 
 	public Night(Game getGame) {

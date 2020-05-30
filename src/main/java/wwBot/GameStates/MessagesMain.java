@@ -144,6 +144,53 @@ public class MessagesMain {
                                                 + prefix + "endDay\"");
         }
 
+        // ---------UNIQUE CARDS MESSAGES--------------------------------------------
+
+        public static void triggerAmor(Game game) {
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                                "[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. Tue dies mit \""
+                                                + prefix + "&inLove\" <Player1> <Player2>",
+                                false);
+        }
+
+        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
+                        Game game) {
+                var mssg = "";
+                mssg += "Die Werwölfe sind: ";
+                for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
+                        mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block()
+                                        .getDisplayName() + " ";
+                }
+                if (mapExistingRoles.containsKey("Wolfsjunges")) {
+                        mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block()
+                                        .getDisplayName() + " ";
+                }
+
+                Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
+
+        }
+
+        public static void checkHarterBurscheDeath(MessageChannel modChannel) {
+                Globals.createMessage(modChannel,
+                                "Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"",
+                                false);
+        }
+
+        public static void amorSuccess(Game game, MessageChannel msgChannel, Player firstLover, Player secondLover) {
+
+                Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!", "" + firstLover.user.getUsername() + " und "
+                                + secondLover.name + " haben sich unsterblich verliebt");
+
+                game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
+
+                firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
+                                + "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+                                .block();
+                secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
+                                + "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+                                .block();
+        }
+
         // ---------DEATH MESSAGES--------------------------------------------
 
         public static String revealId(Player player, Game game) {
@@ -174,7 +221,7 @@ public class MessagesMain {
         }
 
         public static void deathByLove(Game game, Player player) {
-                Globals.createEmbed(game.mainChannel, Color.RED, player.name
+                Globals.createEmbed(game.mainChannel, Color.PINK, player.name
 
                                 + " erträgt die Welt ohne seiner/ihrer Geliebte/n nicht mehr und erhängt sich. ",
                                 revealId(player, game));
@@ -192,13 +239,15 @@ public class MessagesMain {
                                 revealId(player, game));
         }
 
-        public static void wwInfection(Game game) {
+        public static void onAussätzigeDeath(Game game) {
                 Globals.createMessage(game.mainChannel,
                                 "Die Werwölfe wurden infiziert und dürfen in der nächsten Nacht niemanden töten", true);
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                                "Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten");
 
         }
 
-        public static void seherlehrlingWork(Game game, Player player) {
+        public static void onSeherlehrlingPromotion(Game game, Player player) {
                 Globals.createMessage(game.mainChannel, "Bestürzt über den Tod seines Meisters, beschließt der "
                                 + player.role.name
                                 + " die Sache selbst in die Hand zu nehmen. Fortan tritt er in die Fußstapfen seines Meisters und such jede Nacht nach den Werwölfen.",
@@ -206,39 +255,25 @@ public class MessagesMain {
 
         }
 
-        public static void verfluchtenMutation(Game game, Player player) {
+        public static void verfluchtenMutation(Game game) {
                 Globals.createMessage(game.mainChannel,
                                 "Die Dorfbewohner finden zerfetzte Kleider im Wald und wissen, dass dies nur eines bedeuten kann: der Verfluchte ist mutiert!",
                                 true);
         }
 
-        public static void wolfsjungesDeath(Game game, Player player) {
+        public static void onWolfsjungesDeath(Game game) {
                 Globals.createMessage(game.mainChannel,
                                 "Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
                                 true);
+                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+                                "Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
+                                false);
         }
 
-        public static void jägerDeath(Game game, Player player) {
+        public static void onJägerDeath(Game game, Player player) {
                 Globals.createMessage(game.mainChannel,
-                                "Mit letzter kraft zückt der Jäger sein Gewehr. Sage dem Moderator wen du töten möchtest.",
+                                "Mit letzter kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.",
                                 true);
-        }
-
-        public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
-                        Game game) {
-                var mssg = "";
-                mssg += "Die Werwölfe sind: ";
-                for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                        mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block()
-                                        .getDisplayName() + " ";
-                }
-                if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                        mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block()
-                                        .getDisplayName() + " ";
-                }
-
-                Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
-
         }
 
         // ---------VOTE MESSAGES--------------------------------------------
@@ -332,12 +367,12 @@ public class MessagesMain {
         // ---------ERROR MESSAGES--------------------------------------------
 
         public static void errorNoAccessToCommand(Game game, MessageChannel messageChannel) {
-                messageChannel.createMessage("you have no access to this command").block();
+                messageChannel.createMessage("E: you have no access to this command").block();
         }
 
         public static void errorWrongSyntaxKill(Game game, MessageCreateEvent event) {
                 event.getMessage().getChannel().block()
-                                .createMessage("Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\""
+                                .createMessage("E: Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\""
                                                 + prefix
                                                 + "kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verantwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
                                 .block();
@@ -345,24 +380,28 @@ public class MessagesMain {
 
         public static void errorPlayerNotFound(MessageChannel msgChannel) {
                 msgChannel.createMessage(
-                                "Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)")
+                                "E: Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)")
                                 .block();
         }
 
         public static void errorModOnlyCommand(MessageChannel msgChannel) {
-                msgChannel.createMessage("Only the moderator can use this command").block();
+                msgChannel.createMessage("E: Only the moderator can use this command").block();
         }
 
         public static void errorPlayerAlreadyDead(Game game, MessageChannel msgChannel) {
-                msgChannel.createMessage("Looks like this Player is already dead").block();
+                msgChannel.createMessage("E: Looks like this Player is already dead").block();
         }
 
         public static void errorWrongSyntax(Game game, MessageChannel msgChannel) {
-                msgChannel.createMessage("Wrong Syntax - I can't understand you").block();
+                msgChannel.createMessage("E: Wrong Syntax - I can't understand you").block();
         }
 
         public static void errorNotAllowedToVote(Game game, MessageChannel msgChannel) {
-                msgChannel.createMessage("You are not allowed to vote!").block();
+                msgChannel.createMessage("E: You are not allowed to vote!").block();
+        }
+
+        public static void errorPlayersIdentical(MessageChannel msgChannel) {
+                msgChannel.createMessage("E: Players are identical. Try again.").block();
         }
 
 }

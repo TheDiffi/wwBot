@@ -27,10 +27,9 @@ public class Main {
 
         // loads the Bot api
         DiscordClient client = DiscordClientBuilder
-                .create("NzA3NjUzNTk1NjQxOTM4MDMx.XrL8Cw.SRxT4UisfP6doLQoc-ZdgI5CtYY").build();
+                .create("NzA3NjUzNTk1NjQxOTM4MDMx.Xs1bLg.RLbvLwafgTDyhLYsQZl4pi0hluc").build();
 
         // looks at every message and calls "handleCommands"
-
         client.getEventDispatcher().on(MessageCreateEvent.class).filter(message -> message.getMessage().getAuthor()
                 .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
                     try {
@@ -59,7 +58,7 @@ public class Main {
         handleMemes(event, parameters);
 
         // prüft ob die Nachricht keine DM(DirectMessage) ist
-        if (event.getGuildId().isPresent()) {
+        if (event.getGuildId().isPresent() && event.getMessage().getContent().isPresent()) {
 
             if (messageContent.startsWith(prefix)) {
                 var server = event.getGuild().block();
@@ -123,7 +122,7 @@ public class Main {
             }
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
             // Game befindet
-        } else {
+        } else if (!event.getGuildId().isPresent() && event.getMessage().getContent().isPresent()) {
             var userId = event.getMessage().getAuthor().get().getId();
             // prüft ob überhaupt ein game läuft
             if (!mapRunningGames.isEmpty()) {
@@ -184,36 +183,41 @@ public class Main {
     }
 
     private static void handleMemes(MessageCreateEvent event, List<String> parameters) {
-        var content = event.getMessage().getContent().get();
-        if (event.getMessage().getContent().get().contains("Hey @WerwolfBot! lets do this game together, shall we?")) {
-            event.getMessage().getChannel().block().createMessage("Oh, Heeey " + event.getMember().get().getMention()
-                    + "! Didiididn't see you the-re 😳. Yeah.. let's do this~! *blushes*").block();
-        }
+        if (event.getMessage().getContent().isPresent()) {
+            var content = event.getMessage().getContent().get();
+            if (event.getMessage().getContent().get()
+                    .contains("Hey @WerwolfBot! lets do this game together, shall we?")) {
+                event.getMessage().getChannel().block()
+                        .createMessage("Oh, Heeey " + event.getMember().get().getMention()
+                                + "! Didiididn't see you the-re 😳. Yeah.. let's do this~! *blushes*")
+                        .block();
+            }
 
-        if (parameters.get(0).equalsIgnoreCase("F")) {
+            if (parameters.get(0).equalsIgnoreCase("F")) {
 
-            event.getMessage().getChannel().block().createEmbed(spec -> {
-                spec.setImage("https://i.imgur.com/9aJeWxK.jpg");
+                event.getMessage().getChannel().block().createEmbed(spec -> {
+                    spec.setImage("https://i.imgur.com/9aJeWxK.jpg");
 
-            }).block();
+                }).block();
 
-        }
+            }
 
-        // test (remove after)
-        if (event.getMessage().getContent().get().indexOf("I ") != -1) {
+            // test (remove after)
+            if (event.getMessage().getContent().get().indexOf("I ") != -1) {
 
-            event.getMessage().getChannel().block().createMessage(spec -> {
-                var mssg = "> ..." + content.substring(content.indexOf("I") / 2);
-                var youmeanttosay = content.substring(content.indexOf("I"), content.length());
-                mssg += "\nI think you meant to say: " + youmeanttosay.replace("I", "WE");
-                spec.setContent(mssg);
-                spec.setEmbed(b -> {
-                    b.setImage(
-                            "https://cdn.discordapp.com/attachments/545307459691085828/714142918226477136/download.jpg");
+                event.getMessage().getChannel().block().createMessage(spec -> {
+                    var mssg = "> ..." + content.substring(content.indexOf("I") / 2);
+                    var youmeanttosay = content.substring(content.indexOf("I"), content.length());
+                    mssg += "\nI think you meant to say: " + youmeanttosay.replace("I", "WE");
+                    spec.setContent(mssg);
+                    spec.setEmbed(b -> {
+                        b.setImage(
+                                "https://cdn.discordapp.com/attachments/545307459691085828/714142918226477136/download.jpg");
 
-                });
-            }).block();
+                    });
+                }).block();
 
+            }
         }
     }
 

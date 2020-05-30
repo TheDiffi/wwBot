@@ -89,10 +89,13 @@ public class Day {
                 var recievedName = "";
                 // checks the syntax
                 if (parameters != null && parameters.size() != 0) {
+
+                    //removes the dash
                     recievedName = Globals.removeDash(parameters.get(0));
-                    // if the user votes for no one
+
+                    // if the user votes for no one none
                     if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
-                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody")) {
+                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody") || recievedName.equalsIgnoreCase("none")) {
                         votedFor = emptyPlayer;
                     } else {
                         // finds the player

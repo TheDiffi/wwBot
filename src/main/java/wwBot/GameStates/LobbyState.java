@@ -191,7 +191,7 @@ public class LobbyState extends GameState {
             } else {
 
                 var requestedCard = mapRegisteredCards.get(cardName);
-
+                if(requestedCard != null){
                 // calls addCardToDeck and recieves the Status message back
                 String message = addCardToDeck(requestedCard, deck);
                 msgChannel.createMessage(message).block();
@@ -207,10 +207,12 @@ public class LobbyState extends GameState {
                 } else if (figureDifference > 0) {
                     msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
                 }
+            }
 
             }
         };
         gameStateCommands.put("addCard", addCardCommand);
+        gameStateCommands.put("aC", addCardCommand);
 
         // lässt den user eine Karte aus der gewünschten liste entfernen
         Command removeCardCommand = (event, parameters, msgChannel) -> {
@@ -240,6 +242,7 @@ public class LobbyState extends GameState {
             }
         };
         gameStateCommands.put("removeCard", removeCardCommand);
+        gameStateCommands.put("rC", removeCardCommand);
 
         // empties the Deck
         Command clearDeckCommand = (event, parameters, msgChannel) -> {

@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.util.Snowflake;
 import wwBot.Card;
 import wwBot.Game;
 import wwBot.Player;
@@ -17,10 +18,10 @@ public class GameState {
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
     public Game game;
+    public TextChannel wwChat = null;
 
     protected GameState(Game game2) {
         game = game2;
-
     }
 
     public void exit() {
@@ -38,7 +39,6 @@ public class GameState {
     }
 
     public void changeDayPhase() {
-
     }
 
     public void endMainGame(int winner) {
@@ -59,7 +59,6 @@ public class GameState {
     }
 
     public void killPlayer(Player unluckyPlayer, Card causedByRole) {
-
     }
 
     // checks the conditions if the player dies
@@ -69,6 +68,9 @@ public class GameState {
 
     public boolean checkIfGameEnds() {
         return false;
+    }
+
+    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {  
     }
 
 }
