@@ -11,6 +11,7 @@ import wwBot.Globals;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
+import wwBot.cards.RoleDoppelgängerin;
 
 public class FirstNight {
     GameState gameState;
@@ -27,7 +28,7 @@ public class FirstNight {
     }
 
     private void initiateFirstNight() {
-
+        // sets mute and creates the WWchat
         gameState.setMuteAllPlayers(game.livingPlayers, true);
         gameState.wwChat = gameState.createWerwolfChat();
 
@@ -35,6 +36,7 @@ public class FirstNight {
         var listRolesToBeCalled = firstNightRoles();
         MessagesMain.firstNightMod(game, listRolesToBeCalled);
 
+        // specific cards like the amor are handeled
         specificCardInteractions();
 
         endFirstNight();
@@ -42,28 +44,33 @@ public class FirstNight {
     }
 
     private void specificCardInteractions() {
+        // the Günstling gets a list with all the WW
         if (mapExistingRoles.get("Günstling") != null) {
             var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
-
             MessagesMain.günstlingMessage(privateChannel, mapExistingRoles, game);
+
         }
 
+        // if there is a amor, the moderator gets access to a command, which sets the
+        // "inLoveWith" variable of two players to eachother
         if (mapExistingRoles.get("Amor") != null) {
-            MessagesMain.triggerAmor(game);
 
+            MessagesMain.triggerAmor(game);
             Command setLoveCommand = (event, parameters, msgChannel) -> {
                 if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                     if (parameters != null && parameters.size() == 2) {
+
                         // finds the players
                         var player1 = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
                                 game);
                         var player2 = Globals.findPlayerByName(Globals.removeDash(parameters.get(1)), game.mapPlayers,
                                 game);
 
+                        // sets the "inLoveWith" variables
                         if (player1 != null && player2 != null) {
                             if (player1 != player2) {
-                                player1.inLoveWith = player2;
-                                player2.inLoveWith = player1;
+                                player1.role.inLoveWith = player2;
+                                player2.role.inLoveWith = player1;
                                 MessagesMain.amorSuccess(game, game.userModerator.getPrivateChannel().block(), player1,
                                         player2);
 
@@ -82,9 +89,38 @@ public class FirstNight {
             };
             mapCommands.put("inLove", setLoveCommand);
             mapCommands.put("Love", setLoveCommand);
+            mapCommands.put("Amor", setLoveCommand);
         }
 
+        // if there is a amor, the moderator gets access to a command, which sets the
+        // "inLoveWith" variable of two players to eachother
+        if (mapExistingRoles.get("Doppelgängerin") != null) {
 
+            MessagesMain.triggerDoppelgängerin(game);
+            Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
+                if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                    if (parameters != null && parameters.size() == 1) {
+                        // finds the players
+                        var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
+                                game.mapPlayers, game);
+                        var dp = mapExistingRoles.get("Doppelgängerin").get(0);
+
+                        // sets the variable
+                        var dpRole = (RoleDoppelgängerin) dp.role;
+                        dpRole.boundTo = foundPlayer;
+                        MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
+
+                    } else {
+                        MessagesMain.errorWrongSyntax(game, msgChannel);
+                    }
+                } else {
+                    MessagesMain.errorModOnlyCommand(msgChannel);
+                }
+            };
+            mapCommands.put("clone", setDoppelgängerinCommand);
+            mapCommands.put("Doppelgängerin", setDoppelgängerinCommand);
+
+        }
 
     }
 
@@ -124,6 +160,7 @@ public class FirstNight {
         PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
             if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
                     && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                // unmutes, deletes the WWChat and changes the DayPhase
                 gameState.setMuteAllPlayers(game.livingPlayers, false);
                 gameState.deleteWerwolfChat();
                 gameState.changeDayPhase();

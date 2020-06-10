@@ -8,21 +8,22 @@ import java.util.Map;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import wwBot.cards.Role;
 
 //In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {
-	public static Map<String, Card> mapRegisteredCards;
+	public static Map<String, Card> mapRegisteredCardsSpecs;
 
 	// wird zu start aufgerufen und inizialisiert wichtige Variablen
 	public static void loadGlobals() throws Exception {
-		mapRegisteredCards = ReadJSONCard.readCards();
+		mapRegisteredCardsSpecs = ReadJSONCard.readCards();
 	}
 
 	// summiert die Values aller karten in der liste
-	public static int totalCardValue(List<Card> list) {
+	public static int totalCardValue(List<Role> list) {
 		int totalValue = 0;
 		for (var card : list) {
-			totalValue += card.value;
+			totalValue += card.specs.value;
 		}
 		return totalValue;
 	}
@@ -31,7 +32,28 @@ public class Globals {
 	// und wert jeder Card enthält
 	// param: list - eine Liste von Card, title - wird zum titel der Tabelle (meist
 	// der name der Liste)
-	public static String cardListToString(List<Card> list, String title, boolean printTotalValue) {
+	public static String cardListToString(List<Role> list, String title, boolean printTotalValue) {
+		// this variable gets filled with the card infos
+		var message = "";
+
+		// if the list is empty an error message appears, else it goes through every
+		// single card and adds them to message
+		if (list.isEmpty()) {
+			message += "seems like this bitch empty";
+		} else {
+			message += "-----------------" + title + "----------------------  \n";
+
+			for (int i = 0; i < list.size(); i++) {
+				message += "**Karte " + (i + 1) + ":** " + list.get(i).specs.name + " ----- **Value:** " + list.get(i).specs.value
+						+ "\n";
+			}
+			if (printTotalValue) {
+				message += "**Total Value**: " + totalCardValue(list);
+			}
+		}
+		return (message);
+	}
+	public static String cardListToString(List<Card> list, String title) {
 		// this variable gets filled with the card infos
 		var message = "";
 
@@ -46,9 +68,7 @@ public class Globals {
 				message += "**Karte " + (i + 1) + ":** " + list.get(i).name + " ----- **Value:** " + list.get(i).value
 						+ "\n";
 			}
-			if (printTotalValue) {
-				message += "**Total Value**: " + totalCardValue(list);
-			}
+
 		}
 		return (message);
 	}
@@ -86,13 +106,13 @@ public class Globals {
 
 			// lists every player in the list
 			for (var entry : list) {
-				if (!entry.alive) {
+				if (!entry.role.alive) {
 					mssgPlayerList += "~~";
 				}
 
 				mssgPlayerList += entry.name + " ---> " + entry.role.name + "\n";
 
-				if (!entry.alive) {
+				if (!entry.role.alive) {
 					mssgPlayerList += "~~";
 				}
 			}
@@ -113,7 +133,7 @@ public class Globals {
 	// erstellt ein embed (nachricht) mit den Informationen der Karte und sendet
 	// dieses in den erhaltenen Channel
 	public static void printCard(String cardName, MessageChannel channel) {
-		var requestedCard = mapRegisteredCards.get(cardName);
+		var requestedCard = mapRegisteredCardsSpecs.get(cardName);
 
 		// falls eine karte gefunden wird, wird ein embed mit den infos erstellt und in
 		// den channel geschickt
@@ -131,6 +151,7 @@ public class Globals {
 			channel.createMessage("Card not found").block();
 		}
 	}
+
 
 	public static void createEmbed(MessageChannel channel, Color color, String title, String description) {
 		channel.createEmbed(emb -> {
@@ -151,9 +172,9 @@ public class Globals {
 	}
 
 	// fügt mehrere Karten einer Liste hinzu
-	public static void addMultiple(int amount, Card card, List<Card> list) {
+	public static void addMultipleCards(int amount, String cardName, List<Role> list) {
 		for (int i = 0; i < amount; i++) {
-			list.add(card);
+			list.add(Role.CreateRole(cardName));
 		}
 	}
 
@@ -179,9 +200,41 @@ public class Globals {
 		return foundPlayer;
 	}
 
+	// finds a card in the map of all Cards
+	public static boolean ifCardExists(String name) {
+		var mapCards = Globals.mapRegisteredCardsSpecs;
+		var ifFound = mapCards.containsKey(name);
+
+		return ifFound;
+	}
+
+
+
 	public static String removeDash(String rawName) {
 		var name = rawName.replaceAll("-", " ");
 		return name;
+	}
+
+	public static boolean listContainsCard(List<Role> listDeck, Card card) {
+	    var containsCard = false;
+	
+	    for (Role cardDeck : listDeck) {
+	        if (cardDeck.name.equalsIgnoreCase(card.name)) {
+	            containsCard = true;
+	        }
+	    }
+	    return containsCard;
+	}
+
+	static boolean listContainsCard(List<Role> listDeck, Role card) {
+	    var containsCard = false;
+	
+	    for (Role cardDeck : listDeck) {
+	        if (cardDeck.name.equalsIgnoreCase(card.name)) {
+	            containsCard = true;
+	        }
+	    }
+	    return containsCard;
 	}
 
 }

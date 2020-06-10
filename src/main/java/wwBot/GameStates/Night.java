@@ -29,7 +29,7 @@ public class Night {
 		for (int i = 0; i < 4; i++) {
 
 			for (var player : game.livingPlayers.entrySet()) {
-				if (player.getValue().role.nightSequence == i) {
+				if (player.getValue().role.specs.nightSequence == i) {
 					sortedRoles.add(player.getValue());
 				}
 			}

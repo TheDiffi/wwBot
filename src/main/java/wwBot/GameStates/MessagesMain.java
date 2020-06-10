@@ -156,9 +156,50 @@ public class MessagesMain {
 
 	public static void triggerAmor(Game game) {
 		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. Tue dies mit \"" + prefix
+				"[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. \nTue dies mit \"" + prefix
 						+ "&inLove\" <Player1> <Player2>",
 				false);
+	}
+
+	public static void amorSuccess(Game game, MessageChannel modChannel, Player firstLover, Player secondLover) {
+
+		Globals.createEmbed(modChannel, Color.PINK, "ERFOLG!",
+				"" + firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
+
+		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
+
+		firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
+				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+				.block();
+		secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
+				+ "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+				.block();
+	}
+
+	public static void triggerDoppelgängerin(Game game) {
+		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+				"Teile mir mit für welchen Spieler die Doppelgängerin sich entscheidet, damit ich (falls dieser Spieler stirbt) die Rolle der Doppelgängerin ändern kann.\nTue dies mit \""
+						+ prefix + "&Doppelgängerin\" <Player-Chosen-By-The-Doppelgängerin> ",
+				false);
+	}
+
+	public static void doppelgängerinSuccess(Game game, Player dp, Player chosenOne) {
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "ERFOLG!",
+				dp.name + " hat sich an " + chosenOne.name + " gebunden.");
+		Globals.createEmbed(dp.user.getPrivateChannel().block(), Color.GREEN,
+				"Du bist nun an " + chosenOne.name + " gebunden!", "");
+	}
+
+	public static void onDoppelgängerinTransformation(Game game, Player doppelgaengerin, Player unluckyPlayer) {
+		// message to DP
+		Globals.createEmbed(doppelgaengerin.user.getPrivateChannel().block(), Color.WHITE,
+				"Du hast dich verwandelt!\nDeine neue Rolle ist: " + unluckyPlayer.role.name,
+				"Die Person, welche du am Anfang des Spieles ausgewählt hast, ist gestorben. Durch deine ungwöhnlichen Fähigkeiten hast du seine Identität absorbiert. Du nimmst seine Rolle ein und wirst zu einem/einer "
+						+ unluckyPlayer.role.name);
+		// message to mod
+		Globals.createMessage(game.userModerator.getPrivateChannel().block(), "Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
+		// message to all
+		Globals.createMessage(game.mainChannel, "Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
 	}
 
 	public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
@@ -201,21 +242,6 @@ public class MessagesMain {
 		Globals.createMessage(modChannel,
 				"Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"",
 				false);
-	}
-
-	public static void amorSuccess(Game game, MessageChannel msgChannel, Player firstLover, Player secondLover) {
-
-		Globals.createEmbed(msgChannel, Color.PINK, "ERFOLG!",
-				"" + firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
-
-		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-
-		firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
-				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
-		secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
-				+ "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
 	}
 
 	// ---------DEATH MESSAGES--------------------------------------------
@@ -414,7 +440,7 @@ public class MessagesMain {
 		messageChannel.createMessage("E: you have no access to this command").block();
 	}
 
-	public static void errorWrongSyntaxKill(Game game, MessageCreateEvent event) {
+	public static void errorWrongSyntaxOnKill(Game game, MessageCreateEvent event) {
 		event.getMessage().getChannel().block()
 				.createMessage("E: Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\"" + prefix
 						+ "kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verantwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
@@ -425,6 +451,11 @@ public class MessagesMain {
 		msgChannel.createMessage(
 				"E: Player not found.\nWenn der Spielername ein Leerzeichen enthält, ersetze diesen durch einen Bindestrich (-)")
 				.block();
+	}
+
+	public static void errorCardNotFound(MessageChannel msgChannel) {
+		msgChannel.createMessage("E: Card not found.\nMit \"" + prefix
+				+ "allCards\" kannst du dir eine Liste aller verfügbaren Karten anzeigen lassen").block();
 	}
 
 	public static void errorModOnlyCommand(MessageChannel msgChannel) {
@@ -447,5 +478,7 @@ public class MessagesMain {
 		msgChannel.createMessage("E: Players are identical. Try again.").block();
 	}
 	// ---------Need To Sort--------------------------------------------
+
+
 
 }

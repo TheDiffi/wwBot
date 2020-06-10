@@ -18,6 +18,7 @@ import wwBot.GameStates.LobbyState;
 import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
+import wwBot.cards.Role;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -25,7 +26,7 @@ public class Game {
     public Map<Snowflake, Player> livingPlayers = new HashMap<>();
     public List<Player> deadPlayers = new ArrayList<>();
     public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
-    public List<Card> deck = new ArrayList<>();
+    public List<Role> deck = new ArrayList<>();
     public GameState gameState;
     public Guild server;
     public MessageChannel mainChannel;
@@ -73,7 +74,7 @@ public class Game {
 
     // loads the Commands available throughout the game into the map gameCommands
     private void registerGameCommands() {
-        final var mapRegisteredCards = Globals.mapRegisteredCards;
+        final var mapRegisteredCards = Globals.mapRegisteredCardsSpecs;
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -132,7 +133,7 @@ public class Game {
                 tempList.add(entry.getValue());
             }
             // prints the list
-            msgChannel.createMessage(Globals.cardListToString(tempList, "Alle Karten", false)).block();
+            msgChannel.createMessage(Globals.cardListToString(tempList, "Alle Karten")).block();
 
         };
         gameCommands.put("allCards", allCardsCommand);

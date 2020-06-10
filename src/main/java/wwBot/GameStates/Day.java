@@ -36,7 +36,6 @@ public class Day {
 
     // loads all of the following Commands into mapCommands
     public void registerDayCommands() {
-        var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // replys with pong!
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -111,12 +110,12 @@ public class Day {
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-                } else if (!votedFor.alive) {
+                } else if (!votedFor.role.alive) {
                     MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
 
                     // if the player is alive, calls addVote
                     // if the same key gets put in a second time, the first value is dropped
-                } else if (votedFor.alive) {
+                } else if (votedFor.role.alive) {
                     addVote(event, voter, votedFor);
                 }
 
@@ -137,16 +136,15 @@ public class Day {
                 // checks the syntax
                 if (parameters != null && parameters.size() == 1) {
                     // finds the wanted player by name
-                    var causedByRole = mapRegisteredCards.get("Dorfbewohner");
                     var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
                             game.livingPlayers, game);
                     if (unluckyPerson != null) {
                         // checks if the player is alive
-                        if (unluckyPerson.alive) {
+                        if (unluckyPerson.role.alive) {
                             // calls check if dies to consider special roles
-                            if (game.gameState.checkIfDies(unluckyPerson, causedByRole)) {
+                            if (game.gameState.checkIfDies(unluckyPerson, "Dorfbewohner")) {
                                 // lynch kills the player with "Dorfbewohner" being the cause
-                                game.gameState.killPlayer(unluckyPerson, causedByRole);
+                                game.gameState.killPlayer(unluckyPerson, "Dorfbewohner");
                                 // checks if the conditions for GameOver are met
                                 game.gameState.checkIfGameEnds();
                                 msgChannel.createMessage("Done! Du kannst den Tag mit \"&EndDay\" den Tag beenden")

@@ -8,7 +8,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.util.Snowflake;
-import wwBot.Card;
 import wwBot.Game;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
@@ -58,11 +57,11 @@ public class GameState {
     public void deleteDeathChat() {
     }
 
-    public void killPlayer(Player unluckyPlayer, Card causedByRole) {
+    public void killPlayer(Player unluckyPlayer, String causedByRole) {
     }
 
     // checks the conditions if the player dies
-    public boolean checkIfDies(Player unluckyPlayer, Card causedByRole) {
+    public boolean checkIfDies(Player unluckyPlayer, String causedByRole) {
         return false;
     }
 

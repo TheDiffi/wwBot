@@ -32,7 +32,7 @@ public class MainGameState extends GameState {
         // loads living Players for the first time
         var livingPlayers = game.livingPlayers;
         for (var player : mapPlayers.entrySet()) {
-            if (player.getValue().alive) {
+            if (player.getValue().role.alive) {
                 livingPlayers.put(player.getKey(), player.getValue());
             }
         }
@@ -82,8 +82,8 @@ public class MainGameState extends GameState {
 
                     if (firstLover != null && secondLover != null) {
                         success = true;
-                        firstLover.inLoveWith = secondLover;
-                        secondLover.inLoveWith = firstLover;
+                        firstLover.role.inLoveWith = secondLover;
+                        secondLover.role.inLoveWith = firstLover;
                         MessagesMain.amorSuccess(game, msgChannel, firstLover, secondLover);
 
                     } else {
@@ -132,7 +132,7 @@ public class MainGameState extends GameState {
         for (var entry : livingPlayers.entrySet()) {
             // prüft ob WW, Dorfbewohner oder Seher, falls nichts von dem bekommt die Rolle
             // ihre eigene Liste
-            if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().alive) {
+            if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().role.alive) {
                 listWerwölfe.add(entry.getValue());
             } else if (entry.getValue().role.name.equalsIgnoreCase("Seher")) {
                 listSeher.add(entry.getValue());

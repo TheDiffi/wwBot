@@ -1,8 +1,10 @@
 package wwBot.GameStates;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Color;
+import java.util.Map;
+import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -12,23 +14,26 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
+import wwBot.cards.Role;
 
 public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
-    public List<Card> deck = new ArrayList<>();
+    public List<Role> deck = new ArrayList<>();
+    public Map<String, Card> mapRegisteredCardsSpecs = new TreeMap<String, Card>(
+            String.CASE_INSENSITIVE_ORDER);
+
     public boolean gameRuleAutomatic = false;
     public User userModerator;
 
     public LobbyState(Game game) {
         super(game);
-
+        mapRegisteredCardsSpecs = Globals.mapRegisteredCardsSpecs;
         registerGameCommands();
 
     }
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands() {
-        final var mapRegisteredCards = Globals.mapRegisteredCards;
 
         // ping testet ob der bot antwortet
         Command pingCommand = (event, parameters, msgChannel) -> {
@@ -186,28 +191,30 @@ public class LobbyState extends GameState {
 
             var cardName = parameters.get(0);
 
-            if (cardName == "" || cardName == null) {
+            if (cardName == null || cardName == "") {
                 msgChannel.createMessage("syntax not correct").block();
             } else {
+                //gets the Card by its name
+                var requestedCard = mapRegisteredCardsSpecs.get(cardName);
+                if (requestedCard != null) {
+                    // calls addCardToDeck and recieves the Status message back
+                    String message = addCardToDeck(requestedCard, deck);
+                    msgChannel.createMessage(message).block();
 
-                var requestedCard = mapRegisteredCards.get(cardName);
-                if(requestedCard != null){
-                // calls addCardToDeck and recieves the Status message back
-                String message = addCardToDeck(requestedCard, deck);
-                msgChannel.createMessage(message).block();
+                    // shows new List with added Card
+                    msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
-                // shows new List with added Card
-                msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
-
-                // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
-                // und informiert den User über die Differenz
-                var figureDifference = deck.size() - listJoinedUsers.size();
-                if (figureDifference < 0) {
-                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
-                } else if (figureDifference > 0) {
-                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+                    // und informiert den User über die Differenz
+                    var figureDifference = deck.size() - listJoinedUsers.size();
+                    if (figureDifference < 0) {
+                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                    } else if (figureDifference > 0) {
+                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    }
+                } else {
+                    MessagesMain.errorCardNotFound(msgChannel);
                 }
-            }
 
             }
         };
@@ -221,7 +228,7 @@ public class LobbyState extends GameState {
             if (cardName == null) {
                 msgChannel.createMessage("syntax not correct").block();
             } else {
-                var requestedCard = mapRegisteredCards.get(cardName);
+                var requestedCard = mapRegisteredCardsSpecs.get(cardName);
 
                 // calls removeCardFromDeck and recieves the Status message back
                 String message = removeCardFromDeck(requestedCard, deck);
@@ -343,7 +350,7 @@ public class LobbyState extends GameState {
 
                     msgChannel.createMessage("Einen Moment Geduld...").block();
                     // creates a temporary copy of the Deck
-                    var tempDeck = new ArrayList<Card>(deck);
+                    var tempDeck = new ArrayList<Role>(deck);
 
                     // listPlayers gets populated with the user and its Card(role)(the card gets
                     // chosen randomly -> distributed).
@@ -387,40 +394,39 @@ public class LobbyState extends GameState {
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules
     // gibt einen String mit der status-nachricht zurück
-    public static String addCardToDeck(Card card, List<Card> list) {
+    public static String addCardToDeck(Card cardSpec, List<Role> list) {
 
         var message = "";
         // überprüft ob die karte unique ist, falls ja, wird überprüft ob die Karte
         // bereis im Deck ist
-        if (card.unique && list != null) {
+        if (cardSpec.unique && list != null) {
 
             // wenn die karte existiert wird ein fehler gegeben, ansonsten wird sie
             // hinzugefügt
-            if (list.contains(card)) {
+            if (Globals.listContainsCard(list, cardSpec)) {
                 message += "Die gewählte Karte ist einzigartig und bereits im Deck";
             } else {
-                list.add(card);
-                message += card.name + " wurde dem Deck hinzugefügt";
+                list.add(Role.CreateRole(cardSpec.name));
+                message += cardSpec.name + " wurde dem Deck hinzugefügt";
             }
 
             // falls die karte nicht unique ist oder die liste leer ist wird die Karte ohne
             // überprüfen hinzugegügt
-        } else if (!card.unique || list == null) {
-            list.add(card);
-            message += card.name + " wurde dem Deck hinzugefügt";
+        } else if (!cardSpec.unique || list == null) {
+            list.add(Role.CreateRole(cardSpec.name));
+            message += cardSpec.name + " wurde dem Deck hinzugefügt";
 
         } else {
             message += "something went wrong in addCard";
         }
 
         return message;
-
     }
 
     // recieves a card and a list and, if the card is present in the list, removes
     // the card from the list
     // gibt einen String mit der status-nachricht zurück
-    public static String removeCardFromDeck(Card card, List<Card> list) {
+    public static String removeCardFromDeck(Card cardSpec, List<Role> list) {
 
         var message = "";
 
@@ -428,17 +434,22 @@ public class LobbyState extends GameState {
         if (list != null) {
 
             // prüft ob die Karte in der Liste existiert und entfernt sie falls true
-            boolean removed = list.remove(card);
+            var removed = false;
+            for (Role card : list) {
+                if(card.name.equals(cardSpec.name)){
+                    removed = list.remove(card);
+                }
+            }
 
             // gibt die status meldung
             if (removed) {
-                message += card.name + " wurde aus dem Deck entfernt";
+                message += cardSpec.name + " wurde aus dem Deck entfernt";
             } else {
                 message += "Die gewählte Karte ist nicht im Deck";
             }
             // falls die liste leer ist wird ein fehler gegeben
         } else {
-            message += "something went wrong in removeCard";
+            message += "Das Deck ist nock leer.";
         }
 
         return message;
