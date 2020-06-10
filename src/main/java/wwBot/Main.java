@@ -208,15 +208,39 @@ public class Main {
                 event.getMessage().getChannel().block().createMessage(spec -> {
                     var mssg = "> ..." + content.substring(content.indexOf("I") / 2);
                     var youmeanttosay = content.substring(content.indexOf("I"), content.length());
-                    mssg += "\nI think you meant to say: " + youmeanttosay.replace("I", "WE");
+                    while(youmeanttosay.indexOf("me") != -1 || youmeanttosay.indexOf("mine") != -1 || youmeanttosay.indexOf("my") != -1 || youmeanttosay.indexOf("I") != -1 || youmeanttosay.indexOf("am") != -1){
+                        if(youmeanttosay.indexOf("me") != -1 ){
+                            youmeanttosay = youmeanttosay.replaceAll("me", "us");
+                        }
+                        if(youmeanttosay.indexOf("mine") != -1 ){
+                            youmeanttosay = youmeanttosay.replaceAll("mine", "ours");
+                        }
+                        if(youmeanttosay.indexOf("my") != -1 ){
+                            youmeanttosay = youmeanttosay.replaceAll("my", "our");
+                        }
+                        if(youmeanttosay.indexOf("I") != -1 ){
+                            youmeanttosay = youmeanttosay.replace("I", "WE");
+                        }
+                        if(youmeanttosay.indexOf("am") != -1 ){
+                            youmeanttosay = youmeanttosay.replace("am", "are");
+                        }
+                    } 
+                    mssg += "\nI think you meant to say: " + youmeanttosay;
+
                     spec.setContent(mssg);
                     spec.setEmbed(b -> {
                         b.setImage(
-                                "https://cdn.discordapp.com/attachments/545307459691085828/714142918226477136/download.jpg");
+                                "https://i.imgur.com/8doX74q.jpg");
 
                     });
                 }).block();
 
+            } else if(event.getMessage().getContent().get().indexOf("idk") != -1){
+                event.getMessage().delete().block();
+                event.getMessage().getChannel().block().createMessage(event.getMember().get().getMention() + " **WE** don't know").block();
+            } else if(event.getMessage().getContent().get().indexOf("idc") != -1){
+                event.getMessage().delete().block();
+                event.getMessage().getChannel().block().createMessage(event.getMember().get().getMention() + " **WE** don't care").block();
             }
         }
     }

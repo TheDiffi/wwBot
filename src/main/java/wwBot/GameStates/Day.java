@@ -90,12 +90,13 @@ public class Day {
                 // checks the syntax
                 if (parameters != null && parameters.size() != 0) {
 
-                    //removes the dash
+                    // removes the dash
                     recievedName = Globals.removeDash(parameters.get(0));
 
                     // if the user votes for no one none
                     if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
-                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody") || recievedName.equalsIgnoreCase("none")) {
+                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody")
+                            || recievedName.equalsIgnoreCase("none")) {
                         votedFor = emptyPlayer;
                     } else {
                         // finds the player
@@ -111,9 +112,7 @@ public class Day {
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
                 } else if (!votedFor.alive) {
-                    event.getMessage().getChannel().block()
-                            .createMessage("The Person you Voted for is already dead (Seriously, give him a break)")
-                            .block();
+                    MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
 
                     // if the player is alive, calls addVote
                     // if the same key gets put in a second time, the first value is dropped
@@ -207,9 +206,7 @@ public class Day {
             }
 
             if (!hasMajority && mostVoted != null) {
-                Globals.createMessage(game.mainChannel,
-                        "Alle Spieler haben abgestimmt, jedoch gibt es **keine klare Mehrheit**. Es wird gebete, dass wenigstens ein Spieler seine Stimme ändert, damit es zu einer klaren Mehrheit kommt.",
-                        false);
+                MessagesMain.voteButNoMajority(game);
             }
 
             if (hasMajority && mostVoted != null) {
@@ -242,42 +239,37 @@ public class Day {
         // registers who voted for who
         mapVotes.put(voter, votedFor);
         if (votedFor.name.equals("Nobody")) {
-            Globals.createMessage(game.mainChannel, voter.user.getMention() + " will niemanden lynchen.", false);
+            MessagesMain.voteNobody(game, voter);
+
         } else {
-            Globals.createMessage(game.mainChannel,
-                    voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!", false);
+            MessagesMain.votePlayer(game, voter, votedFor);
         }
 
     }
 
     private void suggestMostVoted(Player mostVoted) {
         // suggests the most Voted Player to the Mod
-        MessagesMain.suggestMostVoted(game, mostVoted);
+        MessagesMain.suggestMostVoted(game, mostVoted, mapVotes);
         // gibt ein Embed mit den Votes aus
-        var mssg = "";
-        for (var entry : mapVotes.entrySet()) {
-            mssg += entry.getKey().name + " hat für " + entry.getValue().name + " abgestimmt \n";
-        }
 
-        Globals.createEmbed(game.mainChannel, Color.WHITE,
-                "Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.name, mssg);
         // some cards can interfere in this stage (Prinz, Märtyrerin)
         checkLynchConditions();
 
     }
 
-    // --------------------- Other ------------------------
-
     private void checkLynchConditions() {
-        for (var entry : game.livingPlayers.entrySet()) {
-            if (entry.getValue().role.name.equalsIgnoreCase("Märtyrerin")) {
-                Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-                        "Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.",
-                        false);
-                break;
-            }
+
+        if (game.gameState.mapExistingRoles.containsKey("Prinz")) {
+            MessagesMain.remindAboutPrinz(game);
         }
+        if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
+            MessagesMain.remmindAboutMärtyrerin(game);
+
+        }
+
     }
+
+    // --------------------- Other ------------------------
 
     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
         // mutes all players at night

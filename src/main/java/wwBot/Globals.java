@@ -1,6 +1,7 @@
 package wwBot;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ public class Globals {
 		return (message);
 	}
 
+	// converts a list of users to a String, listing all the users
 	public static String userListToString(List<User> list, String title, Game game) {
 		// this variable gets filled with the players
 		var message = "";
@@ -64,7 +66,8 @@ public class Globals {
 			message += "-----------------" + title + "----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				message += list.get(i).asMember(game.server.getId()).block().getDisplayName() + "\n";
+				message += list.get(i).asMember(game.server.getId()).block().getDisplayName() + "(aka. "
+						+ list.get(i).getUsername() + ")\n";
 			}
 		}
 		return (message);
@@ -78,23 +81,32 @@ public class Globals {
 		if (list.isEmpty()) {
 			mssgPlayerList += "seems like this bitch empty";
 		} else {
+			// header
 			mssgPlayerList += "-----------------" + title + "----------------------  \n";
 
-			for (var entry : game.livingPlayers.entrySet()) {
-				if (!entry.getValue().alive) {
+			// lists every player in the list
+			for (var entry : list) {
+				if (!entry.alive) {
 					mssgPlayerList += "~~";
 				}
 
-				mssgPlayerList += entry.getValue().name + " ---> " + entry.getValue().role.name + "\n";
+				mssgPlayerList += entry.name + " ---> " + entry.role.name + "\n";
 
-				if (!entry.getValue().alive) {
+				if (!entry.alive) {
 					mssgPlayerList += "~~";
 				}
 			}
 		}
-
 		return mssgPlayerList;
+	}
 
+	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game) {
+		var tempList = new ArrayList<Player>();
+		for (var entry : map.entrySet()) {
+			tempList.add(entry.getValue());
+		}
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.WHITE, "",
+				Globals.playerListToString(tempList, title, game));
 	}
 
 	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und

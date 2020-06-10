@@ -60,7 +60,7 @@ public class SemiMainGameState extends GameState {
 	// greets the mod and waits for the mod to start the first night
 	private void greetMod(Game game) {
 		MessagesMain.greetMod(game);
-		printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
+		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game);
 
 		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -123,6 +123,12 @@ public class SemiMainGameState extends GameState {
 			};
 			game.addPrivateCommand(game.userModerator.getId(), confirmCommand);
 
+		}
+
+		// PRINZ
+		if (unluckyPlayer.role.name.equals("Prinz") && causedByRole.name.equals("Dorfbewohner")) {
+			dies = false;
+			MessagesMain.prinzSurvivesLynching(game);
 		}
 
 		return dies;
@@ -255,7 +261,7 @@ public class SemiMainGameState extends GameState {
 		} else if (cause.name.equalsIgnoreCase("Dorfbewohner")) {
 			MessagesMain.deathByLynchen(game, player);
 		} else {
-			MessagesMain.death(game, player);
+			MessagesMain.deathByDefault(game, player);
 
 		}
 	}
@@ -304,8 +310,11 @@ public class SemiMainGameState extends GameState {
 			spec.setPermissionOverwrites(overrides);
 			spec.setName("Privater Werwolf-Chat");
 		}).block();
-		Globals.createEmbed(wwChat, Color.decode("#5499C7"), "Willkommen im Werwolf-Chat",
-				"Dies ist ein Ort in dem die Werwölfe ungestört ihre Diskussionen durchführen können.");
+
+				// Sends the first messages, explaining this Chat
+			MessagesMain.wwChatGreeting(wwChat);
+			Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game);
+		
 		return wwChat;
 	}
 
@@ -346,9 +355,8 @@ public class SemiMainGameState extends GameState {
 		}).block();
 
 		// Sends the first messages, explaining this Chat
-		Globals.createEmbed(deathChat, Color.decode("#5499C7"), "Willkommen im Friedhof-Chat",
-				"Dies ist ein Ort um ungestört über das Spiel zu diskutieren.");
-		printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler");
+		MessagesMain.deathChatGreeting(deathChat, game);
+
 		return deathChat;
 	}
 
@@ -456,14 +464,7 @@ public class SemiMainGameState extends GameState {
 		}
 	}
 
-	private void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title) {
-		var tempList = new ArrayList<Player>();
-		for (var entry : map.entrySet()) {
-			tempList.add(entry.getValue());
-		}
-		Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.WHITE, "",
-				Globals.playerListToString(tempList, title, game));
-	}
+
 
 	@Override
 	public void changeDayPhase() {
@@ -559,6 +560,14 @@ public class SemiMainGameState extends GameState {
 					found = false;
 				}
 			} else if (dayPhase == DayPhase.FIRST_NIGHT) {
+				var foundCommand = firstNight.mapCommands.get(requestedCommand);
+				if (foundCommand != null) {
+					foundCommand.execute(event, parameters, runningInChannel);
+					found = true;
+				} else {
+					found = false;
+				}
+				
 				if (event.getMessage().getContent().get().equalsIgnoreCase("&help")) {
 					event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
 							.block();
@@ -572,8 +581,8 @@ public class SemiMainGameState extends GameState {
 			}
 
 		} else {
-			event.getMessage().getChannel().block().createMessage("Only living Players have accesses to this Command")
-					.block();
+			MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
+			
 			found = true;
 		}
 
@@ -611,9 +620,9 @@ public class SemiMainGameState extends GameState {
 					// if the user typed "Players" it prints a list of all players, if he typed
 					// "Living" it prints only the living players
 					if (param.equalsIgnoreCase("Players")) {
-						printPlayersMap(userModerator.getPrivateChannel().block(), mapPlayers, "Spieler");
+						Globals.printPlayersMap(userModerator.getPrivateChannel().block(), mapPlayers, "Spieler", game);
 					} else if (param.equalsIgnoreCase("Living")) {
-						printPlayersMap(userModerator.getPrivateChannel().block(), livingPlayers, "Noch Lebend");
+						Globals.printPlayersMap(userModerator.getPrivateChannel().block(), livingPlayers, "Noch Lebend", game);
 					}
 				} else {
 					userModerator.getPrivateChannel().block()
@@ -632,7 +641,7 @@ public class SemiMainGameState extends GameState {
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler");
+				Globals.printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
@@ -643,7 +652,7 @@ public class SemiMainGameState extends GameState {
 		Command listLivingCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				printPlayersMap(userModerator.getPrivateChannel().block(), game.livingPlayers, "Alle Spieler");
+				Globals.printPlayersMap(userModerator.getPrivateChannel().block(), game.livingPlayers, "Alle Spieler", game);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}

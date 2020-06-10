@@ -84,7 +84,7 @@ public class FirstNight {
             mapCommands.put("Love", setLoveCommand);
         }
 
-        
+
 
     }
 
