@@ -19,9 +19,7 @@ import wwBot.cards.Role;
 public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
     public List<Role> deck = new ArrayList<>();
-    public Map<String, Card> mapRegisteredCardsSpecs = new TreeMap<String, Card>(
-            String.CASE_INSENSITIVE_ORDER);
-
+    public Map<String, Card> mapRegisteredCardsSpecs = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
     public boolean gameRuleAutomatic = false;
     public User userModerator;
 
@@ -29,6 +27,7 @@ public class LobbyState extends GameState {
         super(game);
         mapRegisteredCardsSpecs = Globals.mapRegisteredCardsSpecs;
         registerGameCommands();
+        MessagesMain.newGameStartMessage(game.mainChannel);
 
     }
 
@@ -114,7 +113,6 @@ public class LobbyState extends GameState {
         gameStateCommands.put("joinedPlayers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedPlayers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedUsers", listJoinedPlayersCommand);
-        gameStateCommands.put("joinedUsers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoined", listJoinedPlayersCommand);
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
@@ -191,10 +189,8 @@ public class LobbyState extends GameState {
 
             var cardName = parameters.get(0);
 
-            if (cardName == null || cardName == "") {
-                msgChannel.createMessage("syntax not correct").block();
-            } else {
-                //gets the Card by its name
+            if (cardName != null && cardName != "") {
+                // gets the Card by its name
                 var requestedCard = mapRegisteredCardsSpecs.get(cardName);
                 if (requestedCard != null) {
                     // calls addCardToDeck and recieves the Status message back
@@ -212,10 +208,12 @@ public class LobbyState extends GameState {
                     } else if (figureDifference > 0) {
                         msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
                     }
+
                 } else {
                     MessagesMain.errorCardNotFound(msgChannel);
                 }
-
+            } else {
+                MessagesMain.errorWrongSyntax(game, msgChannel);
             }
         };
         gameStateCommands.put("addCard", addCardCommand);
@@ -223,29 +221,32 @@ public class LobbyState extends GameState {
 
         // lässt den user eine Karte aus der gewünschten liste entfernen
         Command removeCardCommand = (event, parameters, msgChannel) -> {
-            String cardName = parameters.get(0);
+            if (parameters != null && parameters.size() == 1) {
 
-            if (cardName == null) {
-                msgChannel.createMessage("syntax not correct").block();
-            } else {
-                var requestedCard = mapRegisteredCardsSpecs.get(cardName);
+                var requestedCard = mapRegisteredCardsSpecs.get(parameters.get(0));
+                if (requestedCard != null) {
 
-                // calls removeCardFromDeck and recieves the Status message back
-                String message = removeCardFromDeck(requestedCard, deck);
-                msgChannel.createMessage(message).block();
+                    // calls removeCardFromDeck and recieves the Status message back
+                    String message = removeCardFromDeck(requestedCard, deck);
+                    msgChannel.createMessage(message).block();
 
-                // shows new List without removed Card
-                msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
+                    // shows new List without removed Card
+                    msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
-                // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
-                // und informiert den User über die Differenz
-                var figureDifference = deck.size() - listJoinedUsers.size();
-                if (figureDifference < 0) {
-                    msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
-                } else if (figureDifference > 0) {
-                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+                    // und informiert den User über die Differenz
+                    var figureDifference = deck.size() - listJoinedUsers.size();
+                    if (figureDifference < 0) {
+                        msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
+                    } else if (figureDifference > 0) {
+                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    }
+
+                } else {
+                    MessagesMain.errorCardNotFound(msgChannel);
                 }
-
+            } else {
+                MessagesMain.errorWrongSyntax(game, msgChannel);
             }
         };
         gameStateCommands.put("removeCard", removeCardCommand);
@@ -436,8 +437,9 @@ public class LobbyState extends GameState {
             // prüft ob die Karte in der Liste existiert und entfernt sie falls true
             var removed = false;
             for (Role card : list) {
-                if(card.name.equals(cardSpec.name)){
+                if (card.name.equals(cardSpec.name)) {
                     removed = list.remove(card);
+                    break;
                 }
             }
 
@@ -461,8 +463,8 @@ public class LobbyState extends GameState {
         return message;
     }
 
-    @Override
-    public void exit() {
+
+    public void close() {
 
     }
 }

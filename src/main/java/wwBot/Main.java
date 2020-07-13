@@ -94,9 +94,10 @@ public class Main {
                         event.getMessage().getChannel().block().createMessage("No Game To Delete Found").block();
 
                     } else if (mapRunningGames.containsKey(serverId)) {
+                        mapRunningGames.get(serverId).closeGame();
                         mapRunningGames.remove(serverId);
                         event.getMessage().getChannel().block().createEmbed(spec -> {
-                            spec.setColor(Color.RED).setTitle("Game Deleted").setDescription("");
+                            spec.setColor(Color.RED).setTitle("Game Deleted");
 
                         }).block();
                     }
@@ -118,7 +119,7 @@ public class Main {
                 // prints a list of the commands of this class
                 if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
                     MessagesMain.showCommandsMain(event);
-                }
+                } 
             }
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
             // Game befindet
@@ -202,8 +203,23 @@ public class Main {
 
             }
 
+            if (parameters.get(0).equalsIgnoreCase("Hello") && parameters.get(1).equalsIgnoreCase("There")) {
+
+                event.getMessage().getChannel().block().createEmbed(spec -> {
+                    spec.setImage("https://cdn.discordapp.com/attachments/707699215853289492/728718698646601738/NA9Cn1Q.jpg");
+
+                }).block();
+
+            }
+
+            if (parameters.get(0).equalsIgnoreCase("No") && parameters.get(1).equalsIgnoreCase("U")) {
+
+                event.getMessage().getChannel().block().createMessage("https://tenor.com/view/uno-no-u-reverse-card-reflect-glitch-gif-14951171").block();
+
+            }
+
             // test (remove after)
-            if (event.getMessage().getContent().get().indexOf("I ") != -1) {
+            if (event.getMessage().getContent().get().indexOf("I ") != -1 || event.getMessage().getContent().get().indexOf("I'") != -1) {
 
                 event.getMessage().getChannel().block().createMessage(spec -> {
                     var mssg = "> ..." + content.substring(content.indexOf("I") / 2);
@@ -221,8 +237,14 @@ public class Main {
                         if(youmeanttosay.indexOf("I") != -1 ){
                             youmeanttosay = youmeanttosay.replace("I", "WE");
                         }
+                        if(youmeanttosay.indexOf("i") != -1 ){
+                            youmeanttosay = youmeanttosay.replace(" i ", " we ");
+                        }
                         if(youmeanttosay.indexOf("am") != -1 ){
                             youmeanttosay = youmeanttosay.replace("am", "are");
+                        }
+                        if(youmeanttosay.indexOf("'m") != -1 ){
+                            youmeanttosay = youmeanttosay.replace("'m", "'re");
                         }
                     } 
                     mssg += "\nI think you meant to say: " + youmeanttosay;

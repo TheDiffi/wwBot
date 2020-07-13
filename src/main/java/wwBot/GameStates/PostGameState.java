@@ -24,6 +24,11 @@ public class PostGameState extends GameState {
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
 
+
+    }
+
+    public void close() {
+        
     }
 
 }

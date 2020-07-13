@@ -1,4 +1,4 @@
-package wwBot.GameStates;
+package wwBot.GameStates.DayPhases;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
+import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class Day {
@@ -20,7 +21,7 @@ public class Day {
     Player emptyPlayer;
     Game game;
 
-    Day(Game getGame) {
+    public Day(Game getGame) {
         game = getGame;
 
         // loads all Commands into the mapCommands

@@ -24,14 +24,13 @@ public class MessagesMain {
 	public static void newGameStartMessage(MessageChannel channel) {
 
 		Globals.createEmbed(channel, Color.GREEN, "Created New Game!", "");
-		Globals.createMessage(channel,
-				"Ihr befindet euch nun in der Lobby Phase. Hier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit \""
+		Globals.createEmbed(channel, Color.LIGHT_GRAY, "",
+				"Ihr befindet euch nun in der Lobby Phase. \nHier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit **\""
 						+ prefix
-						+ "join\" dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit \""
+						+ "join\"** dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit **\""
 						+ prefix
-						+ "Start\" gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benutzt oder du nicht weißt was du tun sollst, tippe \""
-						+ prefix + "help\".",
-				false);
+						+ "Start\"** gestartet wird, könnt ihr niemanden mehr trauen.... \nFalls dies das erste mal ist, dass du mich benutzt oder du nicht weißt was du tun sollst, tippe **\""
+						+ prefix + "help\"**.");
 
 	}
 
@@ -51,7 +50,7 @@ public class MessagesMain {
 				"Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.",
 				false);
 		Globals.createMessage(game.mainChannel,
-				"Im Mondschein bestimmen die Dorfbewohner das man dieser Situation ein Ende setzen muss. ", false);
+				"Im Mondschein bestimmen die Dorfbewohner, dass man dieser Situation ein Ende gesetzt werden muss. ", false);
 		Globals.createMessage(game.mainChannel,
 				"Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht",
 				false);
@@ -66,7 +65,6 @@ public class MessagesMain {
 	public static void deathChatGreeting(TextChannel deathChat, Game game) {
 		Globals.createEmbed(deathChat, Color.decode("#5499C7"), "Willkommen im Friedhof-Chat",
 				"Dies ist ein Ort um ungestört über das Spiel zu diskutieren.");
-		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game);
 
 	}
 
@@ -79,7 +77,7 @@ public class MessagesMain {
 	public static void firstNightMod(Game game, ArrayList<Player> listRolesToBeCalled) {
 		// Nachricht an alle
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
-				"```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies aber nur im Privatchat mit mir). ");
+				"```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies im Privatchat mit mir, falls es geheim bleiben soll 😉). ");
 		// der Moderator bekommt eine Liste mit allen Spielern und ihren Rollen, sowie
 		// eine Liste mit allen Rollen, welche aufgerufen werden müssen
 
@@ -109,16 +107,16 @@ public class MessagesMain {
 		// Nachricht an Moderator
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Nacht",
 				"```Nachts erwachen die Werwölfe und einigen Sich auf ein Opfer. Dazu steht ihnen sein geheimer Text-Kanal auf dem Server zur verfügung, auf den auch du Zugriff hast. \nEbenfalls erwachen in dieser Phase einige Spezialkarten.``` \nEs folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
-		var mssg = "";
+		var mssg = "```\n";
 		for (int i = 0; i < sortedRoles.size(); i++) {
-			mssg += Integer.toString(i) + 1 + ") " + sortedRoles.get(i).name + ": ist " + sortedRoles.get(i).role.name
+			mssg += Integer.toString(i) + ") " + sortedRoles.get(i).name + ": ist " + sortedRoles.get(i).role.name
 					+ "\n";
 		}
-		mssg += "Tipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
+		mssg += "```\nTipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
-				"Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg);
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Wichtig!",
-				"Töte die Player mit \"&kill\" erst im Morgengrauen! Beende zuerst die Nacht mit \"&endNight\", und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
+				"Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg); 
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Wichtig! Töte den Player erst im Morgengrauen!",
+				"Beende zuerst die Nacht mit **\"&endNight\"**, und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
 	}
 
 	public static void onMorningAuto(Game game) {
@@ -136,16 +134,16 @@ public class MessagesMain {
 
 	public static void onDayAuto(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG...☀️",
-				"Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
+				"Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit **\""
 						+ prefix
-						+ "vote <playername>\" für eine Person zu Stimmen. Falls der Name eine oder mehrere Personen ein Lehrzeichen beinhaltet, ist man gebeten dieses durch einen Bindestrich(-) zu ersetzen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
+						+ "vote <playername>\"** für eine Person zu Stimmen. Falls der Name eine oder mehrere Personen ein Lehrzeichen beinhaltet, ist man gebeten dieses durch einen Bindestrich(-) zu ersetzen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
 	}
 
 	public static void onDaySemi(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG...☀️",
-				"Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit \""
+				"Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit **\""
 						+ prefix
-						+ "vote <playername>\" für eine Person zu Stimmen. Man kann auch für <nobody> wählen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht. ");
+						+ "vote <playername>\"** für eine Person zu Stimmen. Man kann auch für <nobody> wählen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht. ");
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.YELLOW, "TAG ☀️",
 				"```In dieser Phase stimmen die Spieler ab. Der meistgewählte Spieler wird dir mitgeteilt. Du kannst dir jederzeit mit \""
 						+ prefix + "showVotes\" einen Überblick verschaffen``` \nBeende diese Phase mit\"" + prefix
@@ -197,9 +195,11 @@ public class MessagesMain {
 				"Die Person, welche du am Anfang des Spieles ausgewählt hast, ist gestorben. Durch deine ungwöhnlichen Fähigkeiten hast du seine Identität absorbiert. Du nimmst seine Rolle ein und wirst zu einem/einer "
 						+ unluckyPlayer.role.name);
 		// message to mod
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(), "Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
+		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+				"Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
 		// message to all
-		Globals.createMessage(game.mainChannel, "Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
+		Globals.createMessage(game.mainChannel,
+				"Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
 	}
 
 	public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
@@ -331,7 +331,7 @@ public class MessagesMain {
 	public static void suggestMostVoted(Game game, Player mostVoted, Map<Player, Player> mapVotes) {
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED, "Alle Spieler Haben Gewählt!",
 				"Auf dem Schafott steht **" + mostVoted.user.getMention() + "** der ein/eine **" + mostVoted.role.name
-						+ "** ist.\nMit \"&lynch <Player>\" kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nMit \"&endDay\" kannst du anschließend den Tag beenden (Falls du niemanden Lynchen möchtest kannst du auch gleich mit &endDay fortfahren)");
+						+ "** ist.\nMit \"**&lynch <Player>\"** kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nFalls du niemanden Lynchen möchtest kannst du auch gleich mit &endDay fortfahren");
 
 		var mssg = "";
 		for (var entry : mapVotes.entrySet()) {
@@ -361,7 +361,7 @@ public class MessagesMain {
 	// ---------HELP MESSAGES--------------------------------------------
 
 	public static String getHelpInfo() {
-		var mssg = "*---------------------------*";
+		var mssg = "\n*---------------------------*";
 		mssg += "\n*" + prefix + "help*: TODO: finde gute formulierung";
 		mssg += "\n*" + prefix + "showCommands*: zeigt dir die Liste mit den zurzeit verfügbaren Commands";
 		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obigen Commands nach hilfe wenn du nicht weiter weißt🙂";
@@ -479,6 +479,8 @@ public class MessagesMain {
 	}
 	// ---------Need To Sort--------------------------------------------
 
-
+	public static void errorCommandNotFound(Game game, MessageChannel msgChannel) {
+		msgChannel.createMessage("```diff\n-E: Command Not Found\n```").block();
+	}
 
 }

@@ -3,12 +3,10 @@ package wwBot.GameStates;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -23,6 +21,10 @@ import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
+import wwBot.GameStates.DayPhases.Day;
+import wwBot.GameStates.DayPhases.FirstNight;
+import wwBot.GameStates.DayPhases.Morning;
+import wwBot.GameStates.DayPhases.Night;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.Role;
@@ -30,30 +32,21 @@ import wwBot.cards.RoleDoppelgängerin;
 
 public class SemiMainGameState extends GameState {
 
-	public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
-	public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
-	public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
-			String.CASE_INSENSITIVE_ORDER);
-	public Day day = null;
-	public Night night = null;
-	public Morning morning = null;
-	public FirstNight firstNight = null;
-	public TextChannel wwChat = null;
 	public User userModerator;
-	public TextChannel deathChat = null;
-	public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
 	SemiMainGameState(Game game) {
+		// sets variables
 		super(game);
-		registerStateCommands();
 		mapPlayers = game.mapPlayers;
 		userModerator = game.userModerator;
 
+		// registers Commands; loads the lists and creates the Deathroom
+		registerStateCommands();
 		createDeathChat();
 		reloadGameLists();
 
+		// sends the first messages
 		MessagesMain.onGameStart(game);
-
 		greetMod(game);
 
 	}
@@ -166,7 +159,8 @@ public class SemiMainGameState extends GameState {
 			var dp = mapExistingRoles.get("Doppelgängerin").get(0);
 			var dpRole = (RoleDoppelgängerin) dp.role;
 
-			//if the dead user equals the one chosen by the DP, the DP gets the role of the dead player
+			// if the dead user equals the one chosen by the DP, the DP gets the role of the
+			// dead player
 			if (dpRole.boundTo.user.getId().equals(unluckyPlayer.user.getId())) {
 				dp.role = Role.CreateRole(unluckyPlayer.role.name);
 				MessagesMain.onDoppelgängerinTransformation(game, dp, unluckyPlayer);
@@ -327,7 +321,9 @@ public class SemiMainGameState extends GameState {
 
 		// Sends the first messages, explaining this Chat
 		MessagesMain.wwChatGreeting(wwChat);
-		Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game);
+		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
+		Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
+		
 
 		return wwChat;
 	}
@@ -370,8 +366,10 @@ public class SemiMainGameState extends GameState {
 
 		// Sends the first messages, explaining this Chat
 		MessagesMain.deathChatGreeting(deathChat, game);
+		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game);
 
 		return deathChat;
+
 	}
 
 	private void updateDeathChat() {
@@ -432,9 +430,9 @@ public class SemiMainGameState extends GameState {
 			// ihre eigene Liste
 			if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().role.alive) {
 				listWerwölfe.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Seher")) {
+			} else if (entry.getValue().role.name.equalsIgnoreCase("Seher") && entry.getValue().role.alive) {
 				listSeher.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner")) {
+			} else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner") && entry.getValue().role.alive) {
 				listDorfbewohner.add(entry.getValue());
 			} else {
 				var tempList = Arrays.asList(entry.getValue());
@@ -519,6 +517,14 @@ public class SemiMainGameState extends GameState {
 		}
 		// changes gamestate
 		game.changeGameState(new PostGameState(game, winner));
+	}
+
+	@Override
+	public boolean exit() {
+		deleteDeathChat();
+		deleteWerwolfChat();
+		System.out.println("Successfully closed SemiMainGameState.");
+		return true;
 	}
 
 	// -----------------------------------------------------------

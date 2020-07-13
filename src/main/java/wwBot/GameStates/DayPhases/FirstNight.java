@@ -1,4 +1,4 @@
-package wwBot.GameStates;
+package wwBot.GameStates.DayPhases;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -9,6 +9,8 @@ import java.util.TreeMap;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
+import wwBot.GameStates.GameState;
+import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.RoleDoppelgängerin;
@@ -19,10 +21,10 @@ public class FirstNight {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(String.CASE_INSENSITIVE_ORDER);
 
-    FirstNight(Game getGame) {
+    public FirstNight(Game getGame) {
         game = getGame;
-        game.gameState = gameState;
-        game.gameState.mapExistingRoles = mapExistingRoles;
+        gameState = game.gameState;
+        mapExistingRoles = game.gameState.mapExistingRoles;
         initiateFirstNight();
 
     }

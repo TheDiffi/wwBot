@@ -38,7 +38,6 @@ public class Game {
         mainChannel = givenChannel;
         server = guild;
         registerGameCommands();
-        MessagesMain.newGameStartMessage(mainChannel);
 
         // initializes the first game State
         gameState = new LobbyState(this);
@@ -67,7 +66,7 @@ public class Game {
 
         // found überprüft ob der Command irgentwo gefunden wurde
         if (!found) {
-            event.getMessage().getChannel().block().createMessage("Command Not Found").block();
+            MessagesMain.errorCommandNotFound(this, msgChannel);
         }
 
     }
@@ -155,5 +154,9 @@ public class Game {
         tempList.add(lynchCommand);
         mapPrivateCommands.put(id, tempList);
     }
+
+	public boolean closeGame() {
+        return gameState.exit();
+	}
 
 }

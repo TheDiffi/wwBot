@@ -1,4 +1,4 @@
-package wwBot.GameStates;
+package wwBot.GameStates.DayPhases;
 
 import java.awt.Color;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class Morning {
@@ -13,7 +14,7 @@ public class Morning {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Game game;
 
-    Morning(Game getGame) {
+    public Morning(Game getGame) {
         game = getGame;
         registerDayCommands();
 

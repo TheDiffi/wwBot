@@ -44,8 +44,8 @@ public class Globals {
 			message += "-----------------" + title + "----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				message += "**Karte " + (i + 1) + ":** " + list.get(i).specs.name + " ----- **Value:** " + list.get(i).specs.value
-						+ "\n";
+				message += "**Karte " + (i + 1) + ":** " + list.get(i).specs.name + " ----- **Value:** "
+						+ list.get(i).specs.value + "\n";
 			}
 			if (printTotalValue) {
 				message += "**Total Value**: " + totalCardValue(list);
@@ -53,6 +53,7 @@ public class Globals {
 		}
 		return (message);
 	}
+
 	public static String cardListToString(List<Card> list, String title) {
 		// this variable gets filled with the card infos
 		var message = "";
@@ -86,7 +87,7 @@ public class Globals {
 			message += "-----------------" + title + "----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				message += list.get(i).asMember(game.server.getId()).block().getDisplayName() + "(aka. "
+				message += list.get(i).asMember(game.server.getId()).block().getDisplayName() + " (aka. "
 						+ list.get(i).getUsername() + ")\n";
 			}
 		}
@@ -101,21 +102,25 @@ public class Globals {
 		if (list.isEmpty()) {
 			mssgPlayerList += "seems like this bitch empty";
 		} else {
+
 			// header
-			mssgPlayerList += "-----------------" + title + "----------------------  \n";
+			mssgPlayerList += "-------------------  " + title + "  -------------------";
+			mssgPlayerList += "```diff\n";
 
 			// lists every player in the list
 			for (var entry : list) {
-				if (!entry.role.alive) {
-					mssgPlayerList += "~~";
+				mssgPlayerList += "\n";
+				
+				if (entry.role.specs.friendly) {
+					mssgPlayerList += "+ ";
+				} else {
+					mssgPlayerList += "- ";
 				}
 
-				mssgPlayerList += entry.name + " ---> " + entry.role.name + "\n";
+				mssgPlayerList += entry.name + " ---> " + entry.role.name;
 
-				if (!entry.role.alive) {
-					mssgPlayerList += "~~";
-				}
 			}
+			mssgPlayerList += "\n```";
 		}
 		return mssgPlayerList;
 	}
@@ -125,8 +130,7 @@ public class Globals {
 		for (var entry : map.entrySet()) {
 			tempList.add(entry.getValue());
 		}
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.WHITE, "",
-				Globals.playerListToString(tempList, title, game));
+		Globals.createEmbed(channel, Color.LIGHT_GRAY, "", Globals.playerListToString(tempList, title, game));
 	}
 
 	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und
@@ -151,7 +155,6 @@ public class Globals {
 			channel.createMessage("Card not found").block();
 		}
 	}
-
 
 	public static void createEmbed(MessageChannel channel, Color color, String title, String description) {
 		channel.createEmbed(emb -> {
@@ -208,33 +211,31 @@ public class Globals {
 		return ifFound;
 	}
 
-
-
 	public static String removeDash(String rawName) {
 		var name = rawName.replaceAll("-", " ");
 		return name;
 	}
 
 	public static boolean listContainsCard(List<Role> listDeck, Card card) {
-	    var containsCard = false;
-	
-	    for (Role cardDeck : listDeck) {
-	        if (cardDeck.name.equalsIgnoreCase(card.name)) {
-	            containsCard = true;
-	        }
-	    }
-	    return containsCard;
+		var containsCard = false;
+
+		for (Role cardDeck : listDeck) {
+			if (cardDeck.name.equalsIgnoreCase(card.name)) {
+				containsCard = true;
+			}
+		}
+		return containsCard;
 	}
 
 	static boolean listContainsCard(List<Role> listDeck, Role card) {
-	    var containsCard = false;
-	
-	    for (Role cardDeck : listDeck) {
-	        if (cardDeck.name.equalsIgnoreCase(card.name)) {
-	            containsCard = true;
-	        }
-	    }
-	    return containsCard;
+		var containsCard = false;
+
+		for (Role cardDeck : listDeck) {
+			if (cardDeck.name.equalsIgnoreCase(card.name)) {
+				containsCard = true;
+			}
+		}
+		return containsCard;
 	}
 
 }

@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
@@ -15,14 +14,13 @@ import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 
-// ! WORK IN PROGRESS !
+//----------------------- ! WORK IN PROGRESS ! --------------------------------
 
 public class MainGameState extends GameState {
 
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
     public List<Boolean> nightRolesDone = new ArrayList<>();
-    public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
-            String.CASE_INSENSITIVE_ORDER);
+    
 
     MainGameState(Game game) {
         super(game);

@@ -7,14 +7,12 @@ import wwBot.Player;
 public class Role {
     public Card specs;
     public String name;
-    public boolean friendly;
     public boolean alive = true;
     public Player inLoveWith;
 
-    Role(String name) {
-        specs = Globals.mapRegisteredCardsSpecs.get(name);
-        name = specs.name;
-        friendly = specs.friendly;
+    Role(String roleName) {
+        specs = Globals.mapRegisteredCardsSpecs.get(roleName);
+        name = roleName;
     }
 
     public static Role CreateRole(String name) {
