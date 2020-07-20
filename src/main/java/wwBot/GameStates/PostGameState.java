@@ -2,6 +2,7 @@ package wwBot.GameStates;
 
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class PostGameState extends GameState {
@@ -24,11 +25,19 @@ public class PostGameState extends GameState {
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
 
+        // zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = MessagesMain.showCommandsMain();
+            mssg = "\n" + MessagesMain.showCommandsGame();
+            mssg = "\n" + MessagesMain.showCommandsPostGame();
+            msgChannel.createMessage(mssg);
+        };
+        gameStateCommands.put("showCommands", showCommandsCommand);
 
     }
 
     public void close() {
-        
+
     }
 
 }

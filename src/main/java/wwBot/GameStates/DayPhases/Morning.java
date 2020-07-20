@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 import wwBot.Game;
 import wwBot.Globals;
-import wwBot.GameStates.MessagesMain;
+import wwBot.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class Morning {
@@ -32,14 +32,24 @@ public class Morning {
         Command helpCommand = (event, parameters, msgChannel) -> {
             // replies to the moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                MessagesMain.helpMorningMod(event);
+                MessagesMain.helpMorningMod(msgChannel);
             } else {
-                MessagesMain.helpMorning(event);
+                MessagesMain.helpMorning(msgChannel);
             }
 
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
+
+        // zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = MessagesMain.showCommandsMain();
+            mssg = "\n" + MessagesMain.showCommandsGame();
+            mssg = "\n" + MessagesMain.showCommandsSemiMainGameState();
+            mssg = "\n" + MessagesMain.showCommandsMorning();
+            msgChannel.createMessage(mssg);
+        };
+        mapCommands.put("showCommands", showCommandsCommand);
 
         // ends the Morning and begins the Day
         Command startVotingPhaseCommand = (event, parameters, msgChannel) -> {

@@ -1,57 +1,18 @@
 package wwBot;
 
+import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
-import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.util.Snowflake;
 
+public class CommandHandler {
+    public static String prefix = Main.prefix;
+    public static HashMap<Snowflake, Game> mapRunningGames = Main.mapRunningGames;
 
-public class Main {
-
-    public static HashMap<Snowflake, Game> mapRunningGames = new HashMap<Snowflake, Game>();
-    public static String prefix;
-
-    public static void main(String[] args) throws Exception {
-
-        // initialisiert die Global klasse
-        Globals.loadGlobals();
-
-        // speichert den Prefix in einer Variable
-        prefix = "&";
-
-        // loads the Bot api
-        DiscordClient client = DiscordClientBuilder
-                .create("NzA3NjUzNTk1NjQxOTM4MDMx.Xs1bLg.RLbvLwafgTDyhLYsQZl4pi0hluc").build();
-
-        // looks at every message and calls "handleCommands"
-        client.getEventDispatcher().on(MessageCreateEvent.class).filter(message -> message.getMessage().getAuthor()
-                .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
-                    try {
-                        CommandHandler.handleCommands(event);
-                        // handleCommands(event);
-
-                        
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        event.getMessage().getChannel().block()
-                                .createMessage(
-                                        "avoided critical Exception, pls don't repeat what u did *laughs in pain*")
-                                .block();
-                    }
-                });
-
-        client.login().block();
-    }
-
-
-
-
-
-
-    /* private static void handleCommands(MessageCreateEvent event) {
-
+    public static void handleCommands(MessageCreateEvent event) {
         // messageContent speichert den Inhalt der Message in einer Variable
         // command teilt diesen Inhalt bei einem Leerzeichen und speicher dies in einer
         // Liste
@@ -121,11 +82,11 @@ public class Main {
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)
                 else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
-                    MessagesMain.helpMain(event);
+                    MessagesMain.helpMain(channel);
                 }
                 // prints a list of the commands of this class
                 if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
-                    MessagesMain.showCommandsMain(event);
+                    channel.createMessage(MessagesMain.showCommandsMain());
                 }
             }
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
@@ -134,18 +95,20 @@ public class Main {
             var userId = event.getMessage().getAuthor().get().getId();
             // prüft ob überhaupt ein game läuft
             if (!mapRunningGames.isEmpty()) {
-
                 Game game = null;
                 var isInGame = 0;
                 var tempListGame = mapRunningGames.values();
+
                 // prüft ob der spieler in genau einem spiel ist (Player/Moderator)
                 for (Game tempGame : tempListGame) {
                     if (tempGame.mapPlayers.containsKey(userId)) {
                         isInGame++;
                         game = tempGame;
+
                     } else if (tempGame.userModerator != null && tempGame.userModerator.getId().equals(userId)) {
                         isInGame++;
                         game = tempGame;
+
                     }
                 }
 
@@ -158,10 +121,12 @@ public class Main {
                 } else if (isInGame > 1) {
                     event.getMessage().getChannel().block().createMessage("It looks like you are in **" + isInGame
                             + "** Games. You should only be in one game at a time.").block();
+
                     // falls der spieler in einem Spiel ist
                 } else if (game != null && isInGame == 1) {
                     if (messageContent.startsWith(prefix)) {
                         game.handleCommands(event, event.getMessage().getChannel().block());
+
                     } else {
                         // überprüft, ob in der map dieser User ist, d.h. ob das programm auf eine
                         // Antwort "wartet"
@@ -171,8 +136,10 @@ public class Main {
                             for (int i = 0; i < game.mapPrivateCommands.get(userId).size(); i++) {
                                 var success = game.mapPrivateCommands.get(userId).get(i).execute(event, parameters,
                                         event.getMessage().getChannel().block());
+
                                 if (success) {
                                     game.mapPrivateCommands.get(userId).remove(i);
+
                                 }
                             }
                         } else {
@@ -185,10 +152,14 @@ public class Main {
             } else {
                 event.getMessage().getChannel().block().createMessage("no Game found").block();
             }
-
         }
-
     }
+
+
+
+
+
+
 
     private static void handleMemes(MessageCreateEvent event, List<String> parameters) {
         if (event.getMessage().getContent().isPresent()) {
@@ -279,6 +250,6 @@ public class Main {
                         .createMessage(event.getMember().get().getMention() + " **WE** don't care").block();
             }
         }
-    } */
+    }
 
 }

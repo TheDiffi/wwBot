@@ -8,9 +8,9 @@ import java.util.TreeMap;
 
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.GameState;
-import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.RoleDoppelgängerin;

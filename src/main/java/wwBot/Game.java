@@ -15,7 +15,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
-import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.Role;
@@ -68,38 +67,12 @@ public class Game {
         if (!found) {
             MessagesMain.errorCommandNotFound(this, msgChannel);
         }
-
     }
 
     // loads the Commands available throughout the game into the map gameCommands
     private void registerGameCommands() {
         final var mapRegisteredCards = Globals.mapRegisteredCardsSpecs;
 
-        // ping testet ob der bot antwortet
-        Command pingCommand = (event, parameters, msgChannel) -> {
-
-            msgChannel.createMessage("Pong! Game").block();
-
-        };
-        gameCommands.put("ping", pingCommand);
-
-        // zeigt die verfügbaren commands
-        Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = "";
-            for (var command : gameCommands.entrySet()) {
-                mssg += "\n" + command.getKey();
-            }
-            msgChannel.createMessage(mssg).block();
-        };
-        gameCommands.put("showCommands", showCommandsCommand);
-
-        // basically !help
-        Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.helpLobbyPhase(event);
-
-        };
-        gameCommands.put("help", helpCommand);
-        gameCommands.put("hilfe", helpCommand);
 
         // prints a requested card
         Command showCardCommand = (event, parameters, msgChannel) -> {

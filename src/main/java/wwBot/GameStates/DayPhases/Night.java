@@ -8,8 +8,8 @@ import java.util.TreeMap;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class Night {
@@ -54,14 +54,23 @@ public class Night {
 		Command helpCommand = (event, parameters, msgChannel) -> {
 			// replies to the moderator
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				MessagesMain.helpNightPhaseMod(event);
+				MessagesMain.helpNightPhaseMod(msgChannel);
 			} else {
-				MessagesMain.helpNightPhase(event);
+				MessagesMain.helpNightPhase(msgChannel);
 			}
-
 		};
 		mapCommands.put("help", helpCommand);
 		mapCommands.put("hilfe", helpCommand);
+
+		// zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = MessagesMain.showCommandsMain();
+            mssg = "\n" + MessagesMain.showCommandsGame();
+            mssg = "\n" + MessagesMain.showCommandsSemiMainGameState();
+            mssg = "\n" + MessagesMain.showCommandsNight();
+            msgChannel.createMessage(mssg);
+        };
+        mapCommands.put("showCommands", showCommandsCommand);
 
 		// shows the moderator the list of players
 		Command endNightCommand = (event, parameters, msgChannel) -> {

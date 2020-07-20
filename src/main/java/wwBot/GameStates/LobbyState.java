@@ -12,6 +12,7 @@ import wwBot.Card;
 import wwBot.Deckbuilder;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.cards.Role;
@@ -43,18 +44,17 @@ public class LobbyState extends GameState {
         gameStateCommands.put("ping", pingCommand);
 
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.helpLobbyPhase(event);
+            MessagesMain.helpLobbyPhase(msgChannel);
         };
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = "";
-            for (var command : gameStateCommands.entrySet()) {
-                mssg += "\n*&" + command.getKey() + "*";
-            }
-            msgChannel.createMessage(mssg).block();
+            var mssg = MessagesMain.showCommandsMain();
+            mssg = "\n" + MessagesMain.showCommandsGame();
+            mssg = "\n" + MessagesMain.showCommandsLobby();
+            msgChannel.createMessage(mssg);
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 

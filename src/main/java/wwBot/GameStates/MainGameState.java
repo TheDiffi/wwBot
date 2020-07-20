@@ -10,6 +10,7 @@ import java.util.Map;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;

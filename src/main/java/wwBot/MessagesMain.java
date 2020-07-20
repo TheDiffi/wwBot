@@ -1,4 +1,4 @@
-package wwBot.GameStates;
+package wwBot;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -9,10 +9,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.TextChannel;
-import wwBot.Game;
-import wwBot.Globals;
-import wwBot.Main;
-import wwBot.Player;
 
 public class MessagesMain {
 	public static String prefix = Main.prefix;
@@ -50,7 +46,8 @@ public class MessagesMain {
 				"Unser Dorf wird seit den Tagen des alten Rom von Mythen und Sagen über Werwölfe heimgesucht. Seit kurzem sind diese Mythen zur Wirklichkeit geworden.",
 				false);
 		Globals.createMessage(game.mainChannel,
-				"Im Mondschein bestimmen die Dorfbewohner, dass man dieser Situation ein Ende gesetzt werden muss. ", false);
+				"Im Mondschein bestimmen die Dorfbewohner, dass man dieser Situation ein Ende gesetzt werden muss. ",
+				false);
 		Globals.createMessage(game.mainChannel,
 				"Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht",
 				false);
@@ -114,8 +111,9 @@ public class MessagesMain {
 		}
 		mssg += "```\nTipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
-				"Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg); 
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Wichtig! Töte den Player erst im Morgengrauen!",
+				"Diese Rollen müssen in dieser Reihenfolge aufgerufen werden:", mssg);
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"),
+				"Wichtig! Töte den Player erst im Morgengrauen!",
 				"Beende zuerst die Nacht mit **\"&endNight\"**, und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
 	}
 
@@ -361,33 +359,24 @@ public class MessagesMain {
 	// ---------HELP MESSAGES--------------------------------------------
 
 	public static String getHelpInfo() {
-		var mssg = "\n*---------------------------*";
+		var mssg = "\n* ---- Help ----*";
 		mssg += "\n*" + prefix + "help*: TODO: finde gute formulierung";
 		mssg += "\n*" + prefix + "showCommands*: zeigt dir die Liste mit den zurzeit verfügbaren Commands";
 		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obigen Commands nach hilfe wenn du nicht weiter weißt🙂";
 		return mssg;
 	}
 
-	public static void helpMain(MessageCreateEvent event) {
-		Globals.createMessage(event.getMessage().getChannel().block(), "Schreibe " + prefix
+	public static void helpMain(MessageChannel channel) {
+		Globals.createMessage(channel, "Schreibe " + prefix
 				+ "newGame zm ein neues Spiel zu starten! \n(Je Server kann nur ein Spiel gleichzeitig laufen) \nFalls du weitere Fragen hast kannst du jederzeit "
 				+ prefix
 				+ "showCommands eingeben um dir eine Liste der zurzeit verfügbaren Befehle anzeigen zu lassen oder erneut mit "
 				+ prefix + "help nach hilfe fragen😁", false);
 	}
 
-	public static void showCommandsMain(MessageCreateEvent event) {
-		// mssg +="\n*" + prefix + "";
-		var mssg = "*" + prefix + "newGame*: Startet ein neues Spiel";
-		mssg += "\n*" + prefix + "deleteGame*: Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
-		mssg += getHelpInfo();
-		Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
-	}
-
-	public static void helpLobbyPhase(MessageCreateEvent event) {
+	public static void helpLobbyPhase(MessageChannel channel) {
 		// help
-		Globals.createMessage(event.getMessage().getChannel().block(), "`Ihr könnt dem Dorf beitreten indem ihr \""
-				+ prefix
+		Globals.createMessage(channel, "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
 				+ "join\" eingebt. \nSobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit \""
 				+ prefix
 				+ "buildDeck\" generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit \""
@@ -397,41 +386,93 @@ public class MessagesMain {
 				+ prefix + "start\" starten!*`", false);
 	}
 
-	public static void helpNightPhase(MessageCreateEvent event) {
+	public static void helpNightPhase(MessageChannel channel) {
 		var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschaltet.\n";
-		Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpFirstNightPhase(MessageCreateEvent event) {
+	public static void helpFirstNightPhase(MessageChannel channel) {
 		var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschaltet, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
-		Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpDayPhase(MessageCreateEvent event) {
+	public static void helpDayPhase(MessageChannel channel) {
 		var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
 				+ prefix
 				+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
 				+ prefix + "endDay\" kann der Moderator das Spiel beenden.";
-		Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpMorning(MessageCreateEvent event) {
+	public static void helpMorning(MessageChannel channel) {
 		var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die Opfer der Nacht angekündigt.";
-		Globals.createMessage(event.getMessage().getChannel().block(), mssg, false);
+		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpNightPhaseMod(MessageCreateEvent event) {
-		Globals.createMessage(event.getMessage().getChannel().block(),
+	public static void helpNightPhaseMod(MessageChannel channel) {
+		Globals.createMessage(channel,
 				"Es ist Nacht. In dieser Phase schlafen alle Spieler und der Moderator lässt nach und nach Spezialkarten aufwachen, welche einen einfluss auf den ablauf der Nacht haben. Die Werwölfe einigen sich mittels Werwolf-Chat auf das heutige Opfer.",
 				false);
 	}
 
-	public static void helpMorningMod(MessageCreateEvent event) {
-		Globals.createMessage(event.getMessage().getChannel().block(),
+	public static void helpMorningMod(MessageChannel channel) {
+		Globals.createMessage(channel,
 				"Es ist Tag. In dieser Phase wird auf dem Dorfplatz diskutiert welcher Spieler am ende des Tages öffentlich Hingerichtet werden soll. mit dem Command "
 						+ prefix + "vote <Spielernamen> können alle Lebenden Spieler für eine Person abstimmen.",
 				false);
 
+	}
+
+	public static String showCommandsMain () {
+		// mssg +="\n*" + prefix + "";
+		var mssg = " ---- Bot ----";
+		mssg = "\n*" + prefix + "newGame*: Startet ein neues Spiel";
+		mssg += "\n*" + prefix + "deleteGame*: Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
+		mssg += getHelpInfo();
+		return mssg;
+	}
+
+
+	public static String showCommandsGame() {
+		var mssg = " ---- Utility ----";
+		mssg = "TODO: fill showCommandsLobby";
+
+		return mssg;
+	}
+
+	public static String showCommandsLobby() {
+		var mssg = " ---- Lobby ----";
+		return null;
+	}
+
+	public static String showCommandsPostGame() {
+		var mssg = " ---- PostGame ----";
+
+		return null;
+	}
+
+	public static String showCommandsSemiMainGameState() {
+		var mssg = " ---- Game ----";
+
+		return null;
+	}
+
+	public static String showCommandsDay() {
+		var mssg = " ---- Day ----";
+
+		return null;
+	}
+
+	public static String showCommandsNight() {
+		var mssg = " ---- Night ----";
+
+		return null;
+	}
+
+	public static String showCommandsMorning() {
+		var mssg = " ---- Morning ----";
+
+		return null;
 	}
 
 	// ---------ERROR MESSAGES--------------------------------------------
@@ -477,10 +518,12 @@ public class MessagesMain {
 	public static void errorPlayersIdentical(MessageChannel msgChannel) {
 		msgChannel.createMessage("E: Players are identical. Try again.").block();
 	}
-	// ---------Need To Sort--------------------------------------------
 
 	public static void errorCommandNotFound(Game game, MessageChannel msgChannel) {
 		msgChannel.createMessage("```diff\n-E: Command Not Found\n```").block();
 	}
+	// ---------Need To Sort--------------------------------------------
+
+
 
 }

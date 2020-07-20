@@ -9,8 +9,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
+import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.MessagesMain;
 import wwBot.Interfaces.Command;
 
 public class Day {
@@ -46,11 +46,21 @@ public class Day {
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.helpDayPhase(event);
+            MessagesMain.helpDayPhase(msgChannel);
 
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
+
+        // zeigt die verfügbaren commands
+        Command showCommandsCommand = (event, parameters, msgChannel) -> {
+            var mssg = MessagesMain.showCommandsMain();
+            mssg = "\n" + MessagesMain.showCommandsGame();
+            mssg = "\n" + MessagesMain.showCommandsSemiMainGameState();
+            mssg = "\n" + MessagesMain.showCommandsDay();
+            msgChannel.createMessage(mssg);
+        };
+        mapCommands.put("showCommands", showCommandsCommand);
 
         // gibt ein Embed mit den Votes aus
         Command listVotesCommand = (event, parameters, msgChannel) -> {
