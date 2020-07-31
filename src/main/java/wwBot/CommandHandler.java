@@ -78,15 +78,19 @@ public class CommandHandler {
                 else if (mapRunningGames.containsKey(serverId)) {
                     var game = mapRunningGames.get(serverId);
 
+                    // ------------------------
                     game.handleCommands(event, event.getMessage().getChannel().block());
+                    // ------------------------
+
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)
                 else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
-                    MessagesMain.helpMain(channel);
+                    MessagesMain.sendHelpMain(channel);
+
                 }
                 // prints a list of the commands of this class
                 if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
-                    channel.createMessage(MessagesMain.showCommandsMain());
+                    Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesMain.getCommandsMain());
                 }
             }
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem

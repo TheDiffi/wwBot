@@ -44,19 +44,24 @@ public class LobbyState extends GameState {
         gameStateCommands.put("ping", pingCommand);
 
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.helpLobbyPhase(msgChannel);
+            MessagesMain.sendHelpLobbyPhase(msgChannel);
+
         };
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = MessagesMain.showCommandsMain();
-            mssg = "\n" + MessagesMain.showCommandsGame();
-            mssg = "\n" + MessagesMain.showCommandsLobby();
-            msgChannel.createMessage(mssg);
+            var mssg = MessagesMain.getCommandsMain();
+            mssg += "\n" + MessagesMain.getCommandsGame();
+            mssg += "\n" + MessagesMain.getCommandsLobby();
+            mssg += "\n" + MessagesMain.getHelpInfo();
+            Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
+
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
+        gameStateCommands.put("sC", showCommandsCommand);
+
 
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
@@ -65,8 +70,9 @@ public class LobbyState extends GameState {
             // falls es einen moderator gibt darf dieser nicht joinen
             if (!gameRuleAutomatic && userModerator != null && user.getId().equals(userModerator.getId())) {
                 bool = false;
-                // mit einer DM soll man nicht joinen können
+                
             }
+            // mit einer DM soll man nicht joinen können
             if (!event.getGuildId().isPresent()) {
                 bool = false;
             }

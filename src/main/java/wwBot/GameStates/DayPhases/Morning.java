@@ -32,24 +32,15 @@ public class Morning {
         Command helpCommand = (event, parameters, msgChannel) -> {
             // replies to the moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                MessagesMain.helpMorningMod(msgChannel);
+                MessagesMain.sendHelpMorningMod(msgChannel);
             } else {
-                MessagesMain.helpMorning(msgChannel);
+                MessagesMain.sendHelpMorning(msgChannel);
             }
 
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
 
-        // zeigt die verfügbaren commands
-        Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = MessagesMain.showCommandsMain();
-            mssg = "\n" + MessagesMain.showCommandsGame();
-            mssg = "\n" + MessagesMain.showCommandsSemiMainGameState();
-            mssg = "\n" + MessagesMain.showCommandsMorning();
-            msgChannel.createMessage(mssg);
-        };
-        mapCommands.put("showCommands", showCommandsCommand);
 
         // ends the Morning and begins the Day
         Command startVotingPhaseCommand = (event, parameters, msgChannel) -> {

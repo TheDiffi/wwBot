@@ -54,7 +54,7 @@ public class Night {
 		Command helpCommand = (event, parameters, msgChannel) -> {
 			// replies to the moderator
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				MessagesMain.helpNightPhaseMod(msgChannel);
+				MessagesMain.sendHelpNightPhaseMod(msgChannel);
 			} else {
 				MessagesMain.helpNightPhase(msgChannel);
 			}
@@ -62,15 +62,6 @@ public class Night {
 		mapCommands.put("help", helpCommand);
 		mapCommands.put("hilfe", helpCommand);
 
-		// zeigt die verfügbaren commands
-        Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = MessagesMain.showCommandsMain();
-            mssg = "\n" + MessagesMain.showCommandsGame();
-            mssg = "\n" + MessagesMain.showCommandsSemiMainGameState();
-            mssg = "\n" + MessagesMain.showCommandsNight();
-            msgChannel.createMessage(mssg);
-        };
-        mapCommands.put("showCommands", showCommandsCommand);
 
 		// shows the moderator the list of players
 		Command endNightCommand = (event, parameters, msgChannel) -> {

@@ -359,31 +359,39 @@ public class MessagesMain {
 	// ---------HELP MESSAGES--------------------------------------------
 
 	public static String getHelpInfo() {
-		var mssg = "\n* ---- Help ----*";
-		mssg += "\n*" + prefix + "help*: TODO: finde gute formulierung";
-		mssg += "\n*" + prefix + "showCommands*: zeigt dir die Liste mit den zurzeit verfügbaren Commands";
-		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit sen zwei obigen Commands nach hilfe wenn du nicht weiter weißt🙂";
+		var mssg = "\n ------ Help ------";
+		mssg += "\n" + "`" + prefix + "help:` TODO: finde gute formulierung";
+		mssg += "\n" + "`" + prefix + "showCommands:` zeigt dir die Liste mit den zurzeit verfügbaren Commands";
+		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
 		return mssg;
 	}
 
-	public static void helpMain(MessageChannel channel) {
-		Globals.createMessage(channel, "Schreibe " + prefix
-				+ "newGame zm ein neues Spiel zu starten! \n(Je Server kann nur ein Spiel gleichzeitig laufen) \nFalls du weitere Fragen hast kannst du jederzeit "
-				+ prefix
-				+ "showCommands eingeben um dir eine Liste der zurzeit verfügbaren Befehle anzeigen zu lassen oder erneut mit "
-				+ prefix + "help nach hilfe fragen😁", false);
+	public static String getModHelpInfo() {
+		var mssg = "\n ------ Help ------";
+		mssg += "\n" + "`" + prefix + "help:` TODO: finde gute formulierung";
+		mssg += "\n" + "`" + prefix + "showCommands:` zeigt dir die Liste mit den zurzeit verfügbaren Commands";
+		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
+		return mssg;
 	}
 
-	public static void helpLobbyPhase(MessageChannel channel) {
-		// help
-		Globals.createMessage(channel, "`Ihr könnt dem Dorf beitreten indem ihr \"" + prefix
-				+ "join\" eingebt. \nSobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit \""
+	public static void sendHelpMain(MessageChannel channel) {
+		Globals.createEmbed(channel, Color.BLACK, "", "Schreibe **" + prefix
+				+ "newGame** zm ein neues Spiel zu starten! \n(Je Server kann nur ein Spiel gleichzeitig laufen) \nFalls du weitere Fragen hast kannst du jederzeit **"
 				+ prefix
-				+ "buildDeck\" generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit \""
-				+ prefix + "addCard <Karte>\" und \"" + prefix + "removeCard <Karte>\" bearbeitet werden. \nMit \""
-				+ prefix + "gamerule manual\" und \"" + prefix
-				+ "gamerule automatic\"(coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein(Coming soon)\n*Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit \""
-				+ prefix + "start\" starten!*`", false);
+				+ "showCommands** eingeben um dir eine Liste der zurzeit verfügbaren Befehle anzeigen zu lassen oder erneut mit **"
+				+ prefix + "help** nach hilfe fragen 😁");
+	}
+
+	public static void sendHelpLobbyPhase(MessageChannel channel) {
+		// help
+		Globals.createEmbed(channel, Color.BLACK, "", " - Ihr könnt dem Dorf beitreten indem ihr **" + prefix
+				+ "join** eingebt. \n - Sobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit **"
+				+ prefix
+				+ "buildDeck** generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit **"
+				+ prefix + "addCard <Karte>** und **" + prefix + "removeCard <Karte>** bearbeitet werden. \n ~~- Mit **"
+				+ prefix + "gamerule manual** und **" + prefix
+				+ "gamerule automatic** (coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein~~ (Coming soon)\n - Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit **"
+				+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
 	public static void helpNightPhase(MessageChannel channel) {
@@ -396,7 +404,7 @@ public class MessagesMain {
 		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpDayPhase(MessageChannel channel) {
+	public static void sendHelpDayPhase(MessageChannel channel) {
 		var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
 				+ prefix
 				+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
@@ -404,18 +412,18 @@ public class MessagesMain {
 		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpMorning(MessageChannel channel) {
+	public static void sendHelpMorning(MessageChannel channel) {
 		var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die Opfer der Nacht angekündigt.";
 		Globals.createMessage(channel, mssg, false);
 	}
 
-	public static void helpNightPhaseMod(MessageChannel channel) {
+	public static void sendHelpNightPhaseMod(MessageChannel channel) {
 		Globals.createMessage(channel,
 				"Es ist Nacht. In dieser Phase schlafen alle Spieler und der Moderator lässt nach und nach Spezialkarten aufwachen, welche einen einfluss auf den ablauf der Nacht haben. Die Werwölfe einigen sich mittels Werwolf-Chat auf das heutige Opfer.",
 				false);
 	}
 
-	public static void helpMorningMod(MessageChannel channel) {
+	public static void sendHelpMorningMod(MessageChannel channel) {
 		Globals.createMessage(channel,
 				"Es ist Tag. In dieser Phase wird auf dem Dorfplatz diskutiert welcher Spieler am ende des Tages öffentlich Hingerichtet werden soll. mit dem Command "
 						+ prefix + "vote <Spielernamen> können alle Lebenden Spieler für eine Person abstimmen.",
@@ -423,57 +431,107 @@ public class MessagesMain {
 
 	}
 
-	public static String showCommandsMain () {
-		// mssg +="\n*" + prefix + "";
-		var mssg = " ---- Bot ----";
-		mssg = "\n*" + prefix + "newGame*: Startet ein neues Spiel";
-		mssg += "\n*" + prefix + "deleteGame*: Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
-		mssg += getHelpInfo();
+	// Syntax: mssg += "\n" + "`" + prefix + "<Command>" + "`" + "<Description>"
+	public static String getCommandsMain() {
+		String mssg = " ---- Bot ---- ";
+		mssg += "\n" + "`" + prefix + "newGame:" + "`" + "Startet ein neues Spiel";
+		mssg += "\n" + "`" + prefix + "deleteGame:" + "`"
+				+ "Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
+
 		return mssg;
 	}
 
-
-	public static String showCommandsGame() {
+	public static String getCommandsGame() {
 		var mssg = " ---- Utility ----";
-		mssg = "TODO: fill showCommandsLobby";
+
+		mssg += mssg += "\n" + "`" + prefix + "TODO: fill showCommandsGame";
 
 		return mssg;
 	}
 
-	public static String showCommandsLobby() {
+	public static String getCommandsLobby() {
 		var mssg = " ---- Lobby ----";
-		return null;
+		mssg += "TODO: fill showCommandsLobby";
+
+		return mssg;
 	}
 
-	public static String showCommandsPostGame() {
+	public static String getCommandsPostGame() {
 		var mssg = " ---- PostGame ----";
+		mssg += "TODO: fill showCommandsPostGame";
 
-		return null;
+		return mssg;
 	}
 
-	public static String showCommandsSemiMainGameState() {
+	public static String getCommandsSemiMainGameState() {
 		var mssg = " ---- Game ----";
+		mssg += "TODO: fill getCommandsSemiMainGameState";
 
-		return null;
+		return mssg;
 	}
 
-	public static String showCommandsDay() {
-		var mssg = " ---- Day ----";
+	public static String getCommandsDayPhases(boolean mod) {
+		var mssg = "";
+		if (!mod) {
+			mssg = MessagesMain.getCommandsNight();
+			mssg += "\n" + MessagesMain.getCommandsMorning();
+			mssg += "\n" + MessagesMain.getCommandsDay();
 
-		return null;
+		} else {
+			mssg = "\n" + MessagesMain.getModCommandsNight();
+			mssg += "\n" + MessagesMain.getModCommandsMorning();
+			mssg += "\n" + MessagesMain.getModCommandsDay();
+
+		}
+		return mssg;
 	}
 
-	public static String showCommandsNight() {
+	public static String getCommandsNight() {
 		var mssg = " ---- Night ----";
+		mssg += "TODO: fill getCommandsNight";
 
-		return null;
+		return mssg;
 	}
 
-	public static String showCommandsMorning() {
+	public static String getCommandsMorning() {
 		var mssg = " ---- Morning ----";
+		mssg += "TODO: fill getCommandsMorning";
 
-		return null;
+		return mssg;
 	}
+
+	public static String getCommandsDay() {
+		var mssg = " ---- Day ----";
+		mssg += "TODO: fill getCommandsDay";
+
+		return mssg;
+	}
+
+	public static String getModCommandsSemiMainGameState() {
+		var mssg = " ---- Game ----";
+		mssg += "TODO: fill getCommandsSemiMainGameState";
+
+		return mssg;
+	}
+
+	public static String getModCommandsNight() {
+		var mssg = " ---- Night ----";
+		mssg += "TODO: fill getCommandsNight";
+		return mssg;
+	}
+
+	public static String getModCommandsMorning() {
+		var mssg = " ---- Morning ----";
+		mssg += "TODO: fill getCommandsMorning";
+		return mssg;
+	}
+
+	public static String getModCommandsDay() {
+		var mssg = " ---- Day ----";
+		mssg += "TODO: fill getCommandsDay";
+		return mssg;
+	}
+
 
 	// ---------ERROR MESSAGES--------------------------------------------
 
@@ -523,7 +581,5 @@ public class MessagesMain {
 		msgChannel.createMessage("```diff\n-E: Command Not Found\n```").block();
 	}
 	// ---------Need To Sort--------------------------------------------
-
-
 
 }

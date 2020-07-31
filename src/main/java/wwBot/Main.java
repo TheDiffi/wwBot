@@ -30,9 +30,7 @@ public class Main {
                 .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
                     try {
                         CommandHandler.handleCommands(event);
-                        // handleCommands(event);
 
-                        
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         event.getMessage().getChannel().block()

@@ -323,8 +323,7 @@ public class SemiMainGameState extends GameState {
 		// Sends the first messages, explaining this Chat
 		MessagesMain.wwChatGreeting(wwChat);
 		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-		Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
-		
+				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
 
 		return wwChat;
 	}
@@ -617,13 +616,27 @@ public class SemiMainGameState extends GameState {
 
 		// zeigt die verfügbaren commands
 		Command showCommandsCommand = (event, parameters, msgChannel) -> {
-			var mssg = "";
-			for (var command : gameStateCommands.entrySet()) {
-				mssg += "\n*&" + command.getKey() + "*";
-			}
-			msgChannel.createMessage(mssg).block();
+			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
+			mssg += "\n" + MessagesMain.getCommandsMain();
+			mssg += "\n" + MessagesMain.getCommandsGame();
+			mssg += "\n" + MessagesMain.getCommandsSemiMainGameState();
+			mssg += "\n" + MessagesMain.getCommandsDayPhases(false);
+			mssg += "\n" + MessagesMain.getHelpInfo();
+			Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
 		};
 		gameStateCommands.put("showCommands", showCommandsCommand);
+		gameStateCommands.put("sC", showCommandsCommand);
+
+		// zeigt die verfügbaren commands
+		Command showModCommandsCommand = (event, parameters, msgChannel) -> {
+			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
+			mssg += "\n" + MessagesMain.getModCommandsSemiMainGameState();
+		
+			mssg += "\n" + MessagesMain.getModHelpInfo();
+			Globals.createEmbed(msgChannel, Color.ORANGE, "Moderator Commands", mssg);
+		};
+		gameStateCommands.put("showModCommands", showModCommandsCommand);
+		gameStateCommands.put("modCommands", showModCommandsCommand);
 
 		// shows the moderator the list of players (alive or all)
 		Command printListCommand = (event, parameters, msgChannel) -> {

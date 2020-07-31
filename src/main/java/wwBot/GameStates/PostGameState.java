@@ -5,6 +5,8 @@ import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Interfaces.Command;
 
+import java.awt.Color;
+
 public class PostGameState extends GameState {
 
     PostGameState(Game game, int winner) {
@@ -27,10 +29,12 @@ public class PostGameState extends GameState {
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            var mssg = MessagesMain.showCommandsMain();
-            mssg = "\n" + MessagesMain.showCommandsGame();
-            mssg = "\n" + MessagesMain.showCommandsPostGame();
-            msgChannel.createMessage(mssg);
+            var mssg = MessagesMain.getCommandsMain();
+            mssg += "\n" + MessagesMain.getCommandsGame();
+            mssg += "\n" + MessagesMain.getCommandsPostGame();
+            mssg += "\n" + MessagesMain.getHelpInfo();
+
+            Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 

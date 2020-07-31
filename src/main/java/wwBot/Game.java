@@ -1,5 +1,6 @@
 package wwBot;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -110,6 +111,16 @@ public class Game {
         };
         gameCommands.put("allCards", allCardsCommand);
         gameCommands.put("listAllCards", allCardsCommand);
+
+        // prints a link to the official manual
+        Command showManualCommand = (event, parameters, msgChannel) -> {
+            Globals.createEmbed(msgChannel, Color.BLACK, "", "To view the official manual go here ---> [https://www.prometheusshop.de/media/pdf/d3/5d/36/werw-lfe-spielanleitung.pdf]");
+
+        };
+        gameCommands.put("Anleitung", showManualCommand);
+        gameCommands.put("Handbuch", showManualCommand);
+        gameCommands.put("Manual", showManualCommand);
+
 
     }
 
