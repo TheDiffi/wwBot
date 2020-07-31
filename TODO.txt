@@ -142,3 +142,47 @@ Card Images
 
 https://trello.com/b/2U8GlUBQ/werwolf-bot
 
+<<<<<<< HEAD
+LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
+THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
+Stalker: kennt das liebespaar
+Friedhofwächter, kann jede Nacht einem toden eine (ja/nein/ich kann deine frage nicht antworten) frage stellen. (tode müssen die warheis sagen) (+3)
+
+
+
+
+
+
+WICHTIG!!!! 
+
+        tell ww and mod about the WerWolfChat
+        death players muted + death players 
+        add vote none
+        count votes in player object
+        add Showvotes
+        give info about endMorning to moderator 
+        show livingroles doesent work
+        fill night help 
+        fill morning help
+        fehlermeldung showCard CradNotFound
+
+        (set moderator to auto/manual cleanup)
+        (if not auto set Nickname to Moderator)
+
+
+
+xx add message (on vote) dass bei einem namen ein - statt einem leerzeichen gemacht werden muss (check!)
+xx entMute players!! (check!)
+xx mute everyone in first NIGHT (CHECK!)
+xx add command showjoinedplayers (CHECK!)
+add command list verfügbare karten in deckbuilder (CHECK!)
+xx give info about voting (check!)
+       
+xx no morning after first night/straight to day (check!)
+xx showvotes after all voted (embed) (check!)
+xx fixing player roles display to moderator (check!)
+        
+!!CRITICAL: cant vote for players with whitespace (mby fixed)
+!!CRITICAL: detect when game end doesent work (mby fixed)
+=======
+>>>>>>> c4d200f4ec6813238e448acda34801b29565c2ea

@@ -21,6 +21,10 @@ public class Night {
 		registerNightCommands();
 		initiateNight();
 
+
+
+		// TODO: tell WW and mod about this channel
+
 	}
 
 	private void initiateNight() {
