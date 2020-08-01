@@ -19,6 +19,7 @@ import wwBot.GameStates.LobbyState;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.Role;
+import wwBot.cards.Card;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -74,7 +75,6 @@ public class Game {
     private void registerGameCommands() {
         final var mapRegisteredCards = Globals.mapRegisteredCardsSpecs;
 
-
         // prints a requested card
         Command showCardCommand = (event, parameters, msgChannel) -> {
             String cardName = parameters.get(0);
@@ -93,6 +93,14 @@ public class Game {
         Command showDeckCommand = (event, parameters, msgChannel) -> {
             // prints the deck
             msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
+
+            // prints the moderator if there is one
+            if (!gameRuleAutomatic && userModerator != null) {
+                msgChannel
+                        .createMessage("Moderator: " + userModerator.asMember(server.getId()).block().getDisplayName());
+            } else if (!gameRuleAutomatic && userModerator == null) {
+                msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
+            }
 
         };
         gameCommands.put("Deck", showDeckCommand);
@@ -114,13 +122,13 @@ public class Game {
 
         // prints a link to the official manual
         Command showManualCommand = (event, parameters, msgChannel) -> {
-            Globals.createEmbed(msgChannel, Color.BLACK, "", "To view the official manual go here ---> [https://www.prometheusshop.de/media/pdf/d3/5d/36/werw-lfe-spielanleitung.pdf]");
+            Globals.createEmbed(msgChannel, Color.BLACK, "",
+                    "To view the official manual go here ---> [https://www.prometheusshop.de/media/pdf/d3/5d/36/werw-lfe-spielanleitung.pdf]");
 
         };
         gameCommands.put("Anleitung", showManualCommand);
         gameCommands.put("Handbuch", showManualCommand);
         gameCommands.put("Manual", showManualCommand);
-
 
     }
 
@@ -139,8 +147,8 @@ public class Game {
         mapPrivateCommands.put(id, tempList);
     }
 
-	public boolean closeGame() {
+    public boolean closeGame() {
         return gameState.exit();
-	}
+    }
 
 }

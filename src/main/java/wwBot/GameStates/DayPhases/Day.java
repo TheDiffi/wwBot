@@ -46,7 +46,7 @@ public class Day {
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.sendHelpDayPhase(msgChannel);
+            MessagesMain.sendHelpDay(msgChannel);
 
         };
         mapCommands.put("help", helpCommand);

@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
-import wwBot.Card;
+import wwBot.cards.Card;
 import wwBot.Deckbuilder;
 import wwBot.Game;
 import wwBot.Globals;
@@ -44,7 +44,7 @@ public class LobbyState extends GameState {
         gameStateCommands.put("ping", pingCommand);
 
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.sendHelpLobbyPhase(msgChannel);
+            MessagesMain.sendHelpLobby(msgChannel);
 
         };
         gameStateCommands.put("help", helpCommand);
@@ -119,7 +119,6 @@ public class LobbyState extends GameState {
         gameStateCommands.put("joinedPlayers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedPlayers", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedUsers", listJoinedPlayersCommand);
-        gameStateCommands.put("listJoined", listJoinedPlayersCommand);
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
         Command buildDeckCommand = (event, parameters, msgChannel) -> {

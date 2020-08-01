@@ -8,6 +8,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import wwBot.cards.Card;
+
+
 public class ReadJSONCard {
 
     @SuppressWarnings("unchecked")

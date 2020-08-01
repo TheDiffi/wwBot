@@ -620,7 +620,6 @@ public class SemiMainGameState extends GameState {
 			mssg += "\n" + MessagesMain.getCommandsMain();
 			mssg += "\n" + MessagesMain.getCommandsGame();
 			mssg += "\n" + MessagesMain.getCommandsSemiMainGameState();
-			mssg += "\n" + MessagesMain.getCommandsDayPhases(false);
 			mssg += "\n" + MessagesMain.getHelpInfo();
 			Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
 		};
@@ -630,15 +629,15 @@ public class SemiMainGameState extends GameState {
 		// zeigt die verfügbaren commands
 		Command showModCommandsCommand = (event, parameters, msgChannel) -> {
 			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
-			mssg += "\n" + MessagesMain.getModCommandsSemiMainGameState();
-		
-			mssg += "\n" + MessagesMain.getModHelpInfo();
+			mssg += "\n" + MessagesMain.getModCommands();
+			mssg += "\n" + MessagesMain.getHelpInfo();
+
 			Globals.createEmbed(msgChannel, Color.ORANGE, "Moderator Commands", mssg);
 		};
 		gameStateCommands.put("showModCommands", showModCommandsCommand);
 		gameStateCommands.put("modCommands", showModCommandsCommand);
 
-		// shows the moderator the list of players (alive or all)
+		/* // shows the moderator the list of players (alive or all)
 		Command printListCommand = (event, parameters, msgChannel) -> {
 
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
@@ -665,8 +664,8 @@ public class SemiMainGameState extends GameState {
 
 		};
 		gameStateCommands.put("printList", printListCommand);
-		gameStateCommands.put("showList", printListCommand);
-
+		gameStateCommands.put("list", printListCommand);
+ */
 		// prints the living players and their role
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
@@ -759,11 +758,17 @@ public class SemiMainGameState extends GameState {
 		Command killCommand = (event, parameters, msgChannel) -> {
 			// only the moderator can use this command
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				if (parameters.size() == 2) {
-					var causedBy = parameters.get(1);
+				if (parameters.size() == 2 || parameters.size() == 1) {
+
 					// finds the requested Player
 					var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
 							game.livingPlayers, game);
+
+					//stores the cause
+					var causedBy = "null";
+					if (parameters.size() == 2) {
+						causedBy = parameters.get(1);
+					}
 
 					if (unluckyPlayer != null && (Globals.mapRegisteredCardsSpecs.containsKey(causedBy)
 							|| causedBy.equalsIgnoreCase("Null"))) {
@@ -789,59 +794,6 @@ public class SemiMainGameState extends GameState {
 		gameStateCommands.put("kill", killCommand);
 
 	}
-
-	// -------------------- First Night --------------------------
-
-	/*
-	 * private void initiateFirstNight() {
-	 * 
-	 * setMuteAllPlayers(game.livingPlayers, true);
-	 * 
-	 * var listRolesToBeCalled = new ArrayList<Player>(); var uniqueRolesInThisPhase
-	 * = new ArrayList<String>();
-	 * 
-	 * wwChat = createWerwolfChat();
-	 * 
-	 * // generates which Roles need to be called
-	 * 
-	 * uniqueRolesInThisPhase.add("Günstling"); uniqueRolesInThisPhase.add("Amor");
-	 * uniqueRolesInThisPhase.add("Doppelgängerin"); for (String role :
-	 * uniqueRolesInThisPhase) { if (mapExistingRoles.containsKey(role)) {
-	 * listRolesToBeCalled.add(mapExistingRoles.get(role).get(0)); } }
-	 * 
-	 * if (mapExistingRoles.containsKey("Werwolf")) { for (Player player :
-	 * mapExistingRoles.get("Werwolf")) { listRolesToBeCalled.add(player); } }
-	 * 
-	 * if (mapExistingRoles.containsKey("Seher")) { for (Player player :
-	 * mapExistingRoles.get("Seher")) { listRolesToBeCalled.add(player); } }
-	 * 
-	 * MessagesMain.firstNightMod(game, listRolesToBeCalled);
-	 * 
-	 * if (mapExistingRoles.get("Günstling") != null) { var privateChannel =
-	 * mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
-	 * 
-	 * MessagesMain.günstlingMessage(privateChannel, mapExistingRoles, game); }
-	 * 
-	 * endFirstNight();
-	 * 
-	 * }
-	 * 
-	 * private void endFirstNight() {
-	 * Globals.createEmbed(userModerator.getPrivateChannel().block(), Color.orange,
-	 * "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\""
-	 * , "PS: niemand stirbt in der ersten Nacht");
-	 * 
-	 * // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
-	 * PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> { if
-	 * (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang") &&
-	 * event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-	 * setMuteAllPlayers(game.livingPlayers, false); deleteWerwolfChat();
-	 * changeDayPhase(); return true;
-	 * 
-	 * } else { return false; } };
-	 * 
-	 * game.addPrivateCommand(userModerator.getId(), sonnenaufgangCommand); }
-	 */
 
 }
 

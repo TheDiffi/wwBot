@@ -225,7 +225,7 @@ public class MessagesMain {
 
 	public static void remindAboutPrinz(Game game) {
 		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"Wenn der Prinz duch \"" + prefix + "lynch\" stirbt, zeigt er seine Identität und überlebt.", false);
+				"Wenn der Prinz duch \"" + prefix + "lynch\" stirbt, zeigt er seine Identität und überlebt.");
 	}
 
 	public static void prinzSurvivesLynching(Game game) {
@@ -348,29 +348,25 @@ public class MessagesMain {
 
 	public static void votePlayer(Game game, Player voter, Player votedFor) {
 		Globals.createMessage(game.mainChannel,
-				voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!", false);
+				voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!");
 	}
 
 	public static void voteNobody(Game game, Player voter) {
-		Globals.createMessage(game.mainChannel, voter.user.getMention() + " will niemanden lynchen.", false);
+		Globals.createMessage(game.mainChannel, voter.user.getMention() + " will niemanden lynchen.");
 
 	}
 
 	// ---------HELP MESSAGES--------------------------------------------
 
-	public static String getHelpInfo() {
-		var mssg = "\n ------ Help ------";
-		mssg += "\n" + "`" + prefix + "help:` TODO: finde gute formulierung";
-		mssg += "\n" + "`" + prefix + "showCommands:` zeigt dir die Liste mit den zurzeit verfügbaren Commands";
-		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
-		return mssg;
+	public static String buildDescription(String command, String description) {
+		return "\n" + "`" + prefix + command + ":` " + description;
 	}
 
-	public static String getModHelpInfo() {
+	public static String getHelpInfo() {
 		var mssg = "\n ------ Help ------";
-		mssg += "\n" + "`" + prefix + "help:` TODO: finde gute formulierung";
-		mssg += "\n" + "`" + prefix + "showCommands:` zeigt dir die Liste mit den zurzeit verfügbaren Commands";
-		mssg += "\nVergiss nicht: Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
+		mssg += buildDescription("help", "Gibt dir Rat je nach deiner aktuellen Lage");
+		mssg += buildDescription("showCommands", "Listet alle dir zurzeit verfügbaren Befehle auf");
+		mssg += "\n**Vergiss nicht:** Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
 		return mssg;
 	}
 
@@ -382,7 +378,7 @@ public class MessagesMain {
 				+ prefix + "help** nach hilfe fragen 😁");
 	}
 
-	public static void sendHelpLobbyPhase(MessageChannel channel) {
+	public static void sendHelpLobby(MessageChannel channel) {
 		// help
 		Globals.createEmbed(channel, Color.BLACK, "", " - Ihr könnt dem Dorf beitreten indem ihr **" + prefix
 				+ "join** eingebt. \n - Sobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit **"
@@ -394,144 +390,146 @@ public class MessagesMain {
 				+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
-	public static void helpNightPhase(MessageChannel channel) {
+	public static void sendHelpNight(MessageChannel channel) {
 		var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschaltet.\n";
-		Globals.createMessage(channel, mssg, false);
+		Globals.createMessage(channel, mssg);
 	}
 
-	public static void helpFirstNightPhase(MessageChannel channel) {
+	public static void helpFirstNight(MessageChannel channel) {
 		var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschaltet, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
-		Globals.createMessage(channel, mssg, false);
-	}
-
-	public static void sendHelpDayPhase(MessageChannel channel) {
-		var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
-				+ prefix
-				+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
-				+ prefix + "endDay\" kann der Moderator das Spiel beenden.";
-		Globals.createMessage(channel, mssg, false);
+		Globals.createMessage(channel, mssg);
 	}
 
 	public static void sendHelpMorning(MessageChannel channel) {
 		var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die Opfer der Nacht angekündigt.";
-		Globals.createMessage(channel, mssg, false);
+		Globals.createMessage(channel, mssg);
 	}
 
-	public static void sendHelpNightPhaseMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-				"Es ist Nacht. In dieser Phase schlafen alle Spieler und der Moderator lässt nach und nach Spezialkarten aufwachen, welche einen einfluss auf den ablauf der Nacht haben. Die Werwölfe einigen sich mittels Werwolf-Chat auf das heutige Opfer.",
-				false);
-	}
-
-	public static void sendHelpMorningMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-				"Es ist Tag. In dieser Phase wird auf dem Dorfplatz diskutiert welcher Spieler am ende des Tages öffentlich Hingerichtet werden soll. mit dem Command "
-						+ prefix + "vote <Spielernamen> können alle Lebenden Spieler für eine Person abstimmen.",
-				false);
-
+	public static void sendHelpDay(MessageChannel channel) {
+		var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+				+ prefix
+				+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
+				+ prefix + "endDay\" kann der Moderator das Spiel beenden.";
+		Globals.createMessage(channel, mssg);
 	}
 
 	// Syntax: mssg += "\n" + "`" + prefix + "<Command>" + "`" + "<Description>"
 	public static String getCommandsMain() {
 		String mssg = " ---- Bot ---- ";
-		mssg += "\n" + "`" + prefix + "newGame:" + "`" + "Startet ein neues Spiel";
-		mssg += "\n" + "`" + prefix + "deleteGame:" + "`"
-				+ "Falls aus diesem Server zurzeit ein Spiel läuft, wird es gelöscht";
+		mssg += buildDescription("newGame", "Startet ein neues Spiel");
+		mssg += buildDescription("deleteGame", "Falls aus diesem Server zurzeit ein Spiel läuft, wird es beendet");
 
 		return mssg;
 	}
 
 	public static String getCommandsGame() {
-		var mssg = " ---- Utility ----";
-
-		mssg += mssg += "\n" + "`" + prefix + "TODO: fill showCommandsGame";
+		var mssg = "\n ---- Utility ----";
+		mssg += buildDescription("showCard <Cardname>", "Zeigt die Details einer Karte");
+		mssg += buildDescription("showDeck", "Zeigt das aktuelle Kartendeck");
+		mssg += buildDescription("allCards", "Listet ALLE Spielkarten auf");
+		mssg += buildDescription("manual", "Zeigt die Spielanleitung");
 
 		return mssg;
 	}
 
 	public static String getCommandsLobby() {
-		var mssg = " ---- Lobby ----";
-		mssg += "TODO: fill showCommandsLobby";
+		var mssg = "\n ---- Lobby ----";
+		mssg += buildDescription("join", "Tritt dem Spiel bei");
+		mssg += buildDescription("leave", "Verlasse ein beigetretenes Spiel");
+		mssg += buildDescription("makeMeMod", "Werde zum Moderator");
+		mssg += buildDescription("joinedPlayers", "Listet alle beigetretenen Spieler auf");
+		mssg += buildDescription("buildDeck", "Kreiert ein ausgewogenes Kartendeck");
+		mssg += buildDescription("addCard <Karte>", "Fügt eine Karte dem Deck hinzu");
+		mssg += buildDescription("removeCard <Karte>", "Entfernt eine Karte aus dem Deck");
+		mssg += buildDescription("clearDeck", "Entfernt alle Karten aus dem Deck");
+		mssg += buildDescription("start", "Startet das Spiel");
 
 		return mssg;
 	}
 
 	public static String getCommandsPostGame() {
 		var mssg = " ---- PostGame ----";
-		mssg += "TODO: fill showCommandsPostGame";
+		mssg += buildDescription("randomStat", "COMING SOMETIME MBY");
 
 		return mssg;
 	}
 
 	public static String getCommandsSemiMainGameState() {
 		var mssg = " ---- Game ----";
-		mssg += "TODO: fill getCommandsSemiMainGameState";
+		mssg += buildDescription("vote <Player>", "Stimmt für die öffentliche Hinrichtung dieses Spielers");
+		mssg += buildDescription("listVotes", "Listet alle Stimmen auf");
 
 		return mssg;
 	}
 
-	public static String getCommandsDayPhases(boolean mod) {
-		var mssg = "";
-		if (!mod) {
-			mssg = MessagesMain.getCommandsNight();
-			mssg += "\n" + MessagesMain.getCommandsMorning();
-			mssg += "\n" + MessagesMain.getCommandsDay();
+	// -------------------------------------------------------------
 
-		} else {
-			mssg = "\n" + MessagesMain.getModCommandsNight();
-			mssg += "\n" + MessagesMain.getModCommandsMorning();
-			mssg += "\n" + MessagesMain.getModCommandsDay();
-
-		}
-		return mssg;
+	public static void sendHelpFirstNightMod(MessageChannel channel) {
+		Globals.createMessage(channel,
+				"TODO: fill Help FirstNight Mod");
+	}
+	public static void sendHelpNightMod(MessageChannel channel) {
+		Globals.createMessage(channel,
+		"TODO: fill Help Night Mod");
+	}
+	public static void sendHelpDayMod(MessageChannel channel) {
+		Globals.createMessage(channel,
+		"TODO: fill Help Day Mod");
 	}
 
-	public static String getCommandsNight() {
-		var mssg = " ---- Night ----";
-		mssg += "TODO: fill getCommandsNight";
+	public static void sendHelpMorningMod(MessageChannel channel) {
+		Globals.createMessage(channel,
+		"TODO: fill Help Morning Mod");
 
-		return mssg;
 	}
 
-	public static String getCommandsMorning() {
-		var mssg = " ---- Morning ----";
-		mssg += "TODO: fill getCommandsMorning";
-
-		return mssg;
-	}
-
-	public static String getCommandsDay() {
-		var mssg = " ---- Day ----";
-		mssg += "TODO: fill getCommandsDay";
-
-		return mssg;
-	}
-
-	public static String getModCommandsSemiMainGameState() {
+	public static String getModCommands() {
 		var mssg = " ---- Game ----";
-		mssg += "TODO: fill getCommandsSemiMainGameState";
+		mssg += buildDescription("kill <Player> <Role>",
+				"Tötet diesen Spieler, optional kann auch die Todesursache in Form einer Rolle angegeben werden");
+		mssg += buildDescription("listPlayers", "Listet alle Spieler und deren Rollen auf");
+		mssg += buildDescription("listLiving", "Listet alle noch lebenden Spieler auf");
+		mssg += buildDescription("mute <Player>", "Schaltet diesen Spieler stumm");
+		mssg += buildDescription("unMute <Player>", "Hebt eine Stummschaltung wieder auf");
+		mssg += buildDescription("muteAll", "Schaltet alle Spieler Stumm");
+		mssg += buildDescription("listVotes", "Hebt die Stummschaltung aller Spieler auf");
+
+		mssg += "\n" + MessagesMain.getModCommandsFirstNight();
+		mssg += "\n" + MessagesMain.getModCommandsNight();
+		mssg += "\n" + MessagesMain.getModCommandsMorning();
+		mssg += "\n" + MessagesMain.getModCommandsDay();
+
+		return mssg;
+	}
+
+	public static String getModCommandsFirstNight() {
+		var mssg = " ---- First Night ----";
+		mssg += "\n" + "`" + "Amor <Player1> <Player2>" + ":` " + "Verliebt zwei Spieler";
+		mssg += "\n" + "`" + "Doppelgängerin <Player1> " + ":` " + "Bindet die Doppelgängerin an diese Person";
+		mssg += "\n" + "`" + "Sonnenaufgang" + ":` " + "Beendet die erste Nacht";
 
 		return mssg;
 	}
 
 	public static String getModCommandsNight() {
 		var mssg = " ---- Night ----";
-		mssg += "TODO: fill getCommandsNight";
+		mssg += buildDescription("endNight", "Beendet die Nacht");
 		return mssg;
 	}
 
 	public static String getModCommandsMorning() {
 		var mssg = " ---- Morning ----";
-		mssg += "TODO: fill getCommandsMorning";
+		mssg += buildDescription("endMorning", "Beendet die MorgenPhase");
 		return mssg;
 	}
 
 	public static String getModCommandsDay() {
 		var mssg = " ---- Day ----";
-		mssg += "TODO: fill getCommandsDay";
+		mssg += buildDescription("endNight", "Beendet den Tag");
+		mssg += buildDescription("lynch <Player>", "Richtet diesen Spieler öffentlich hin");
+
 		return mssg;
 	}
-
 
 	// ---------ERROR MESSAGES--------------------------------------------
 

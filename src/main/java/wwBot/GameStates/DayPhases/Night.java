@@ -21,10 +21,6 @@ public class Night {
 		registerNightCommands();
 		initiateNight();
 
-
-
-		// TODO: tell WW and mod about this channel
-
 	}
 
 	private void initiateNight() {
@@ -58,9 +54,9 @@ public class Night {
 		Command helpCommand = (event, parameters, msgChannel) -> {
 			// replies to the moderator
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				MessagesMain.sendHelpNightPhaseMod(msgChannel);
+				MessagesMain.sendHelpNightMod(msgChannel);
 			} else {
-				MessagesMain.helpNightPhase(msgChannel);
+				MessagesMain.sendHelpNight(msgChannel);
 			}
 		};
 		mapCommands.put("help", helpCommand);

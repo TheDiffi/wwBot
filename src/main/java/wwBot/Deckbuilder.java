@@ -3,6 +3,7 @@ package wwBot;
 import java.util.ArrayList;
 import java.util.List;
 
+import wwBot.cards.Card;
 import wwBot.cards.Role;
 
 public class Deckbuilder {

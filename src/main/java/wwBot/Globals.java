@@ -9,6 +9,8 @@ import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import wwBot.cards.Role;
+import wwBot.cards.Card;
+
 
 //In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {

@@ -1,6 +1,5 @@
 package wwBot.cards;
 
-import wwBot.Card;
 import wwBot.Globals;
 import wwBot.Player;
 

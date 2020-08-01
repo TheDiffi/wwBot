@@ -16,9 +16,11 @@ Struktur:
             (Klasse Nacht:)
         Klasse EndGamePhase
 
-    Player: Username, Karte, TodesStatus,
+    Player: Username, Rolle
 
-    Karte: Kartenname, Wert, Einmaligkeit, 
+    Rolle: Karte, Name, TodesStatus, 
+
+    Karte: Kartendetails,
 
 Part 1. Grundstruktur - Lass Player Joinen & Stelle Deck Zusammen (Lobby-Phase)
         
@@ -122,11 +124,7 @@ Falls keine Mehrheit existiert, wartet der bot bis ein player seine meinung änd
 &nominate // ein player kann einen anderen player fürs lyncen nominieren -> player kommt in listNominated
 &showNominated // printet die listNominated
 
-&vote //votet effektiv für einen spieler, muss nich unbedingt nominiert sein
-
-
-WerWolfChat: wird in der ersten nacht erstellt.
-            wenn die WW am tag schreiben -> erste Nachricht: Warnung -> zweite Nachricht: kein kill in der nächsten Nacht -> dritte Nachricht: preisgebungs eines zufälligen Werwolfes
+&vote //votet effektiv für einen spieler, muss nicht unbedingt nominiert sein
 
 
 DEAD PLAYERS: muted, jedoch still in game, kein recht auf votes/ihre kartenfähigkeit, ww konmmen aus dem ww chat heraus, alle toden kommen in ein Höllenchatroom
@@ -140,9 +138,14 @@ Card Images
 
 
 
-https://trello.com/b/2U8GlUBQ/werwolf-bot
 
-<<<<<<< HEAD
+--------------->  https://trello.com/b/2U8GlUBQ/werwolf-bot  <---------------
+
+
+
+
+
+
 LOVVER BOY: muss alles von einer zufällig gewählten person unterstützen (-3)
 THE SILENCER: einmalig: am nächsten Tag sind alle Votes anonym (-2)
 Stalker: kennt das liebespaar
@@ -184,5 +187,3 @@ xx fixing player roles display to moderator (check!)
         
 !!CRITICAL: cant vote for players with whitespace (mby fixed)
 !!CRITICAL: detect when game end doesent work (mby fixed)
-=======
->>>>>>> c4d200f4ec6813238e448acda34801b29565c2ea

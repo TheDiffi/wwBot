@@ -1,4 +1,4 @@
-package wwBot;
+package wwBot.cards;
 
 public class Card {
 
@@ -11,7 +11,7 @@ public class Card {
     public boolean friendly;
     public int nightSequence;
 
-    Card() {
+    public Card() {
 
     }
 

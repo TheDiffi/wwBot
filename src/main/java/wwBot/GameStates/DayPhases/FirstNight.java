@@ -105,13 +105,18 @@ public class FirstNight {
                         // finds the players
                         var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
                                 game.mapPlayers, game);
-                        var dp = mapExistingRoles.get("Doppelgängerin").get(0);
 
-                        // sets the variable
-                        var dpRole = (RoleDoppelgängerin) dp.role;
-                        dpRole.boundTo = foundPlayer;
-                        MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
+                        if (foundPlayer != null) {
+                            var dp = mapExistingRoles.get("Doppelgängerin").get(0);
 
+                            // sets the variable
+                            var dpRole = (RoleDoppelgängerin) dp.role;
+                            dpRole.boundTo = foundPlayer;
+                            MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
+                            
+                        } else {
+                            MessagesMain.errorPlayerNotFound(msgChannel);
+                        }
                     } else {
                         MessagesMain.errorWrongSyntax(game, msgChannel);
                     }
@@ -124,6 +129,29 @@ public class FirstNight {
 
         }
 
+    }
+
+    private void endFirstNight() {
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.orange,
+                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
+                "PS: niemand stirbt in der ersten Nacht");
+
+        // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
+        PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
+                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                // unmutes, deletes the WWChat and changes the DayPhase
+                gameState.setMuteAllPlayers(game.livingPlayers, false);
+                gameState.deleteWerwolfChat();
+                gameState.changeDayPhase();
+                return true;
+
+            } else {
+                return false;
+            }
+        };
+
+        game.addPrivateCommand(game.userModerator.getId(), sonnenaufgangCommand);
     }
 
     private ArrayList<Player> firstNightRoles() {
@@ -151,29 +179,6 @@ public class FirstNight {
             }
         }
         return list;
-    }
-
-    private void endFirstNight() {
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.orange,
-                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
-                "PS: niemand stirbt in der ersten Nacht");
-
-        // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
-        PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
-                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                // unmutes, deletes the WWChat and changes the DayPhase
-                gameState.setMuteAllPlayers(game.livingPlayers, false);
-                gameState.deleteWerwolfChat();
-                gameState.changeDayPhase();
-                return true;
-
-            } else {
-                return false;
-            }
-        };
-
-        game.addPrivateCommand(game.userModerator.getId(), sonnenaufgangCommand);
     }
 
 }

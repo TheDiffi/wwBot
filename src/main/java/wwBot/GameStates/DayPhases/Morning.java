@@ -16,11 +16,11 @@ public class Morning {
 
     public Morning(Game getGame) {
         game = getGame;
-        registerDayCommands();
+        registerMorningCommands();
 
     }
 
-    private void registerDayCommands() {
+    private void registerMorningCommands() {
 
         // replys with pong!
         Command pingCommand = (event, parameters, msgChannel) -> {
