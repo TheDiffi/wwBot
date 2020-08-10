@@ -363,7 +363,7 @@ public class MessagesMain {
 	}
 
 	public static String getHelpInfo() {
-		var mssg = "\n ------ Help ------";
+		var mssg = "\n\n ------ Help ------";
 		mssg += buildDescription("help", "Gibt dir Rat je nach deiner aktuellen Lage");
 		mssg += buildDescription("showCommands", "Listet alle dir zurzeit verfügbaren Befehle auf");
 		mssg += "\n**Vergiss nicht:** Zusammen mit dem Spiel ändert sich auch, welche Commands du benutzen kannst! Frag jederzeit mit den zwei obigen Commands nach Hilfe wenn du nicht weiter weißt 🙂";
@@ -380,37 +380,41 @@ public class MessagesMain {
 
 	public static void sendHelpLobby(MessageChannel channel) {
 		// help
-		Globals.createEmbed(channel, Color.BLACK, "", " - Ihr könnt dem Dorf beitreten indem ihr **" + prefix
-				+ "join** eingebt. \n - Sobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit **"
-				+ prefix
-				+ "buildDeck** generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit **"
-				+ prefix + "addCard <Karte>** und **" + prefix + "removeCard <Karte>** bearbeitet werden. \n ~~- Mit **"
-				+ prefix + "gamerule manual** und **" + prefix
-				+ "gamerule automatic** (coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein~~ (Coming soon)\n - Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit **"
-				+ prefix + "start** starten!*" + getHelpInfo());
-	}
-
-	public static void sendHelpNight(MessageChannel channel) {
-		var mssg = "Es ist Nacht. In dieser Phase werden Spezialkarten vom Moderator aufgerufen und die Werwölfe einigen sich auf ein Opfer. Für den Werwölfen ist ein privater Chat freigeschaltet.\n";
-		Globals.createMessage(channel, mssg);
+		Globals.createEmbed(channel, Color.BLACK, "____ Lobby Phase ____  ",
+				" - Ihr könnt dem Dorf beitreten indem ihr **" + prefix
+						+ "join** eingebt. \n - Sobald alle Mitspieler beigetreten sind, wollt ihr als nächstes euer Kartendeck für dieses Spiel bestimmen.\nMit **"
+						+ prefix
+						+ "buildDeck** generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit **"
+						+ prefix + "addCard <Karte>** und **" + prefix
+						+ "removeCard <Karte>** bearbeitet werden. \n ~~- Mit **" + prefix + "gamerule manual** und **"
+						+ prefix
+						+ "gamerule automatic** (coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein~~ (Coming soon)\n - Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit **"
+						+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
 	public static void helpFirstNight(MessageChannel channel) {
-		var mssg = "Es ist die erste Nacht. In dieser Phase werden nur diejenigen Spezielkarten aufgerufen, welche eine einmalige Funktion erfüllen. (z.B. Amor oder Doppelgängerin). Für den Werwölfen ist nun ein privater Chat freigeschaltet, diese einigen sich jedoch in der ersten Nacht noch auf kein Opfer.";
-		Globals.createMessage(channel, mssg);
+		Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
+				"In dieser Phase werden vom Moderator Spezialkarten mit bestimmten Funktionen zu Beginn des Spiels, wie z.B. Amor, aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, allerdings dürfen sie noch niemanden töten. Überprüft ob ihr eine private Nachricht von mir erhalten habt. Falls ja, befinden sich dort genauere Informationen.");
+
+	}
+
+	public static void sendHelpNight(MessageChannel channel) {
+		Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
+				"In dieser Phase werden Spezialkarten vom Moderator in bestimmter Reihenfolge aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, wo sie ungestört diskutieren können.");
 	}
 
 	public static void sendHelpMorning(MessageChannel channel) {
-		var mssg = "Es ist Morgen. In dieser Phase werden vom Moderator die Opfer der Nacht angekündigt.";
-		Globals.createMessage(channel, mssg);
+		Globals.createEmbed(channel, Color.BLACK, "____ Morgen ____  ",
+				"Am Morgen verkündet der Moderator die Opfer der Nacht (und spezielle Interaktionen wie Jäger finden statt)");
+
 	}
 
 	public static void sendHelpDay(MessageChannel channel) {
-		var mssg = "Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
-				+ prefix
-				+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
-				+ prefix + "endDay\" kann der Moderator das Spiel beenden.";
-		Globals.createMessage(channel, mssg);
+		Globals.createEmbed(channel, Color.BLACK, "____ Tag ____  ",
+				"Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+						+ prefix
+						+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
+						+ prefix + "endDay\" kann der Moderator das Spiel beenden.");
 	}
 
 	// Syntax: mssg += "\n" + "`" + prefix + "<Command>" + "`" + "<Description>"
@@ -465,22 +469,28 @@ public class MessagesMain {
 	// -------------------------------------------------------------
 
 	public static void sendHelpFirstNightMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-				"TODO: fill Help FirstNight Mod");
+
+		Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
+				"Die erste Nacht ist dazu da, dass du dir einen kurzen Überblick über das Spiel verschaffen kannst. Zudem rufst du Rollen wie z.B. den Amor auf, welche zu Beginn des Spiels in Aktion treten. Obig findest du eine Liste die dir sagt, welche Personen du in welcher Reihenfolge aufrufen solltest. Mit \"Sonnenaufgang\" kannst du diese Phase beenden, tue dies aber erst, sobald du alle Spieler auf der Liste kontaktiert hast! "
+						+ getHelpInfo());
 	}
+
 	public static void sendHelpNightMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-		"TODO: fill Help Night Mod");
+		Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
+				"Zu Beginn jeder Nacht erhältst du eine Liste mit den Rollen welche in dieser Nacht aktiv werden. Jede Rolle verhält sich anders, was du mit **&showCard <Kartenname>** nachschlagen kannst. Im Server existiert ein geheimer Chat auf den nur die Werwölfe und du als Moderator Zugriff haben. Nachdem jede Rolle agiert hat und die Wölfe ihr Ziel dir mitgeteilt haben, beende die Nacht mit **&endNight**. \nWICHTIG: Töte die Opfer dieser Nacht erst nachdem du die Nacht beendet hast und der Morgen graut!"
+						+ getHelpInfo());
 	}
+
 	public static void sendHelpDayMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-		"TODO: fill Help Day Mod");
+		Globals.createEmbed(channel, Color.BLACK, "____ Tag ____  ",
+				"Am Tag stimmen die Spieler für das nächste öffentliche Opfer. Wenn alle Spieler abgestimmt haben und eine Mehrheit besteht, bekommst du eine Nachricht von mit, welche dir rät, diesen Spieler mit **&lynch <Opfer>** zu töten. Du kannst allerdings jeden Spieler deiner Wahl hinrichten (falls du dies tun willst). Beende diese Phase mit **&endDay**."
+						+ getHelpInfo());
 	}
 
 	public static void sendHelpMorningMod(MessageChannel channel) {
-		Globals.createMessage(channel,
-		"TODO: fill Help Morning Mod");
-
+		Globals.createEmbed(channel, Color.BLACK, "____ Morgen ____  ",
+				"In dieser Phase tötest du die Opfer der Nacht mit **&kill <Opfer> (Optional)<RolleDieTötete>** die Opfer der Nacht und ich verkünde automatisch deren Rolle. Beende diese Phase mit **&endMorning**. Ich überprüfe dann, ob das Spiel von einer Partei gewonnen wurde. "
+						+ getHelpInfo());
 	}
 
 	public static String getModCommands() {

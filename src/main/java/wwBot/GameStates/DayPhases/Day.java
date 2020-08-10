@@ -46,12 +46,16 @@ public class Day {
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.sendHelpDay(msgChannel);
+           // replies to the moderator
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				MessagesMain.sendHelpDayMod(msgChannel);
+			} else {
+				MessagesMain.sendHelpDay(msgChannel);
+			}
 
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
-
 
 
         // gibt ein Embed mit den Votes aus

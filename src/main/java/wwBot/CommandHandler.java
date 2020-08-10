@@ -89,7 +89,7 @@ public class CommandHandler {
 
                 }
                 // prints a list of the commands of this class
-                if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
+                else if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
                     Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesMain.getCommandsMain());
                 }
             }
