@@ -33,6 +33,14 @@ import wwBot.cards.RoleDoppelgängerin;
 
 public class SemiMainGameState extends GameState {
 
+	public Day day = null;
+	public Night night = null;
+	public Morning morning = null;
+	public FirstNight firstNight = null;
+    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
+
+    public TextChannel wwChat = null;
+    public TextChannel deathChat = null;
 	public User userModerator;
 
 	SemiMainGameState(Game game) {
@@ -293,7 +301,7 @@ public class SemiMainGameState extends GameState {
 	// creates a private MessageChannel and puts all the WW and the Moderator ob the
 	// Whitelist
 	@Override
-	public TextChannel createWerwolfChat() {
+	public void createWerwolfChat() {
 
 		if (wwChat != null) {
 			deleteWerwolfChat();
@@ -325,7 +333,7 @@ public class SemiMainGameState extends GameState {
 		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
 				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
 
-		return wwChat;
+		
 	}
 
 	// if present, deletes the wwChat
@@ -341,7 +349,7 @@ public class SemiMainGameState extends GameState {
 	}
 
 	@Override
-	public TextChannel createDeathChat() {
+	public void createDeathChat() {
 
 		if (deathChat != null) {
 			deleteDeathChat();
@@ -367,8 +375,6 @@ public class SemiMainGameState extends GameState {
 		// Sends the first messages, explaining this Chat
 		MessagesMain.deathChatGreeting(deathChat, game);
 		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game);
-
-		return deathChat;
 
 	}
 
@@ -503,21 +509,7 @@ public class SemiMainGameState extends GameState {
 
 	}
 
-	@Override
-	public void endMainGame(int winner) {
-		// unmutes all players
-		setMuteAllPlayers(mapPlayers, false);
-		// deletes deathChat
-		deleteDeathChat();
-		// sends gameover message
-		if (winner == 1) {
-			Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
-		} else if (winner == 2) {
-			Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
-		}
-		// changes gamestate
-		game.changeGameState(new PostGameState(game, winner));
-	}
+
 
 	@Override
 	public boolean exit() {

@@ -19,107 +19,54 @@ import wwBot.Interfaces.PrivateCommand;
 
 public class MainGameState extends GameState {
 
-    public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
-    public List<Boolean> nightRolesDone = new ArrayList<>();
     
 
     MainGameState(Game game) {
         super(game);
         registerStateCommands();
-        mapPlayers = game.mapPlayers;
 
-        // loads living Players for the first time
-        var livingPlayers = game.livingPlayers;
-        for (var player : mapPlayers.entrySet()) {
-            if (player.getValue().role.alive) {
-                livingPlayers.put(player.getKey(), player.getValue());
-            }
-        }
-
-        loadLivingRoles(livingPlayers);
-
-        MessagesMain.onGameStart(game);
-
-        // prüft ob die rolle bei den existierenden Rollen dabei ist und führt falls
-        // true die Bedingungen des Günstling aus
-        if (mapExistingRoles.get("Günstling") != null) {
-            var playerWithThisRole = mapExistingRoles.get("Günstling").get(0);
-            var privateChannel = playerWithThisRole.user.getPrivateChannel().block();
-
-            var mssg = "";
-            mssg += "Die Werwölfe sind: ";
-            for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-                mssg += mapExistingRoles.get("Werwolf").get(i).name + " ";
-            }
-            if (mapExistingRoles.containsKey("Wolfsjunges")) {
-                mssg += mapExistingRoles.get("Werwolf").get(0).name + " ";
-            }
-
-            Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
-        }
-
-        if (mapExistingRoles.get("Amor") != null) {
-            var playerWithThisRole = mapExistingRoles.get("Amor").get(0);
-            var privateChannel = playerWithThisRole.user.getPrivateChannel().block();
-
-            // Amor in Love function
-            var mssg = "Flüstere mir nun zwei Namen zu und ich lasse deine Liebespfeile ihr Ziel treffen. Doch gib Acht! Ich verstehe dich nur wenn du die Namen in **einer Nachricht** und mit **einem Leerzeichen** dazwischen schreibst. ";
-            Globals.createEmbed(privateChannel, Color.GREEN,
-                    "Es kitzelt dich in den Fingern und du weißt, es ist Zeit deinen Bogen auszupacken ", mssg);
-
-            PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
-                var success = false;
-
-                if (parameters != null && parameters.size() == 2 && parameters.get(0) != parameters.get(1)) {
-                    var person1 = Globals.removeDash(parameters.get(0));
-                    var person2 = Globals.removeDash(parameters.get(1));
-                    Player firstLover = null;
-                    Player secondLover = null;
-
-                    firstLover = Globals.findPlayerByName(person1, mapPlayers, game);
-                    secondLover = Globals.findPlayerByName(person2, mapPlayers, game);
-
-                    if (firstLover != null && secondLover != null) {
-                        success = true;
-                        firstLover.role.inLoveWith = secondLover;
-                        secondLover.role.inLoveWith = firstLover;
-                        MessagesMain.amorSuccess(game, msgChannel, firstLover, secondLover);
-
-                    } else {
-                        Globals.createEmbed(msgChannel, Color.RED, "Error: Zwei identische Usernames gefunden",
-                                "Tut mir leid, ich verstehe dich nicht. \n Deine Nachricht sollte aussehen: \n<Username> <Username> \n Achte darauf, dass du die Namen der Spieler richtig geschrieben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal!");
-                        success = false;
-
-                    }
-
-                } else {
-                    msgChannel.createMessage(
-                            "Tut mir leid ich verstehe dich nicht \n Deine Nachricht sollte aussehen \n<Username>LEERZEICHEN<Username> \n Achte darauf, dass du die Namen der Spieler richtig geschrieben hast und keine überflüssigen Leerzeichen gesetzt hast. Probiere es noch einmal")
-                            .block();
-                    success = false;
-                }
-                return success;
-
-            };
-            game.addPrivateCommand(playerWithThisRole.user.getId(), amorCommand);
-
-        }
-
-        // überprüft ob jeder boolean der liste true ist
-        var isDone = true;
-        for (boolean bool1 : nightRolesDone) {
-            if (!bool1) {
-                isDone = false;
-            }
-        }
-        // falls alle player fertig sind wird die nächste phase gestartet
-        if (isDone) {
-
-            // wwPhase.start();
-        }
 
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     // läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
     // mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle
     // vorhanden sind)

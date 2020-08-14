@@ -1,5 +1,6 @@
 package wwBot.GameStates;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,18 +8,13 @@ import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
+import wwBot.Globals;
 import wwBot.Player;
-import wwBot.GameStates.DayPhases.Day;
-import wwBot.GameStates.DayPhases.FirstNight;
-import wwBot.GameStates.DayPhases.Morning;
-import wwBot.GameStates.DayPhases.Night;
 import wwBot.Interfaces.Command;
 
 public class GameState {
-
 
     public Map<Snowflake, Player> mapPlayers = new HashMap<Snowflake, Player>();
     public Map<Snowflake, Player> livingPlayers = new HashMap<Snowflake, Player>();
@@ -26,22 +22,11 @@ public class GameState {
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
 
-	public Day day = null;
-	public Night night = null;
-	public Morning morning = null;
-	public FirstNight firstNight = null;
-    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
-
-    public TextChannel wwChat = null;
-    public TextChannel deathChat = null;
     public Game game;
-    
 
     protected GameState(Game game2) {
         game = game2;
     }
-
-   
 
     public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
             MessageChannel runningInChannel) {
@@ -57,18 +42,13 @@ public class GameState {
     public void changeDayPhase() {
     }
 
-    public void endMainGame(int winner) {
-    }
-
-    public TextChannel createWerwolfChat() {
-        return null;
+    public void createWerwolfChat() {
     }
 
     public void deleteWerwolfChat() {
     }
 
-    public TextChannel createDeathChat() {
-        return null;
+    public void createDeathChat() {
     }
 
     public void deleteDeathChat() {
@@ -77,7 +57,6 @@ public class GameState {
     public void killPlayer(Player unluckyPlayer, String causedByRole) {
     }
 
-    // checks the conditions if the player dies
     public boolean checkIfDies(Player unluckyPlayer, String causedByRole) {
         return false;
     }
@@ -86,13 +65,26 @@ public class GameState {
         return false;
     }
 
-    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {  
+    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
     }
 
     public boolean exit() {
         return true;
     }
 
-
+    public void endMainGame(int winner) {
+        // unmutes all players
+        setMuteAllPlayers(mapPlayers, false);
+        // deletes deathChat
+        deleteDeathChat();
+        // sends gameover message
+        if (winner == 1) {
+            Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
+        } else if (winner == 2) {
+            Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
+        }
+        // changes gamestate
+        game.changeGameState(new PostGameState(game, winner));
+    }
 
 }

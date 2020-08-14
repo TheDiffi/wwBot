@@ -32,7 +32,7 @@ public class FirstNight {
     private void initiateFirstNight() {
         // sets mute and creates the WWchat
         gameState.setMuteAllPlayers(game.livingPlayers, true);
-        gameState.wwChat = gameState.createWerwolfChat();
+        gameState.createWerwolfChat();
 
         // generates which Roles need to be called
         var listRolesToBeCalled = firstNightRoles();
@@ -41,7 +41,9 @@ public class FirstNight {
         // specific cards like the amor are handeled
         specificCardInteractions();
 
-        endFirstNight();
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.orange,
+                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"&endNight\"",
+                "PS: niemand stirbt in der ersten Nacht");
 
     }
 
@@ -113,7 +115,7 @@ public class FirstNight {
                             var dpRole = (RoleDoppelgängerin) dp.role;
                             dpRole.boundTo = foundPlayer;
                             MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
-                            
+
                         } else {
                             MessagesMain.errorPlayerNotFound(msgChannel);
                         }
@@ -129,29 +131,6 @@ public class FirstNight {
 
         }
 
-    }
-
-    private void endFirstNight() {
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.orange,
-                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"Sonnenaufgang\"",
-                "PS: niemand stirbt in der ersten Nacht");
-
-        // Sonnenaufgang lässt den ersten Tag starten und beginnt den Zyklus
-        PrivateCommand sonnenaufgangCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("Sonnenaufgang")
-                    && event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                // unmutes, deletes the WWChat and changes the DayPhase
-                gameState.setMuteAllPlayers(game.livingPlayers, false);
-                gameState.deleteWerwolfChat();
-                gameState.changeDayPhase();
-                return true;
-
-            } else {
-                return false;
-            }
-        };
-
-        game.addPrivateCommand(game.userModerator.getId(), sonnenaufgangCommand);
     }
 
     private ArrayList<Player> firstNightRoles() {
@@ -179,6 +158,52 @@ public class FirstNight {
             }
         }
         return list;
+
+    }
+    // --------------- Commands -------------------
+
+    public void registerNightCommands() {
+
+        // replys with pong!
+        Command pingCommand = (event, parameters, msgChannel) -> {
+            event.getMessage().getChannel().block().createMessage("Pong! FirstNightPhase").block();
+        };
+        mapCommands.put("ping", pingCommand);
+
+        // shows the available Commands in this Phase
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            // replies to the moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                MessagesMain.sendHelpFirstNightMod(msgChannel);
+            } else {
+                MessagesMain.sendHelpFirstNight(msgChannel);
+            }
+        };
+        mapCommands.put("help", helpCommand);
+        mapCommands.put("hilfe", helpCommand);
+
+        // shows the moderator the list of players
+        Command endNightCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                endFirstNight();
+            } else {
+                MessagesMain.errorModOnlyCommand(msgChannel);
+            }
+        };
+        mapCommands.put("endNight", endNightCommand);
+        mapCommands.put("next", endNightCommand);
+        mapCommands.put("end", endNightCommand);
+
     }
 
+    private void endFirstNight() {
+
+        // unmutes, deletes the WWChat and changes the DayPhase
+        gameState.setMuteAllPlayers(game.livingPlayers, false);
+        gameState.deleteWerwolfChat();
+        gameState.changeDayPhase();
+
+    }
 }

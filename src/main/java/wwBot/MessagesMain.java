@@ -392,7 +392,7 @@ public class MessagesMain {
 						+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
-	public static void helpFirstNight(MessageChannel channel) {
+	public static void sendHelpFirstNight(MessageChannel channel) {
 		Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
 				"In dieser Phase werden vom Moderator Spezialkarten mit bestimmten Funktionen zu Beginn des Spiels, wie z.B. Amor, aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, allerdings dürfen sie noch niemanden töten. Überprüft ob ihr eine private Nachricht von mir erhalten habt. Falls ja, befinden sich dort genauere Informationen.");
 
@@ -471,7 +471,7 @@ public class MessagesMain {
 	public static void sendHelpFirstNightMod(MessageChannel channel) {
 
 		Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
-				"Die erste Nacht ist dazu da, dass du dir einen kurzen Überblick über das Spiel verschaffen kannst. Zudem rufst du Rollen wie z.B. den Amor auf, welche zu Beginn des Spiels in Aktion treten. Obig findest du eine Liste die dir sagt, welche Personen du in welcher Reihenfolge aufrufen solltest. Mit \"Sonnenaufgang\" kannst du diese Phase beenden, tue dies aber erst, sobald du alle Spieler auf der Liste kontaktiert hast! "
+				"Die erste Nacht ist dazu da, dass du dir einen kurzen Überblick über das Spiel verschaffen kannst. Zudem rufst du Rollen wie z.B. den Amor auf, welche zu Beginn des Spiels in Aktion treten. Obig findest du eine Liste die dir sagt, welche Personen du in welcher Reihenfolge aufrufen solltest. Mit \"&endNight\" kannst du diese Phase beenden, tue dies aber erst, sobald du alle Spieler auf der Liste kontaktiert hast! "
 						+ getHelpInfo());
 	}
 
@@ -516,7 +516,7 @@ public class MessagesMain {
 		var mssg = " ---- First Night ----";
 		mssg += "\n" + "`" + "Amor <Player1> <Player2>" + ":` " + "Verliebt zwei Spieler";
 		mssg += "\n" + "`" + "Doppelgängerin <Player1> " + ":` " + "Bindet die Doppelgängerin an diese Person";
-		mssg += "\n" + "`" + "Sonnenaufgang" + ":` " + "Beendet die erste Nacht";
+		mssg += "\n" + "`" + "endNight" + ":` " + "Beendet die erste Nacht";
 
 		return mssg;
 	}
