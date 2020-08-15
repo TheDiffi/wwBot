@@ -130,6 +130,8 @@ public class Game {
         gameCommands.put("Handbuch", showManualCommand);
         gameCommands.put("Manual", showManualCommand);
 
+        
+
     }
 
     public void changeGameState(GameState nextGameState) {

@@ -8,13 +8,13 @@ import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
-import wwBot.cards.Card;
 import wwBot.Deckbuilder;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.Interfaces.Command;
+import wwBot.cards.Card;
 import wwBot.cards.Role;
 
 public class LobbyState extends GameState {
@@ -384,9 +384,9 @@ public class LobbyState extends GameState {
                     msgChannel.createMessage("Game Created!").block();
                     // initializes the next game state
                     if (gameRuleAutomatic) {
-                        game.changeGameState(new MainGameState(game));
+                        game.changeGameState(new AutoState(game));
                     } else {
-                        game.changeGameState(new SemiMainGameState(game));
+                        game.changeGameState(new SemiState(game));
                     }
                 }
 

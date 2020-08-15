@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
 
-public class Night {
+public class NightSemi {
 	public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
 	Game game;
 
-	public Night(Game getGame) {
+	public NightSemi (Game getGame) {
 		game = getGame;
 		registerNightCommands();
 		initiateNight();
@@ -81,22 +81,11 @@ public class Night {
 
 	// --------------- Other -------------------
 
-	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		// mutes all players at night
-		for (var player : mapPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(isMuted).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+
 
 	private void endNight() {
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-		game.gameState.changeDayPhase();
+		game.gameState.changeDayPhase(DayPhase.MORNING);
 
 	}
 

@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
 
-public class Day {
+public class DaySemi  {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Player, Player> mapVotes = new HashMap<>();
@@ -21,7 +21,7 @@ public class Day {
     Player emptyPlayer;
     Game game;
 
-    public Day(Game getGame) {
+    public DaySemi (Game getGame) {
         game = getGame;
 
         // loads all Commands into the mapCommands
@@ -30,6 +30,8 @@ public class Day {
         // registers an empty Player; neccessary for the voting system
         emptyPlayer = new Player();
         emptyPlayer.name = "Nobody";
+
+        MessagesMain.onDaySemi(game);
 
     }
 
@@ -276,23 +278,11 @@ public class Day {
 
     // --------------------- Other ------------------------
 
-    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-        // mutes all players at night
-        for (var player : mapPlayers.entrySet()) {
-            try {
-                player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-                    a.setMute(isMuted).setDeafen(false);
-                }).block();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void endDay() {
 
         Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-        game.gameState.changeDayPhase();
+        game.gameState.changeDayPhase(DayPhase.MORNING);
 
     }
 

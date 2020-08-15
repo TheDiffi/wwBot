@@ -1,49 +1,39 @@
 package wwBot.GameStates;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
-import discord4j.core.object.util.PermissionSet;
-import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.DayPhases.Day;
-import wwBot.GameStates.DayPhases.FirstNight;
-import wwBot.GameStates.DayPhases.Morning;
-import wwBot.GameStates.DayPhases.Night;
+import wwBot.GameStates.DayPhases.DaySemi;
+import wwBot.GameStates.DayPhases.FirstNightSemi;
+import wwBot.GameStates.DayPhases.MorningSemi;
+import wwBot.GameStates.DayPhases.NightSemi;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.Role;
 import wwBot.cards.RoleDoppelgängerin;
 
-public class SemiMainGameState extends GameState {
+public class SemiState extends MainState {
 
-	public Day day = null;
-	public Night night = null;
-	public Morning morning = null;
-	public FirstNight firstNight = null;
-    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
+	public DaySemi day = null;
+	public NightSemi night = null;
+	public MorningSemi morning = null;
+	public FirstNightSemi firstNight = null;
+	public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
-    public TextChannel wwChat = null;
-    public TextChannel deathChat = null;
 	public User userModerator;
 
-	SemiMainGameState(Game game) {
+	SemiState(Game game) {
 		// sets variables
 		super(game);
 		mapPlayers = game.mapPlayers;
@@ -52,7 +42,7 @@ public class SemiMainGameState extends GameState {
 		// registers Commands; loads the lists and creates the Deathroom
 		registerStateCommands();
 		createDeathChat();
-		reloadGameLists();
+		loadGameLists();
 
 		// sends the first messages
 		MessagesMain.onGameStart(game);
@@ -67,7 +57,7 @@ public class SemiMainGameState extends GameState {
 
 		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
-				firstNight = new FirstNight(game);
+				changeDayPhase(DayPhase.FIRST_NIGHT);
 				return true;
 
 			} else {
@@ -151,7 +141,7 @@ public class SemiMainGameState extends GameState {
 		} catch (Exception e) {
 		}
 
-		reloadGameLists();
+		loadGameLists();
 
 		// reveals the players death and identity
 		checkDeathMessages(unluckyPlayer, causedByRole);
@@ -283,239 +273,47 @@ public class SemiMainGameState extends GameState {
 		}
 	}
 
-	// -------------------- Utility --------------------------
-
-	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		// mutes all players at night
-		for (var player : mapPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(isMuted).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	// creates a private MessageChannel and puts all the WW and the Moderator ob the
-	// Whitelist
 	@Override
-	public void createWerwolfChat() {
-
-		if (wwChat != null) {
-			deleteWerwolfChat();
-		}
-
-		var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
-				.get();
-
-		wwChat = game.server.createTextChannel(spec -> {
-			var overrides = new HashSet<PermissionOverwrite>();
-			overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-					PermissionSet.of(Permission.VIEW_CHANNEL)));
-			for (var player : mapExistingRoles.get("Werwolf")) {
-				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
-						PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-			}
-			if (!game.gameRuleAutomatic) {
-				overrides.add(
-						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
-								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-			}
-
-			spec.setPermissionOverwrites(overrides);
-			spec.setName("Privater Werwolf-Chat");
-		}).block();
-
-		// Sends the first messages, explaining this Chat
-		MessagesMain.wwChatGreeting(wwChat);
-		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
-
-		
-	}
-
-	// if present, deletes the wwChat
-	@Override
-	public void deleteWerwolfChat() {
-
-		if (wwChat != null) {
-			game.server.getChannelById(wwChat.getId()).block().delete().block();
-			wwChat = null;
-		} else {
-			game.mainChannel.createMessage("No Channel Found").block();
-		}
-	}
-
-	@Override
-	public void createDeathChat() {
-
-		if (deathChat != null) {
-			deleteDeathChat();
-		}
-
-		var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
-				.get();
-		deathChat = game.server.createTextChannel(spec -> {
-			var overrides = new HashSet<PermissionOverwrite>();
-			overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-					PermissionSet.of(Permission.VIEW_CHANNEL)));
-
-			if (!game.gameRuleAutomatic) {
-				overrides.add(
-						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
-								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-			}
-
-			spec.setPermissionOverwrites(overrides);
-			spec.setName("Friedhof-Chat");
-		}).block();
-
-		// Sends the first messages, explaining this Chat
-		MessagesMain.deathChatGreeting(deathChat, game);
-		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game);
-
-	}
-
-	private void updateDeathChat() {
-		// adds him to the deathChat and mutes him
-		var defaultRole = game.server.getRoles().toStream().filter(r -> r.getName().equals("@everyone")).findFirst()
-				.get();
-
-		deathChat.edit(spec -> {
-			var overrides = new HashSet<PermissionOverwrite>();
-			overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
-					PermissionSet.of(Permission.VIEW_CHANNEL)));
-			for (var player : game.deadPlayers) {
-				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
-						PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-			}
-			if (!game.gameRuleAutomatic) {
-				overrides.add(
-						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
-								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
-			}
-
-			spec.setPermissionOverwrites(overrides);
-		}).block();
-	}
-
-	// if present, deletes the deathChat
-	@Override
-	public void deleteDeathChat() {
-
-		if (deathChat != null) {
-			game.server.getChannelById(deathChat.getId()).block().delete().block();
-			deathChat = null;
-		} else {
-			game.mainChannel.createMessage("No Channel Found").block();
-		}
-	}
-
-	private void reloadGameLists() {
-		// reloads the living Players
-		livingPlayers.clear();
-		for (var player : game.mapPlayers.entrySet()) {
-			if (player.getValue().role.alive) {
-				livingPlayers.put(player.getKey(), player.getValue());
-			}
-		}
-		game.livingPlayers = livingPlayers;
-
-		// läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map
-		// mit dem Rollennamen als Key (Value = Liste wo alle Player mit derselben Rolle
-		// vorhanden sind)
-		mapExistingRoles.clear();
-		var listWerwölfe = new ArrayList<Player>();
-		var listDorfbewohner = new ArrayList<Player>();
-		var listSeher = new ArrayList<Player>();
-
-		for (var entry : livingPlayers.entrySet()) {
-			// prüft ob WW, Dorfbewohner oder Seher, falls nichts von dem bekommt die Rolle
-			// ihre eigene Liste
-			if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().role.alive) {
-				listWerwölfe.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Seher") && entry.getValue().role.alive) {
-				listSeher.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner") && entry.getValue().role.alive) {
-				listDorfbewohner.add(entry.getValue());
-			} else {
-				var tempList = Arrays.asList(entry.getValue());
-				mapExistingRoles.put(entry.getValue().role.name, tempList);
-
-			}
-		}
-
-		mapExistingRoles.put("Werwolf", listWerwölfe);
-		mapExistingRoles.put("Seher", listSeher);
-		mapExistingRoles.put("Dorfbewohner", listDorfbewohner);
-
-	}
-
-	// collects every "good" and every "bad" role in a list and compares the size.
-	// If the are equaly or less "good" than "bad" roles, the ww won
-	@Override
-	public boolean checkIfGameEnds() {
-
-		var amountGoodPlayers = 0;
-		var amountWW = 0;
-		for (var playerEntry : game.livingPlayers.entrySet()) {
-			if (playerEntry.getValue().role.name.equalsIgnoreCase("Werwolf")) {
-				amountWW++;
-			} else {
-				amountGoodPlayers++;
-			}
-
-		}
-		if (amountWW < 1) {
-			// int winner: 1 = Dorfbewohner, 2 = Werwölfe
-			game.gameState.endMainGame(1);
-			return true;
-		} else if (amountWW >= amountGoodPlayers) {
-			game.gameState.endMainGame(2);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public void changeDayPhase() {
-		reloadGameLists();
+	public void changeDayPhase(DayPhase nextPhase) {
+		loadGameLists();
 		// transitions to Night
-		if (dayPhase == DayPhase.DAY) {
+		if (nextPhase == DayPhase.NORMAL_NIGHT) {
 			checkIfGameEnds();
 			setMuteAllPlayers(game.livingPlayers, true);
 			createWerwolfChat();
-			dayPhase = DayPhase.NORMALE_NIGHT;
-			night = new Night(game);
+			
+			night = new NightSemi(game);
+			dayPhase = DayPhase.NORMAL_NIGHT;
 
 			// transitions to Morning
-		} else if (dayPhase == DayPhase.NORMALE_NIGHT) {
+		} else if (nextPhase == DayPhase.MORNING) {
 			setMuteAllPlayers(game.livingPlayers, false);
 			deleteWerwolfChat();
-			MessagesMain.onMorningSemi(game);
+			
+			morning = new MorningSemi(game);
 			dayPhase = DayPhase.MORNING;
-			morning = new Morning(game);
 
 			// transitions to Day
-		} else if (dayPhase == DayPhase.MORNING || dayPhase == DayPhase.FIRST_NIGHT) {
+		} else if (nextPhase == DayPhase.DAY) {
 			checkIfGameEnds();
-			MessagesMain.onDaySemi(game);
+			
+			day = new DaySemi(game);
 			dayPhase = DayPhase.DAY;
-			day = new Day(game);
+
+			// transitions to 1st Night
+		}else if (nextPhase == DayPhase.FIRST_NIGHT) {
+			
+			firstNight = new FirstNightSemi(game);
+			dayPhase = DayPhase.FIRST_NIGHT;
 		}
 
 	}
-
-
 
 	@Override
 	public boolean exit() {
 		deleteDeathChat();
 		deleteWerwolfChat();
-		System.out.println("Successfully closed SemiMainGameState.");
+		System.out.println("Successfully closed SemiMainGameState");
 		return true;
 	}
 
@@ -555,7 +353,7 @@ public class SemiMainGameState extends GameState {
 				} else {
 					found = false;
 				}
-			} else if (dayPhase == DayPhase.NORMALE_NIGHT) {
+			} else if (dayPhase == DayPhase.NORMAL_NIGHT) {
 				var foundCommand = night.mapCommands.get(requestedCommand);
 				if (foundCommand != null) {
 					foundCommand.execute(event, parameters, runningInChannel);
@@ -590,7 +388,6 @@ public class SemiMainGameState extends GameState {
 
 		} else {
 			MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
-
 			found = true;
 		}
 
@@ -611,7 +408,7 @@ public class SemiMainGameState extends GameState {
 			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
 			mssg += "\n" + MessagesMain.getCommandsMain();
 			mssg += "\n" + MessagesMain.getCommandsGame();
-			mssg += "\n" + MessagesMain.getCommandsSemiMainGameState();
+			mssg += "\n" + MessagesMain.getCommandsSemiState();
 			mssg += "\n" + MessagesMain.getHelpInfo();
 			Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
 		};
@@ -629,35 +426,29 @@ public class SemiMainGameState extends GameState {
 		gameStateCommands.put("showModCommands", showModCommandsCommand);
 		gameStateCommands.put("modCommands", showModCommandsCommand);
 
-		/* // shows the moderator the list of players (alive or all)
-		Command printListCommand = (event, parameters, msgChannel) -> {
-
-			// compares the Snowflake of the Author to the Snowflake of the Moderator
-			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				// checks if the syntax is correct
-				if (parameters != null && parameters.size() != 0) {
-					var param = parameters.get(0);
-					// if the user typed "Players" it prints a list of all players, if he typed
-					// "Living" it prints only the living players
-					if (param.equalsIgnoreCase("Players")) {
-						Globals.printPlayersMap(userModerator.getPrivateChannel().block(), mapPlayers, "Spieler", game);
-					} else if (param.equalsIgnoreCase("Living")) {
-						Globals.printPlayersMap(userModerator.getPrivateChannel().block(), livingPlayers, "Noch Lebend",
-								game);
-					}
-				} else {
-					userModerator.getPrivateChannel().block()
-							.createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\"").block();
-
-				}
-			} else {
-				MessagesMain.errorModOnlyCommand(msgChannel);
-			}
-
-		};
-		gameStateCommands.put("printList", printListCommand);
-		gameStateCommands.put("list", printListCommand);
- */
+		/*
+		 * // shows the moderator the list of players (alive or all) Command
+		 * printListCommand = (event, parameters, msgChannel) -> {
+		 * 
+		 * // compares the Snowflake of the Author to the Snowflake of the Moderator if
+		 * (event.getMessage().getAuthor().get().getId().equals(userModerator.getId()))
+		 * { // checks if the syntax is correct if (parameters != null &&
+		 * parameters.size() != 0) { var param = parameters.get(0); // if the user typed
+		 * "Players" it prints a list of all players, if he typed // "Living" it prints
+		 * only the living players if (param.equalsIgnoreCase("Players")) {
+		 * Globals.printPlayersMap(userModerator.getPrivateChannel().block(),
+		 * mapPlayers, "Spieler", game); } else if (param.equalsIgnoreCase("Living")) {
+		 * Globals.printPlayersMap(userModerator.getPrivateChannel().block(),
+		 * livingPlayers, "Noch Lebend", game); } } else {
+		 * userModerator.getPrivateChannel().block()
+		 * .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\""
+		 * ).block();
+		 * 
+		 * } } else { MessagesMain.errorModOnlyCommand(msgChannel); }
+		 * 
+		 * }; gameStateCommands.put("printList", printListCommand);
+		 * gameStateCommands.put("list", printListCommand);
+		 */
 		// prints the living players and their role
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
@@ -756,7 +547,7 @@ public class SemiMainGameState extends GameState {
 					var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
 							game.livingPlayers, game);
 
-					//stores the cause
+					// stores the cause
 					var causedBy = "null";
 					if (parameters.size() == 2) {
 						causedBy = parameters.get(1);
@@ -789,6 +580,3 @@ public class SemiMainGameState extends GameState {
 
 }
 
-enum DayPhase {
-	FIRST_NIGHT, NORMALE_NIGHT, DAY, MORNING
-}

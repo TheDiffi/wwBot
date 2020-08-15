@@ -7,16 +7,18 @@ import java.util.TreeMap;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
+import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
 
-public class Morning {
+public class MorningSemi  {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Game game;
 
-    public Morning(Game getGame) {
+    public MorningSemi (Game getGame) {
         game = getGame;
         registerMorningCommands();
+        MessagesMain.onMorningSemi(game);
 
     }
 
@@ -48,7 +50,7 @@ public class Morning {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-                game.gameState.changeDayPhase();
+                game.gameState.changeDayPhase(DayPhase.DAY);
 
             } else {
                 MessagesMain.errorModOnlyCommand(msgChannel);

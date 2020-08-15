@@ -88,6 +88,11 @@ public class CommandHandler {
                     MessagesMain.sendHelpMain(channel);
 
                 }
+                // erklärt den Bot
+                else if (parameters.get(0).equalsIgnoreCase(prefix + "explanation")) {
+                    MessagesMain.sendGameExplanation(channel);
+
+                }
                 // prints a list of the commands of this class
                 else if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
                     Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesMain.getCommandsMain());

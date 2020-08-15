@@ -180,10 +180,14 @@ public class MessagesMain {
 	}
 
 	public static void doppelgängerinSuccess(Game game, Player dp, Player chosenOne) {
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "ERFOLG!",
-				dp.name + " hat sich an " + chosenOne.name + " gebunden.");
+		if (game.gameRuleAutomatic) {
+			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "ERFOLG!",
+					dp.name + " hat sich an " + chosenOne.name + " gebunden.");
+		}
+
 		Globals.createEmbed(dp.user.getPrivateChannel().block(), Color.GREEN,
 				"Du bist nun an " + chosenOne.name + " gebunden!", "");
+
 	}
 
 	public static void onDoppelgängerinTransformation(Game game, Player doppelgaengerin, Player unluckyPlayer) {
@@ -422,6 +426,7 @@ public class MessagesMain {
 		String mssg = " ---- Bot ---- ";
 		mssg += buildDescription("newGame", "Startet ein neues Spiel");
 		mssg += buildDescription("deleteGame", "Falls aus diesem Server zurzeit ein Spiel läuft, wird es beendet");
+		mssg += buildDescription("explanation", "Falls du nach einer Erklärung suchst, was \"Werwölfe\" überhaupt ist");
 
 		return mssg;
 	}
@@ -458,7 +463,7 @@ public class MessagesMain {
 		return mssg;
 	}
 
-	public static String getCommandsSemiMainGameState() {
+	public static String getCommandsSemiState() {
 		var mssg = " ---- Game ----";
 		mssg += buildDescription("vote <Player>", "Stimmt für die öffentliche Hinrichtung dieses Spielers");
 		mssg += buildDescription("listVotes", "Listet alle Stimmen auf");
@@ -589,5 +594,11 @@ public class MessagesMain {
 		msgChannel.createMessage("```diff\n-E: Command Not Found\n```").block();
 	}
 	// ---------Need To Sort--------------------------------------------
+
+	public static void sendGameExplanation(MessageChannel channel) {
+		Globals.createEmbed(channel, Color.BLUE, "Was ist \"WERWÖLFE\"",
+				"Werwölfe ist ein interaktives Deduktionsspiel für zwei Teams: die Dorfbewohner und die Werwölfe. Während die Dorfbewohner nicht wissen, wer die Werwölfe sind, versuchen diese, unentdeckt zu bleiben und einen Dorfbewohner nach dem anderen auszuschalten. Ein Moderator „leitet“ das Spiel (es kann einer der Spieler sein), und erleichtert so den Ablauf von Werwölfe. (Alternativ kann ich diese Rolle übernehmen). Eine Partie Werwölfe verläuft über eine Reihe von „Tagen“ und „Nächten“. Jede Nacht wählen die Werwölfe ein Opfer, während die einsame Seherin Informationen über einen anderen Spieler sammelt und so lernt, ob dieser ein Werwolf ist. Während des Tages versuchen die Spieler gemeinsam herauszufinden, wer von ihnen ein Werwolf ist, um ihn dann nach einer Abstimmung zu lynchen. Das Spiel gewinnt immer eine Gruppe – entweder die Dorf­ bewohner, wenn sie alle Werwölfe gelyncht haben, oder die Werwölfe, wenn sie einen Gleichstand mit den Dorfbewohnern erreicht haben. Bei einer Partie Werwölfe müssen Sie versuchen, die anderen Mitspieler in die Irre zu führen, um das Spiel gewinnen zu können.");
+
+	}
 
 }

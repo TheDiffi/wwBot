@@ -12,6 +12,7 @@ import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
+import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
 
 public class GameState {
@@ -39,7 +40,7 @@ public class GameState {
         return false;
     }
 
-    public void changeDayPhase() {
+    public void changeDayPhase(DayPhase nextPhase) {
     }
 
     public void createWerwolfChat() {
