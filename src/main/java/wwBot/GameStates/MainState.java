@@ -19,7 +19,9 @@ import wwBot.Player;
 public class MainState extends GameState{
 
     public TextChannel wwChat = null;
-    public TextChannel deathChat = null;
+	public TextChannel deathChat = null;
+
+	
 
     protected MainState(Game game) {
         super(game);

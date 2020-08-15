@@ -1,5 +1,6 @@
 package wwBot.cards;
 
+import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 
@@ -14,7 +15,7 @@ public class Role {
         name = roleName;
     }
 
-    public static Role CreateRole(String name) {
+    public static Role createRole(String name) {
         switch (name) {
             case "Hexe":
                 return new RoleHexe();
@@ -24,10 +25,15 @@ public class Role {
                 return new RolePriester();
             case "Säufer":
                 return new RoleSäufer();
+                case "Amor":
+                return new RoleAmor();
 
             default:
                 return new Role(name);
         }
+    }
+
+    public void execute(Game game, Player player){
     }
 
 }

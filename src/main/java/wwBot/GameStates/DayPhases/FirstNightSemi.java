@@ -55,7 +55,7 @@ public class FirstNightSemi  {
 
         }
 
-        // if there is a amor, the moderator gets access to a command, which sets the
+        // if there is a AMOR, the moderator gets access to a command, which sets the
         // "inLoveWith" variable of two players to eachother
         if (mapExistingRoles.get("Amor") != null) {
 

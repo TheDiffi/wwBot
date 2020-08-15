@@ -13,61 +13,57 @@ import wwBot.Interfaces.Command;
 public class AutoState extends MainState {
 
     public Day day = null;
-	public Night night = null;
-	public Morning morning = null;
-	public FirstNight firstNight = null;
-	public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
-    
+    public Night night = null;
+    public Morning morning = null;
+    public FirstNight firstNight = null;
+    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
     AutoState(Game game) {
         super(game);
         registerStateCommands();
 
-        //TODO: greet Players
+        // TODO: greet Players
         changeDayPhase(DayPhase.FIRST_NIGHT);
     }
 
-
-        // --------------------- Day/Night - Cycle ----------------------------
+    // --------------------- Day/Night - Cycle ----------------------------
 
     @Override
-	public void changeDayPhase(DayPhase nextPhase) {
+    public void changeDayPhase(DayPhase nextPhase) {
         loadGameLists();
-        //TODO: clear GameEndChecks
-		// transitions to Night
-		if (nextPhase == DayPhase.NORMAL_NIGHT) {
-			checkIfGameEnds();
-			setMuteAllPlayers(game.livingPlayers, true);
-			createWerwolfChat();
-			
-			night = new NightSemi(game);
-			dayPhase = DayPhase.NORMAL_NIGHT;
+        // TODO: clear GameEndChecks
+        // transitions to Night
+        if (nextPhase == DayPhase.NORMAL_NIGHT) {
+            checkIfGameEnds();
+            setMuteAllPlayers(game.livingPlayers, true);
+            createWerwolfChat();
 
-			// transitions to Morning
-		} else if (nextPhase == DayPhase.MORNING) {
-			setMuteAllPlayers(game.livingPlayers, false);
-			deleteWerwolfChat();
-			
-			morning = new MorningSemi(game);
-			dayPhase = DayPhase.MORNING;
+            night = new NightSemi(game);
+            dayPhase = DayPhase.NORMAL_NIGHT;
 
-			// transitions to Day
-		} else if (nextPhase == DayPhase.DAY) {
-			checkIfGameEnds();
-			
-			day = new DaySemi(game);
-			dayPhase = DayPhase.DAY;
+            // transitions to Morning
+        } else if (nextPhase == DayPhase.MORNING) {
+            setMuteAllPlayers(game.livingPlayers, false);
+            deleteWerwolfChat();
 
-			// transitions to 1st Night
-		}else if (nextPhase == DayPhase.FIRST_NIGHT) {
-			
-			firstNight = new FirstNightSemi(game);
-			dayPhase = DayPhase.FIRST_NIGHT;
-		}
+            morning = new MorningSemi(game);
+            dayPhase = DayPhase.MORNING;
 
-	}
+            // transitions to Day
+        } else if (nextPhase == DayPhase.DAY) {
+            checkIfGameEnds();
 
+            day = new DaySemi(game);
+            dayPhase = DayPhase.DAY;
 
+            // transitions to 1st Night
+        } else if (nextPhase == DayPhase.FIRST_NIGHT) {
+
+            firstNight = new FirstNightSemi(game);
+            dayPhase = DayPhase.FIRST_NIGHT;
+        }
+
+    }
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerStateCommands() {
@@ -80,13 +76,13 @@ public class AutoState extends MainState {
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            //TODO: FILL
+            // TODO: FILL
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            //TODO: Fill
+            // TODO: Fill
         };
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);

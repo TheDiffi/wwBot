@@ -71,7 +71,7 @@ public class Deckbuilder {
 
             // aus der liste wird zufällig ein Element ausgewählt und dem Deck hinzugefügt
             var rand = (int) (Math.random() * (tempCardList.size()));
-            listDeck.add(Role.CreateRole(tempCardList.get(rand).name));
+            listDeck.add(Role.createRole(tempCardList.get(rand).name));
         }
 
         return listDeck;
@@ -97,7 +97,7 @@ public class Deckbuilder {
         // holt sich ein zufälliges Element aus probabilityMap und returnt es
         if (amount > 0) {
             int randomValue = (int) (Math.random() * probabilityMap.size());
-            return Role.CreateRole(probabilityMap.get(randomValue));
+            return Role.createRole(probabilityMap.get(randomValue));
 
         } else {
             System.out.println("oops, no place for spezialkarten");

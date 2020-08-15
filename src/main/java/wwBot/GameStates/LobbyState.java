@@ -412,14 +412,14 @@ public class LobbyState extends GameState {
             if (Globals.listContainsCard(list, cardSpec)) {
                 message += "Die gewählte Karte ist einzigartig und bereits im Deck";
             } else {
-                list.add(Role.CreateRole(cardSpec.name));
+                list.add(Role.createRole(cardSpec.name));
                 message += cardSpec.name + " wurde dem Deck hinzugefügt";
             }
 
             // falls die karte nicht unique ist oder die liste leer ist wird die Karte ohne
             // überprüfen hinzugegügt
         } else if (!cardSpec.unique || list == null) {
-            list.add(Role.CreateRole(cardSpec.name));
+            list.add(Role.createRole(cardSpec.name));
             message += cardSpec.name + " wurde dem Deck hinzugefügt";
 
         } else {

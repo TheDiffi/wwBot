@@ -161,7 +161,7 @@ public class SemiState extends MainState {
 			// if the dead user equals the one chosen by the DP, the DP gets the role of the
 			// dead player
 			if (dpRole.boundTo.user.getId().equals(unluckyPlayer.user.getId())) {
-				dp.role = Role.CreateRole(unluckyPlayer.role.name);
+				dp.role = Role.createRole(unluckyPlayer.role.name);
 				MessagesMain.onDoppelgängerinTransformation(game, dp, unluckyPlayer);
 			}
 
@@ -173,7 +173,7 @@ public class SemiState extends MainState {
 			for (var player : game.livingPlayers.entrySet()) {
 				// if a Lehrling id found, he is the new Seher
 				if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
-					player.getValue().role = Role.CreateRole("Seher");
+					player.getValue().role = Role.createRole("Seher");
 					MessagesMain.onSeherlehrlingPromotion(game, unluckyPlayer);
 				}
 			}
@@ -247,9 +247,10 @@ public class SemiState extends MainState {
 					});
 		}
 
-		if (unluckyPlayer.role.inLoveWith != null) {
-			if (checkIfDies(unluckyPlayer, "Amor")) {
-				killPlayer(unluckyPlayer, "Amor");
+		// AMOR
+		if (unluckyPlayer.role.inLoveWith != null && unluckyPlayer.role.inLoveWith.role.alive) {
+			if (checkIfDies(unluckyPlayer.role.inLoveWith, "Amor")) {
+				killPlayer(unluckyPlayer.role.inLoveWith, "Amor");
 			}
 		}
 
@@ -257,7 +258,22 @@ public class SemiState extends MainState {
 
 	private void checkDeathMessages(Player player, String cause) {
 
-		if (cause.equalsIgnoreCase("Werwolf")) {
+		switch (cause) {
+			case "Werwolf":
+				MessagesMain.deathByWW(game, player);
+			case "Hexe":
+				MessagesMain.deathByMagic(game, player);
+			case "Amor":
+				MessagesMain.deathByLove(game, player);
+			case "Jäger":
+				MessagesMain.deathByGunshot(game, player);
+			case "Dorfbewohner":
+				MessagesMain.deathByLynchen(game, player);
+			default:
+				MessagesMain.deathByDefault(game, player);
+		}
+
+		/* if (cause.equalsIgnoreCase("Werwolf")) {
 			MessagesMain.deathByWW(game, player);
 		} else if (cause.equalsIgnoreCase("Hexe") || cause.equalsIgnoreCase("Magier")) {
 			MessagesMain.deathByMagic(game, player);
@@ -269,8 +285,7 @@ public class SemiState extends MainState {
 			MessagesMain.deathByLynchen(game, player);
 		} else {
 			MessagesMain.deathByDefault(game, player);
-
-		}
+		} */
 	}
 
 	@Override
@@ -281,7 +296,7 @@ public class SemiState extends MainState {
 			checkIfGameEnds();
 			setMuteAllPlayers(game.livingPlayers, true);
 			createWerwolfChat();
-			
+
 			night = new NightSemi(game);
 			dayPhase = DayPhase.NORMAL_NIGHT;
 
@@ -289,20 +304,20 @@ public class SemiState extends MainState {
 		} else if (nextPhase == DayPhase.MORNING) {
 			setMuteAllPlayers(game.livingPlayers, false);
 			deleteWerwolfChat();
-			
+
 			morning = new MorningSemi(game);
 			dayPhase = DayPhase.MORNING;
 
 			// transitions to Day
 		} else if (nextPhase == DayPhase.DAY) {
 			checkIfGameEnds();
-			
+
 			day = new DaySemi(game);
 			dayPhase = DayPhase.DAY;
 
 			// transitions to 1st Night
-		}else if (nextPhase == DayPhase.FIRST_NIGHT) {
-			
+		} else if (nextPhase == DayPhase.FIRST_NIGHT) {
+
 			firstNight = new FirstNightSemi(game);
 			dayPhase = DayPhase.FIRST_NIGHT;
 		}
@@ -579,4 +594,3 @@ public class SemiState extends MainState {
 	}
 
 }
-

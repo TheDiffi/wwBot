@@ -23,7 +23,7 @@ public class GameState {
     public Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(
             String.CASE_INSENSITIVE_ORDER);
 
-    public Game game;
+    protected Game game;
 
     protected GameState(Game game2) {
         game = game2;

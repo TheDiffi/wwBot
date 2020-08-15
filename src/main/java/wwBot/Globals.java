@@ -179,7 +179,7 @@ public class Globals {
 	// fügt mehrere Karten einer Liste hinzu
 	public static void addMultipleCards(int amount, String cardName, List<Role> list) {
 		for (int i = 0; i < amount; i++) {
-			list.add(Role.CreateRole(cardName));
+			list.add(Role.createRole(cardName));
 		}
 	}
 

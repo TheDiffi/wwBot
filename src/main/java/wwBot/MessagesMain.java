@@ -2,6 +2,7 @@ package wwBot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -161,6 +162,18 @@ public class MessagesMain {
 
 		Globals.createEmbed(modChannel, Color.PINK, "ERFOLG!",
 				"" + firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
+
+		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
+
+		firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
+				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+				.block();
+		secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
+				+ "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
+				.block();
+	}
+
+	public static void amorSuccess(Game game, Player firstLover, Player secondLover) {
 
 		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
 
@@ -579,7 +592,11 @@ public class MessagesMain {
 	}
 
 	public static void errorWrongSyntax(Game game, MessageChannel msgChannel) {
-		msgChannel.createMessage("E: Wrong Syntax - I can't understand you").block();
+		var a = Arrays.asList("E: Wrong Syntax - I can't understand you",
+				"E: Wrong Syntax - Use &showCommands for a list of all Commands",
+				"E: Wrong Syntax - TIPP: when writing the name of a player, use \"-\" insplace of a space",
+				"E: Wrong Syntax - I can't understand you", "E: Wrong Syntax - I can't understand you");
+		msgChannel.createMessage(a.get((int)Math.random()*a.size())).block();
 	}
 
 	public static void errorNotAllowedToVote(Game game, MessageChannel msgChannel) {
