@@ -25,15 +25,17 @@ public class Role {
                 return new RolePriester();
             case "Säufer":
                 return new RoleSäufer();
-                case "Amor":
+            case "Amor":
                 return new RoleAmor();
+            case "Seher":
+                return new RoleSeher();
 
             default:
                 return new Role(name);
         }
     }
 
-    public void execute(Game game, Player player){
+    public void execute(Game game, Player player) {
     }
 
 }

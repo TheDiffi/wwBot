@@ -7,11 +7,11 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import wwBot.Game;
-import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.MainState.DayPhase;
-import wwBot.Interfaces.PrivateCommand;
+
+//---------------- TODO: TEST ----------------------------
 
 public class FirstNight {
 
@@ -26,35 +26,34 @@ public class FirstNight {
     }
 
     private void sendPrivateMessages() {
-        // TODO: Seher
+        // Seher
+        if (game.gameState.mapExistingRoles.containsKey("Seher")) {
 
-        
-        
+            var player = mapExistingRoles.get("Seher").get(0);
+            endChecks.put("Seher", false);
+            player.role.execute(game, player);
+        }
+
         // Amor
         if (game.gameState.mapExistingRoles.containsKey("Amor")) {
-            /// TODO: send mssg
-            var player = mapExistingRoles.get("Amor").get(0);
-            player.user.getPrivateChannel().block().createMessage("TEST");
 
+            var player = mapExistingRoles.get("Amor").get(0);
             endChecks.put("Amor", false);
             player.role.execute(game, player);
         }
 
         // the Günstling gets a list with all the WW
         if (game.gameState.mapExistingRoles.containsKey("Günstling")) {
+
             MessagesMain.günstlingMessage(mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block(),
                     mapExistingRoles, game);
             endChecks.put("Günstling", true);
-
         }
 
         // Doppelgängerin: recieves a plaver in the next mssg that player in her role
         if (game.gameState.mapExistingRoles.containsKey("Doppelgängerin")) {
 
-            // TODO: send mssg
             var player = mapExistingRoles.get("Doppelgängerin").get(0);
-            player.user.getPrivateChannel().block().createMessage("TEST");
-
             endChecks.put("Doppelgängerin", false);
             player.role.execute(game, player);
 

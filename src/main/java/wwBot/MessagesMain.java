@@ -618,4 +618,10 @@ public class MessagesMain {
 
 	}
 
+	public static void showSeher(Player seher, Player found, Game game) {
+		var color = found.role.specs.friendly ? Color.GREEN : Color.RED;
+		
+		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "", Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));;
+	}
+
 }
