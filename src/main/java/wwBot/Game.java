@@ -139,13 +139,13 @@ public class Game {
         gameState = nextGameState;
     }
 
-    public void addPrivateCommand(Snowflake id, PrivateCommand lynchCommand) {
+    public void addPrivateCommand(Snowflake id, PrivateCommand command) {
         var tempList = new ArrayList<PrivateCommand>();
         if (mapPrivateCommands.containsKey(id)) {
             tempList = mapPrivateCommands.get(id);
         }
 
-        tempList.add(lynchCommand);
+        tempList.add(command);
         mapPrivateCommands.put(id, tempList);
     }
 

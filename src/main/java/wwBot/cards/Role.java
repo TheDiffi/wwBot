@@ -29,6 +29,8 @@ public class Role {
                 return new RoleAmor();
             case "Seher":
                 return new RoleSeher();
+            case "Günstling":
+                return new RoleGünstling();
 
             default:
                 return new Role(name);

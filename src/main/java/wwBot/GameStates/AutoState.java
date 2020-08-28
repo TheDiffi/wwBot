@@ -1,11 +1,13 @@
 package wwBot.GameStates;
 
 import wwBot.Game;
-import wwBot.GameStates.DayPhases.DaySemi;
+import wwBot.Globals;
+import wwBot.MessagesMain;
+import wwBot.Player;
+import wwBot.GameStates.DayPhases.Day;
 import wwBot.GameStates.DayPhases.FirstNight;
-import wwBot.GameStates.DayPhases.FirstNightSemi;
-import wwBot.GameStates.DayPhases.MorningSemi;
-import wwBot.GameStates.DayPhases.NightSemi;
+import wwBot.GameStates.DayPhases.Morning;
+import wwBot.GameStates.DayPhases.Night;
 import wwBot.Interfaces.Command;
 
 //----------------------- ! WORK IN PROGRESS ! --------------------------------
@@ -31,36 +33,47 @@ public class AutoState extends MainState {
     @Override
     public void changeDayPhase(DayPhase nextPhase) {
         loadGameLists();
-        // TODO: clear GameEndChecks
-        // transitions to Night
-        if (nextPhase == DayPhase.NORMAL_NIGHT) {
-            checkIfGameEnds();
-            setMuteAllPlayers(game.livingPlayers, true);
-            createWerwolfChat();
 
-            night = new NightSemi(game);
-            dayPhase = DayPhase.NORMAL_NIGHT;
+        if (!checkIfGameEnds()) {
+            // TODO: clear GameEndChecks
+            // transitions to Night
 
-            // transitions to Morning
-        } else if (nextPhase == DayPhase.MORNING) {
-            setMuteAllPlayers(game.livingPlayers, false);
-            deleteWerwolfChat();
+            if (nextPhase == DayPhase.NORMAL_NIGHT) {
 
-            morning = new MorningSemi(game);
-            dayPhase = DayPhase.MORNING;
+                setMuteAllPlayers(game.livingPlayers, true);
+                createWerwolfChat();
 
-            // transitions to Day
-        } else if (nextPhase == DayPhase.DAY) {
-            checkIfGameEnds();
+                night = new Night(game);
+                dayPhase = DayPhase.NORMAL_NIGHT;
 
-            day = new DaySemi(game);
-            dayPhase = DayPhase.DAY;
+                MessagesMain.onNightAuto(game);
 
-            // transitions to 1st Night
-        } else if (nextPhase == DayPhase.FIRST_NIGHT) {
+                // transitions to Morning
+            } else if (nextPhase == DayPhase.MORNING) {
+                setMuteAllPlayers(game.livingPlayers, false);
+                deleteWerwolfChat();
 
-            firstNight = new FirstNightSemi(game);
-            dayPhase = DayPhase.FIRST_NIGHT;
+                morning = new Morning(game);
+                dayPhase = DayPhase.MORNING;
+
+                MessagesMain.onMorningAuto(game);
+
+                // transitions to Day
+            } else if (nextPhase == DayPhase.DAY) {
+
+                day = new Day(game);
+                dayPhase = DayPhase.DAY;
+
+                MessagesMain.onDayAuto(game);
+
+                // transitions to 1st Night
+            } else if (nextPhase == DayPhase.FIRST_NIGHT) {
+
+                firstNight = new FirstNight(game);
+                dayPhase = DayPhase.FIRST_NIGHT;
+
+                MessagesMain.onFirstNightAuto(game);
+            }
         }
 
     }
@@ -89,4 +102,46 @@ public class AutoState extends MainState {
 
     }
 
+    // TODO: implement kill system
+    @Override
+    public void killPlayer(Player victim, String causedByRole) {
+
+        // kills player
+        victim.role.alive = false;
+        game.deadPlayers.add(victim);
+
+        updateDeathChat();
+
+        try {
+            victim.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
+        } catch (Exception e) {
+        }
+
+        loadGameLists();
+
+        // reveals the players death and identity
+        sendDeathMessage(victim, causedByRole);
+
+        // calculates the consequences
+        checkConsequences(victim, causedByRole);
+    }
+
+    private void sendDeathMessage(Player player, String cause) {
+
+        switch (cause) {
+            case "Werwolf":
+                MessagesMain.deathByWW(game, player);
+            case "Hexe":
+                MessagesMain.deathByMagic(game, player);
+            case "Amor":
+                MessagesMain.deathByLove(game, player);
+            case "Jäger":
+                MessagesMain.deathByGunshot(game, player);
+            case "Dorfbewohner":
+                MessagesMain.deathByLynchen(game, player);
+            default:
+                MessagesMain.deathByDefault(game, player);
+        }
+        Globals.printCard(player.role.name, game.mainChannel);
+    }
 }

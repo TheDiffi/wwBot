@@ -18,7 +18,6 @@ public class DaySemi  {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Player, Player> mapVotes = new HashMap<>();
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
-    Player emptyPlayer;
     Game game;
 
     public DaySemi (Game getGame) {
@@ -26,10 +25,6 @@ public class DaySemi  {
 
         // loads all Commands into the mapCommands
         registerDayCommands();
-
-        // registers an empty Player; neccessary for the voting system
-        emptyPlayer = new Player();
-        emptyPlayer.name = "Nobody";
 
         MessagesMain.onDaySemi(game);
 
@@ -105,7 +100,7 @@ public class DaySemi  {
                     if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
                             || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody")
                             || recievedName.equalsIgnoreCase("none")) {
-                        votedFor = emptyPlayer;
+                        votedFor = getEmptyPlayer();
                     } else {
                         // finds the player
                         votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
@@ -228,9 +223,8 @@ public class DaySemi  {
 
         // if the voter already voted once, the old voteAmount gets removed
         if (mapVotes != null && mapVotes.containsKey(voter)) {
-            var originallyVotedFor = mapVotes.get(voter);
-            var lessVotes = mapAmountVotes.get(originallyVotedFor) - 1d;
-            mapAmountVotes.put(originallyVotedFor, lessVotes);
+            var originalVictim = mapVotes.get(voter);
+            mapAmountVotes.put(originalVictim, mapAmountVotes.get(originalVictim) - voteValue);
 
         }
 
@@ -256,7 +250,7 @@ public class DaySemi  {
 
     private void suggestMostVoted(Player mostVoted) {
         // suggests the most Voted Player to the Mod
-        MessagesMain.suggestMostVoted(game, mostVoted, mapVotes);
+        MessagesMain.announceMajority(game, mostVoted, mapVotes);
         // gibt ein Embed mit den Votes aus
 
         // some cards can interfere in this stage (Prinz, Märtyrerin)
@@ -270,7 +264,7 @@ public class DaySemi  {
             MessagesMain.remindAboutPrinz(game);
         }
         if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
-            MessagesMain.remmindAboutMärtyrerin(game);
+            MessagesMain.remindAboutMärtyrerin(game);
 
         }
 
@@ -284,6 +278,13 @@ public class DaySemi  {
         Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
         game.gameState.changeDayPhase(DayPhase.MORNING);
 
+    }
+
+    // returns an empty player type
+    private Player getEmptyPlayer() {
+        var emptyPlayer = new Player();
+        emptyPlayer.name = "Nobody";
+        return emptyPlayer;
     }
 
 }

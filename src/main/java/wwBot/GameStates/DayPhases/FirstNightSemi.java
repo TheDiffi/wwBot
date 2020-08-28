@@ -36,7 +36,7 @@ public class FirstNightSemi  {
 
         // generates which Roles need to be called
         var listRolesToBeCalled = firstNightRoles();
-        MessagesMain.firstNightMod(game, listRolesToBeCalled);
+        MessagesMain.onFirstNightSemi(game, listRolesToBeCalled);
 
         // specific cards like the amor are handeled
         specificCardInteractions();

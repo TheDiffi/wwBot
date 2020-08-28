@@ -66,13 +66,13 @@ public class MessagesMain {
 
 	}
 
-	public static void firstNightAuto(Game game) {
+	public static void onFirstNightAuto(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
 				"In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren");
 
 	}
 
-	public static void firstNightMod(Game game, ArrayList<Player> listRolesToBeCalled) {
+	public static void onFirstNightSemi(Game game, ArrayList<Player> listRolesToBeCalled) {
 		// Nachricht an alle
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
 				"```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies im Privatchat mit mir, falls es geheim bleiben soll 😉). ");
@@ -234,7 +234,7 @@ public class MessagesMain {
 
 	}
 
-	public static void remmindAboutMärtyrerin(Game game) {
+	public static void remindAboutMärtyrerin(Game game) {
 		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 				"Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.");
 
@@ -343,11 +343,14 @@ public class MessagesMain {
 
 	// ---------VOTE MESSAGES--------------------------------------------
 
-	public static void suggestMostVoted(Game game, Player mostVoted, Map<Player, Player> mapVotes) {
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED, "Alle Spieler Haben Gewählt!",
-				"Auf dem Schafott steht **" + mostVoted.user.getMention() + "** der ein/eine **" + mostVoted.role.name
-						+ "** ist.\nMit \"**&lynch <Player>\"** kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nFalls du niemanden Lynchen möchtest kannst du auch gleich mit &endDay fortfahren");
-
+	public static void announceMajority(Game game, Player mostVoted, Map<Player, Player> mapVotes) {
+		if (!game.gameRuleAutomatic) {
+			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
+					"Alle Spieler Haben Gewählt!",
+					"Auf dem Schafott steht **" + mostVoted.user.getMention() + "** der ein/eine **"
+							+ mostVoted.role.name
+							+ "** ist.\nMit \"**&lynch <Player>\"** kannst du einen Spieler lynchen und damit die Rolle des Spielers offenbaren. \nFalls du niemanden Lynchen möchtest kannst du auch gleich mit &endDay fortfahren");
+		}
 		var mssg = "";
 		for (var entry : mapVotes.entrySet()) {
 			mssg += entry.getKey().name + " hat für " + entry.getValue().name + " abgestimmt \n";
@@ -596,7 +599,11 @@ public class MessagesMain {
 				"E: Wrong Syntax - Use &showCommands for a list of all Commands",
 				"E: Wrong Syntax - TIPP: when writing the name of a player, use \"-\" insplace of a space",
 				"E: Wrong Syntax - I can't understand you", "E: Wrong Syntax - I can't understand you");
-		msgChannel.createMessage(a.get((int)Math.random()*a.size())).block();
+		msgChannel.createMessage(a.get((int) Math.random() * a.size())).block();
+	}
+
+	public static void errorWrongAnswer(Game game, MessageChannel msgChannel) {
+		msgChannel.createMessage("E: This was not an answer I was expecting. Try again!").block();
 	}
 
 	public static void errorNotAllowedToVote(Game game, MessageChannel msgChannel) {
@@ -620,8 +627,27 @@ public class MessagesMain {
 
 	public static void showSeher(Player seher, Player found, Game game) {
 		var color = found.role.specs.friendly ? Color.GREEN : Color.RED;
-		
-		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "", Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));;
+
+		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "",
+				Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
+		;
 	}
+
+	public static void remindMärtyrerin(Game game, Player player) {
+		// TODO: fill
+		Globals.createMessage(player.user.getPrivateChannel().block(), "test");
+
+	}
+
+	public static void sendApproval(MessageChannel msgChannel) {
+
+		var a = Arrays.asList("Okay", "OK", "Alrighty", "You're the Boss", "Done!", "Good Decision ;)");
+		// TODO: MORE APPOVAL AAAAAAAH!!!?!!
+
+		var randMssg = a.get((int) Math.random() * a.size());
+
+		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
+	}
+
 
 }
