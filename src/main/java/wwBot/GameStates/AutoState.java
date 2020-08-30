@@ -4,10 +4,10 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.DayPhases.Day;
-import wwBot.GameStates.DayPhases.FirstNight;
-import wwBot.GameStates.DayPhases.Morning;
-import wwBot.GameStates.DayPhases.Night;
+import wwBot.GameStates.DayPhases.Auto.Day;
+import wwBot.GameStates.DayPhases.Auto.FirstNight;
+import wwBot.GameStates.DayPhases.Auto.Morning;
+import wwBot.GameStates.DayPhases.Auto.Night;
 import wwBot.Interfaces.Command;
 
 //----------------------- ! WORK IN PROGRESS ! --------------------------------
@@ -15,8 +15,10 @@ import wwBot.Interfaces.Command;
 public class AutoState extends MainState {
 
     public Day day = null;
-    public Night night = null;
-    public Morning morning = null;
+    
+      public Night night = null; 
+      public Morning morning = null;
+    
     public FirstNight firstNight = null;
     public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
@@ -53,7 +55,7 @@ public class AutoState extends MainState {
                 setMuteAllPlayers(game.livingPlayers, false);
                 deleteWerwolfChat();
 
-                morning = new Morning(game);
+                //morning = new Morning(game);
                 dayPhase = DayPhase.MORNING;
 
                 MessagesMain.onMorningAuto(game);
@@ -64,7 +66,6 @@ public class AutoState extends MainState {
                 day = new Day(game);
                 dayPhase = DayPhase.DAY;
 
-                MessagesMain.onDayAuto(game);
 
                 // transitions to 1st Night
             } else if (nextPhase == DayPhase.FIRST_NIGHT) {
@@ -72,7 +73,6 @@ public class AutoState extends MainState {
                 firstNight = new FirstNight(game);
                 dayPhase = DayPhase.FIRST_NIGHT;
 
-                MessagesMain.onFirstNightAuto(game);
             }
         }
 
@@ -123,7 +123,7 @@ public class AutoState extends MainState {
         sendDeathMessage(victim, causedByRole);
 
         // calculates the consequences
-        checkConsequences(victim, causedByRole);
+        // checkConsequences(victim, causedByRole);
     }
 
     private void sendDeathMessage(Player player, String cause) {
@@ -139,6 +139,9 @@ public class AutoState extends MainState {
                 MessagesMain.deathByGunshot(game, player);
             case "Dorfbewohner":
                 MessagesMain.deathByLynchen(game, player);
+            case "Märtyrerin":
+                MessagesMain.deathBySacrifice(game, player);
+
             default:
                 MessagesMain.deathByDefault(game, player);
         }

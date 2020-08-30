@@ -305,6 +305,11 @@ public class MessagesMain {
 				"Das Leben von " + player.name + " kam zu einem tragischen Ende. ", revealId(player, game));
 	}
 
+	public static void deathBySacrifice(Game game, Player player) {
+		Globals.createEmbed(game.mainChannel, Color.RED,
+				"Mutig und voller Entschlossenheit tritt die Mäetyrerin aufs Schafott. Alle Stimmen verstumme als sie mit einer kleinen Träne im Auge nicht vor der Henkersaxt zurück zuckt.", revealId(player, game));
+	}
+
 	public static void onAussätzigeDeath(Game game) {
 		Globals.createMessage(game.mainChannel,
 				"Die Werwölfe wurden infiziert und dürfen in der nächsten Nacht niemanden töten", true);
@@ -633,9 +638,10 @@ public class MessagesMain {
 		;
 	}
 
-	public static void remindMärtyrerin(Game game, Player player) {
-		// TODO: fill
-		Globals.createMessage(player.user.getPrivateChannel().block(), "test");
+	public static void remindMärtyrerin(Game game, Player player, Player mostVoted) {
+		
+		Globals.createMessage(player.user.getPrivateChannel().block(), "Auf dem Schafott steht: **" + mostVoted.name + "!** Nun liegt es an dir...\nWenn du dich anstelle des Spielers opfern willst, tippe **ja** und ansonsten **nein**.");
+		Globals.createMessage(game.mainChannel, "Waiting for the \"Märtyrerin\" to act...");
 
 	}
 
@@ -648,6 +654,8 @@ public class MessagesMain {
 
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
 	}
+
+
 
 
 }

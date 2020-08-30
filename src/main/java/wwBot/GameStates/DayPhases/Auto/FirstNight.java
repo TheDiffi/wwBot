@@ -1,4 +1,4 @@
-package wwBot.GameStates.DayPhases;
+package wwBot.GameStates.DayPhases.Auto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +22,9 @@ public class FirstNight {
     public FirstNight(Game getGame) {
         game = getGame;
         mapExistingRoles = game.gameState.mapExistingRoles;
+
+        MessagesMain.onFirstNightAuto(game);
+        
         sendPrivateMessages();
     }
 

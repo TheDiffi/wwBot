@@ -1,4 +1,4 @@
-package wwBot.GameStates.DayPhases;
+package wwBot.GameStates.DayPhases.Semi;
 
 import java.awt.Color;
 import java.util.Map;

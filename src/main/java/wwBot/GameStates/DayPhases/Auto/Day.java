@@ -1,11 +1,10 @@
-package wwBot.GameStates.DayPhases;
+package wwBot.GameStates.DayPhases.Auto;
 
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
@@ -25,6 +24,9 @@ public class Day {
 
         // loads all Commands into the mapCommands
         registerDayCommands();
+
+        MessagesMain.onDayAuto(game);
+
     }
 
     // --------------------- Commands ------------------------
@@ -196,16 +198,19 @@ public class Day {
 
         MessagesMain.announceMajority(game, mostVoted, mapVotes);
 
-        var victim = mostVoted;
-
-        // TODO: check
-        // Prinz condition gets checked later
+        // waits for a bit for suspense
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            game.mainChannel.createMessage("error in: Day -> Thread.sleep();");
+            e.printStackTrace();
+        }
 
         // MÄRTYRERIN
         if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
 
             var player = game.gameState.mapExistingRoles.get("Märtyrerin").get(0);
-            MessagesMain.remindMärtyrerin(game, player);
+            MessagesMain.remindMärtyrerin(game, player, mostVoted);
 
             PrivateCommand sacrifice = (event, parameters, msgChannel) -> {
                 if (parameters.size() != 1) {
@@ -214,12 +219,13 @@ public class Day {
 
                 } else if (parameters.get(0).equalsIgnoreCase("no")) {
                     MessagesMain.sendApproval(msgChannel);
+                    lynchPlayer(mostVoted, false);
+
                     return true;
 
                 } else if (parameters.get(0).equalsIgnoreCase("yes")) {
-                    victim = player;
-
-                    // TODO: figure this out
+                    MessagesMain.sendApproval(msgChannel);
+                    lynchPlayer(player, true);
 
                     return true;
 
@@ -231,10 +237,18 @@ public class Day {
             };
             game.addPrivateCommand(player.user.getId(), sacrifice);
 
+        } else {
+            lynchPlayer(mostVoted, false);
         }
 
+    }
+
+    private void lynchPlayer(Player victim, boolean hasSacrificed) {
+
+        var cause = hasSacrificed ? "Märtyrerin" : "Dorfbewohner";
+
         // calling killPlayer() with "Dorfbewohner" means lynching him
-        game.gameState.killPlayer(victim, "Dorfbewohner");
+        game.gameState.killPlayer(victim, cause);
 
         // waits for a bit b4 changing to night
         try {
@@ -245,7 +259,6 @@ public class Day {
         }
 
         game.gameState.changeDayPhase(DayPhase.NORMAL_NIGHT);
-        
     }
 
     // returns an empty player type
