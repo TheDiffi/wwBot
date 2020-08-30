@@ -67,7 +67,7 @@ public class Game {
 
         // found überprüft ob der Command irgentwo gefunden wurde
         if (!found) {
-            MessagesMain.errorCommandNotFound(this, msgChannel);
+            MessagesMain.errorCommandNotFound(msgChannel);
         }
     }
 

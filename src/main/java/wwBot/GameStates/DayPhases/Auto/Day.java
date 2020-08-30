@@ -11,7 +11,6 @@ import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
-import wwBot.Interfaces.PrivateCommand;
 
 public class Day {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
@@ -78,7 +77,7 @@ public class Day {
                 }
             }
             if (!allowedToVote) {
-                MessagesMain.errorNotAllowedToVote(game, msgChannel);
+                MessagesMain.errorNotAllowedToVote(msgChannel);
 
             } else if (allowedToVote) {
                 // finds the wanted player
@@ -87,7 +86,7 @@ public class Day {
                 // checks the syntax
                 if (parameters == null || parameters.size() != 1) {
                     // wrong syntax
-                    MessagesMain.errorWrongSyntax(game, msgChannel);
+                    MessagesMain.errorWrongSyntax(msgChannel);
                 } else {
 
                     // removes the dash
@@ -107,7 +106,7 @@ public class Day {
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
                 } else if (!votedFor.role.alive) {
-                    MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+                    MessagesMain.errorPlayerAlreadyDead(msgChannel);
 
                     // if the player is alive, calls addVote
                     // if the same key gets put in a second time, the first value is dropped
@@ -210,32 +209,7 @@ public class Day {
         if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
 
             var player = game.gameState.mapExistingRoles.get("Märtyrerin").get(0);
-            MessagesMain.remindMärtyrerin(game, player, mostVoted);
-
-            PrivateCommand sacrifice = (event, parameters, msgChannel) -> {
-                if (parameters.size() != 1) {
-                    MessagesMain.errorWrongAnswer(game, msgChannel);
-                    return false;
-
-                } else if (parameters.get(0).equalsIgnoreCase("no")) {
-                    MessagesMain.sendApproval(msgChannel);
-                    lynchPlayer(mostVoted, false);
-
-                    return true;
-
-                } else if (parameters.get(0).equalsIgnoreCase("yes")) {
-                    MessagesMain.sendApproval(msgChannel);
-                    lynchPlayer(player, true);
-
-                    return true;
-
-                } else {
-                    MessagesMain.errorWrongAnswer(game, msgChannel);
-                    return false;
-                }
-
-            };
-            game.addPrivateCommand(player.user.getId(), sacrifice);
+            player.role.execute(game, mostVoted);
 
         } else {
             lynchPlayer(mostVoted, false);
@@ -243,7 +217,7 @@ public class Day {
 
     }
 
-    private void lynchPlayer(Player victim, boolean hasSacrificed) {
+    public void lynchPlayer(Player victim, boolean hasSacrificed) {
 
         var cause = hasSacrificed ? "Märtyrerin" : "Dorfbewohner";
 

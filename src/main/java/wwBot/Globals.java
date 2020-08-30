@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
-import wwBot.cards.Role;
 import wwBot.cards.Card;
-
+import wwBot.cards.Role;
 
 //In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {
@@ -112,7 +112,7 @@ public class Globals {
 			// lists every player in the list
 			for (var entry : list) {
 				mssgPlayerList += "\n";
-				
+
 				if (entry.role.specs.friendly) {
 					mssgPlayerList += "+ ";
 				} else {
@@ -203,6 +203,32 @@ public class Globals {
 			foundPlayer = null;
 		}
 		return foundPlayer;
+	}
+
+	// checks the syntax of a Private command and find the player
+	public static Player privateCommandPlayerFinder(MessageCreateEvent event, List<String> parameters,
+			MessageChannel msgChannel, Game game) {
+		if (parameters == null || parameters.size() > 2) {
+			MessagesMain.errorWrongSyntax(msgChannel);
+			return null;
+		} else {
+			// finds the player
+			var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers, game);
+
+			if (player == null) {
+				MessagesMain.errorPlayerNotFound(msgChannel);
+				return null;
+			}
+			if (!player.role.alive) {
+				MessagesMain.errorPlayerAlreadyDead(msgChannel);
+				return null;
+			}
+
+			else {
+				return player;
+			}
+		}
+
 	}
 
 	// finds a card in the map of all Cards

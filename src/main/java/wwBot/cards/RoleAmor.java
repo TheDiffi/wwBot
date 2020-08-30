@@ -4,7 +4,6 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleAmor extends Role {
@@ -22,7 +21,7 @@ public class RoleAmor extends Role {
         PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
 
             if (parameters == null || parameters.size() != 2) {
-                MessagesMain.errorWrongSyntax(game, msgChannel);
+                MessagesMain.errorWrongSyntax(msgChannel);
                 return false;
             } else {
                 // finds the players
@@ -45,10 +44,7 @@ public class RoleAmor extends Role {
                     // sends a mssg
                     MessagesMain.amorSuccess(game, player1, player2);
 
-                    // sets this roles state to done
-                    var state = (AutoState) game.gameState;
-                    state.firstNight.endChecks.replace("Amor", true);
-                    state.firstNight.endNightCheck();
+                    setDone(game, "Amor");
                     return true;
 
                 }

@@ -12,6 +12,8 @@ import wwBot.Interfaces.Command;
 
 //----------------------- ! WORK IN PROGRESS ! --------------------------------
 
+//TODO: every morning set all surviving players.deathstate to ALIVE
+
 public class AutoState extends MainState {
 
     public Day day = null;

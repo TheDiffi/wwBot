@@ -8,6 +8,8 @@ import wwBot.Interfaces.Command;
 import java.awt.Color;
 
 public class PostGameState extends GameState {
+    //IDEA: parse every morning a summary of the night (including: death state, who saved who, ect. ) into a json or smthing and use these stats in post state
+
 
     PostGameState(Game game, int winner) {
         super(game);

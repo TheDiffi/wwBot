@@ -6,25 +6,25 @@ import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.Interfaces.PrivateCommand;
 
-public class RoleSeher extends Role {
+public class RoleAuraSeherin extends Role {
 
-    RoleSeher() {
-        super("Seher");
+    RoleAuraSeherin() {
+        super("Aura-Seherin");
     }
 
     @Override
-    public void execute(Game game, Player seher) {
+    public void execute(Game game, Player auraSeherin) {
         /// TODO: send mssg
-        seher.user.getPrivateChannel().block().createMessage("TEST");
+        auraSeherin.user.getPrivateChannel().block().createMessage("TEST");
 
         PrivateCommand seherCommand = (event, parameters, msgChannel) -> {
             var player = Globals.privateCommandPlayerFinder(event, parameters, msgChannel, game);
 
             if (player != null) {
                 // sends the mssg
-                MessagesMain.showSeher(seher, player, game);
+                MessagesMain.showSeher(auraSeherin, player, game);
 
-                setDone(game, "Seher");
+                setDone(game, "Aura-Seherin");
                 return true;
 
             } else {
@@ -32,6 +32,6 @@ public class RoleSeher extends Role {
             }
 
         };
-        game.addPrivateCommand(seher.user.getId(), seherCommand);
+        game.addPrivateCommand(auraSeherin.user.getId(), seherCommand);
     }
 }

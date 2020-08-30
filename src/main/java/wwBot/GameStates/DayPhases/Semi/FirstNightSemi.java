@@ -85,7 +85,7 @@ public class FirstNightSemi  {
                             MessagesMain.errorPlayerNotFound(msgChannel);
                         }
                     } else {
-                        MessagesMain.errorWrongSyntax(game, msgChannel);
+                        MessagesMain.errorWrongSyntax(msgChannel);
                     }
                 } else {
                     MessagesMain.errorModOnlyCommand(msgChannel);
@@ -119,7 +119,7 @@ public class FirstNightSemi  {
                             MessagesMain.errorPlayerNotFound(msgChannel);
                         }
                     } else {
-                        MessagesMain.errorWrongSyntax(game, msgChannel);
+                        MessagesMain.errorWrongSyntax(msgChannel);
                     }
                 } else {
                     MessagesMain.errorModOnlyCommand(msgChannel);

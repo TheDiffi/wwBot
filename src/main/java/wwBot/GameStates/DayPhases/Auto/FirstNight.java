@@ -1,14 +1,11 @@
 package wwBot.GameStates.DayPhases.Auto;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import wwBot.Game;
 import wwBot.MessagesMain;
-import wwBot.Player;
 import wwBot.GameStates.MainState.DayPhase;
 
 //---------------- TODO: TEST ----------------------------
@@ -16,12 +13,10 @@ import wwBot.GameStates.MainState.DayPhase;
 public class FirstNight {
 
     public Map<String, Boolean> endChecks = new HashMap<>();
-    Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(String.CASE_INSENSITIVE_ORDER);
     private Game game;
 
     public FirstNight(Game getGame) {
         game = getGame;
-        mapExistingRoles = game.gameState.mapExistingRoles;
 
         MessagesMain.onFirstNightAuto(game);
         
@@ -36,7 +31,6 @@ public class FirstNight {
             initiateRole("Günstling");
             
         }
-
         // Seher
         if (game.gameState.mapExistingRoles.containsKey("Seher")) {
 
@@ -58,7 +52,7 @@ public class FirstNight {
     }
 
     private void initiateRole(String roleName) {
-        var player = mapExistingRoles.get(roleName).get(0);
+        var player = game.gameState.mapExistingRoles.get(roleName).get(0);
         endChecks.put(roleName, false);
         player.role.execute(game, player);
     }

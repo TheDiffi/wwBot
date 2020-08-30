@@ -203,9 +203,9 @@ public class MessagesMain {
 
 	}
 
-	public static void onDoppelgängerinTransformation(Game game, Player doppelgaengerin, Player unluckyPlayer) {
+	public static void onDoppelgängerinTransformation(Game game, Player doppelgängerin, Player unluckyPlayer) {
 		// message to DP
-		Globals.createEmbed(doppelgaengerin.user.getPrivateChannel().block(), Color.WHITE,
+		Globals.createEmbed(doppelgängerin.user.getPrivateChannel().block(), Color.WHITE,
 				"Du hast dich verwandelt!\nDeine neue Rolle ist: " + unluckyPlayer.role.name,
 				"Die Person, welche du am Anfang des Spieles ausgewählt hast, ist gestorben. Durch deine ungwöhnlichen Fähigkeiten hast du seine Identität absorbiert. Du nimmst seine Rolle ein und wirst zu einem/einer "
 						+ unluckyPlayer.role.name);
@@ -573,7 +573,7 @@ public class MessagesMain {
 		messageChannel.createMessage("E: you have no access to this command").block();
 	}
 
-	public static void errorWrongSyntaxOnKill(Game game, MessageCreateEvent event) {
+	public static void errorWrongSyntaxOnKill(MessageCreateEvent event) {
 		event.getMessage().getChannel().block()
 				.createMessage("E: Ich verstehe dich nicht 😕\nDein Command sollte so aussehen: \n\"" + prefix
 						+ "kill\" <PlayerDerSterbenSoll> <RolleWelchenDenSpielerTötet> \nBeispiel: &kill Anne-Frank Werwolf \nFalls du dir nicht sicher bist, wodurch der Spieler getötet wurde, schreibe \"null\" (Nicht immer ist die der Verantwortliche gemeint, sondern die Rolle, welche zu diesem Tod geführt hat z.B. bei Liebe -> Amor)")
@@ -595,11 +595,11 @@ public class MessagesMain {
 		msgChannel.createMessage("E: Only the moderator can use this command").block();
 	}
 
-	public static void errorPlayerAlreadyDead(Game game, MessageChannel msgChannel) {
+	public static void errorPlayerAlreadyDead(MessageChannel msgChannel) {
 		msgChannel.createMessage("E: The Person you Voted for is already dead (Seriously, give him a break)").block();
 	}
 
-	public static void errorWrongSyntax(Game game, MessageChannel msgChannel) {
+	public static void errorWrongSyntax(MessageChannel msgChannel) {
 		var a = Arrays.asList("E: Wrong Syntax - I can't understand you",
 				"E: Wrong Syntax - Use &showCommands for a list of all Commands",
 				"E: Wrong Syntax - TIPP: when writing the name of a player, use \"-\" insplace of a space",
@@ -607,11 +607,11 @@ public class MessagesMain {
 		msgChannel.createMessage(a.get((int) Math.random() * a.size())).block();
 	}
 
-	public static void errorWrongAnswer(Game game, MessageChannel msgChannel) {
+	public static void errorWrongAnswer(MessageChannel msgChannel) {
 		msgChannel.createMessage("E: This was not an answer I was expecting. Try again!").block();
 	}
 
-	public static void errorNotAllowedToVote(Game game, MessageChannel msgChannel) {
+	public static void errorNotAllowedToVote(MessageChannel msgChannel) {
 		msgChannel.createMessage("E: You are not allowed to vote!").block();
 	}
 
@@ -619,9 +619,14 @@ public class MessagesMain {
 		msgChannel.createMessage("E: Players are identical. Try again.").block();
 	}
 
-	public static void errorCommandNotFound(Game game, MessageChannel msgChannel) {
+	public static void errorChoseIdenticalPlayer(MessageChannel msgChannel) {
+		msgChannel.createMessage("E: You cannot chose the same player as last round. Try again.").block();
+	}
+
+	public static void errorCommandNotFound(MessageChannel msgChannel) {
 		msgChannel.createMessage("```diff\n-E: Command Not Found\n```").block();
 	}
+
 	// ---------Need To Sort--------------------------------------------
 
 	public static void sendGameExplanation(MessageChannel channel) {
@@ -636,6 +641,14 @@ public class MessagesMain {
 		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "",
 				Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
 		;
+	}
+
+	public static void showAuraSeherin(Player seher, Player found, Game game) {
+		var color = found.role.specs.unique ? Color.GREEN : Color.WHITE;
+		var revelation = found.role.specs.unique ? " ist eine" : " ist keine";
+
+		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, found.name + revelation + " Spezial Rolle" ,"");
+		
 	}
 
 	public static void remindMärtyrerin(Game game, Player player, Player mostVoted) {
@@ -653,6 +666,9 @@ public class MessagesMain {
 		var randMssg = a.get((int) Math.random() * a.size());
 
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
+	}
+
+	public static void errorChoseIdenticalPlayer() {
 	}
 
 

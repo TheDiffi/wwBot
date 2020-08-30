@@ -62,7 +62,6 @@ public class LobbyState extends GameState {
         gameStateCommands.put("showCommands", showCommandsCommand);
         gameStateCommands.put("sC", showCommandsCommand);
 
-
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
             User user = event.getMessage().getAuthor().get();
@@ -70,7 +69,7 @@ public class LobbyState extends GameState {
             // falls es einen moderator gibt darf dieser nicht joinen
             if (!gameRuleAutomatic && userModerator != null && user.getId().equals(userModerator.getId())) {
                 bool = false;
-                
+
             }
             // mit einer DM soll man nicht joinen können
             if (!event.getGuildId().isPresent()) {
@@ -218,7 +217,7 @@ public class LobbyState extends GameState {
                     MessagesMain.errorCardNotFound(msgChannel);
                 }
             } else {
-                MessagesMain.errorWrongSyntax(game, msgChannel);
+                MessagesMain.errorWrongSyntax(msgChannel);
             }
         };
         gameStateCommands.put("addCard", addCardCommand);
@@ -251,7 +250,7 @@ public class LobbyState extends GameState {
                     MessagesMain.errorCardNotFound(msgChannel);
                 }
             } else {
-                MessagesMain.errorWrongSyntax(game, msgChannel);
+                MessagesMain.errorWrongSyntax(msgChannel);
             }
         };
         gameStateCommands.put("removeCard", removeCardCommand);
@@ -404,8 +403,8 @@ public class LobbyState extends GameState {
 
         var message = "";
         // überprüft ob die karte unique ist, falls ja, wird überprüft ob die Karte
-        // bereis im Deck ist
-        if (cardSpec.unique && list != null) {
+        // bereis im Deck ist (ausnahme: Seher)
+        if ((cardSpec.unique && !cardSpec.name.equalsIgnoreCase("Seher")) && list != null) {
 
             // wenn die karte existiert wird ein fehler gegeben, ansonsten wird sie
             // hinzugefügt
@@ -418,7 +417,7 @@ public class LobbyState extends GameState {
 
             // falls die karte nicht unique ist oder die liste leer ist wird die Karte ohne
             // überprüfen hinzugegügt
-        } else if (!cardSpec.unique || list == null) {
+        } else if ((!cardSpec.unique || cardSpec.name.equalsIgnoreCase("Seher"))|| list == null) {
             list.add(Role.createRole(cardSpec.name));
             message += cardSpec.name + " wurde dem Deck hinzugefügt";
 
@@ -467,7 +466,6 @@ public class LobbyState extends GameState {
 
         return message;
     }
-
 
     public void close() {
 

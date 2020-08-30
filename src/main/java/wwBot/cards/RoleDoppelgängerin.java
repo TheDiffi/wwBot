@@ -4,7 +4,6 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleDoppelgängerin extends Role {
@@ -23,7 +22,7 @@ public class RoleDoppelgängerin extends Role {
         // registers a private commands which asks the player for the name of a player
         PrivateCommand dpCommand = (event, parameters, msgChannel) -> {
             if (parameters == null || !(parameters.size() == 1)) {
-                MessagesMain.errorWrongSyntax(game, msgChannel);
+                MessagesMain.errorWrongSyntax(msgChannel);
                 return false;
 
             }
@@ -37,10 +36,7 @@ public class RoleDoppelgängerin extends Role {
                 //sends the mssg
                 MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
 
-                //sets this roles state to done
-                var state = (AutoState) game.gameState;
-                state.firstNight.endChecks.replace("Doppelgängerin", true);
-                state.firstNight.endNightCheck();
+                setDone(game, "Doppelgängerin");
                 return true;
             }
 

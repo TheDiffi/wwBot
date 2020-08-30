@@ -52,7 +52,6 @@ public class Deckbuilder {
             // ist als die Differenz der bisherigen wird sie in smallestDifferenceCard
             // gespeichert.
             for (var card : mapRegisteredCards.values()) {
-
                 if (card.unique && !Globals.listContainsCard(listDeck, card)) {
                     if (smallestDifferenceCard == null || Math.abs(totalValue + card.value) < Math
                             .abs(totalValue + smallestDifferenceCard.value)) {
@@ -64,7 +63,7 @@ public class Deckbuilder {
             // haben und speichert diese in einer liste
             var tempCardList = new ArrayList<Card>();
             for (var card : mapRegisteredCards.values()) {
-                if (card.unique && smallestDifferenceCard.value == card.value) {
+                if (card.unique && !Globals.listContainsCard(listDeck, card) && smallestDifferenceCard.value == card.value) {
                     tempCardList.add(card);
                 }
             }

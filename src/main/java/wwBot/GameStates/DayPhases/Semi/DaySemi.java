@@ -108,14 +108,14 @@ public class DaySemi  {
 
                 } else {
                     // wrong syntax
-                    MessagesMain.errorWrongSyntax(game, msgChannel);
+                    MessagesMain.errorWrongSyntax(msgChannel);
                 }
 
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
                 } else if (!votedFor.role.alive) {
-                    MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+                    MessagesMain.errorPlayerAlreadyDead(msgChannel);
 
                     // if the player is alive, calls addVote
                     // if the same key gets put in a second time, the first value is dropped
@@ -127,7 +127,7 @@ public class DaySemi  {
                 countVotes();
 
             } else if (!allowedToVote) {
-                MessagesMain.errorNotAllowedToVote(game, msgChannel);
+                MessagesMain.errorNotAllowedToVote(msgChannel);
 
             }
         };
@@ -155,7 +155,7 @@ public class DaySemi  {
                                         .block();
                             }
                         } else {
-                            MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+                            MessagesMain.errorPlayerAlreadyDead(msgChannel);
                         }
 
                     } else {
@@ -163,7 +163,7 @@ public class DaySemi  {
                     }
 
                 } else {
-                    MessagesMain.errorWrongSyntax(game, msgChannel);
+                    MessagesMain.errorWrongSyntax(msgChannel);
                 }
             }
         };

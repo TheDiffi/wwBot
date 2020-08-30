@@ -87,7 +87,7 @@ public class SemiState extends MainState {
 		// falls der Spieler Tot ist stirbt er nicht
 		if (!unluckyPlayer.role.alive) {
 			dies = false;
-			MessagesMain.errorPlayerAlreadyDead(game, modChannel);
+			MessagesMain.errorPlayerAlreadyDead(modChannel);
 		}
 
 		// VERFLUCHTER
@@ -196,7 +196,7 @@ public class SemiState extends MainState {
 
 			}
 
-			// JÄGER
+			// JÄGER //TODO:TEST, very experimantal
 		} else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
 			MessagesMain.onJägerDeath(game, unluckyPlayer);
 			// loads the Bot api
@@ -239,7 +239,7 @@ public class SemiState extends MainState {
 								}
 
 							} else {
-								MessagesMain.errorWrongSyntax(game, messageChannel);
+								MessagesMain.errorWrongSyntax(messageChannel);
 							}
 						} catch (Exception e) {
 							event.getMessage().getChannel().block().createMessage("Something went wrong").block();
@@ -273,19 +273,16 @@ public class SemiState extends MainState {
 				MessagesMain.deathByDefault(game, player);
 		}
 
-		/* if (cause.equalsIgnoreCase("Werwolf")) {
-			MessagesMain.deathByWW(game, player);
-		} else if (cause.equalsIgnoreCase("Hexe") || cause.equalsIgnoreCase("Magier")) {
-			MessagesMain.deathByMagic(game, player);
-		} else if (cause.equalsIgnoreCase("Amor")) {
-			MessagesMain.deathByLove(game, player);
-		} else if (cause.equalsIgnoreCase("Jäger")) {
-			MessagesMain.deathByGunshot(game, player);
-		} else if (cause.equalsIgnoreCase("Dorfbewohner")) {
-			MessagesMain.deathByLynchen(game, player);
-		} else {
-			MessagesMain.deathByDefault(game, player);
-		} */
+		/*
+		 * if (cause.equalsIgnoreCase("Werwolf")) { MessagesMain.deathByWW(game,
+		 * player); } else if (cause.equalsIgnoreCase("Hexe") ||
+		 * cause.equalsIgnoreCase("Magier")) { MessagesMain.deathByMagic(game, player);
+		 * } else if (cause.equalsIgnoreCase("Amor")) { MessagesMain.deathByLove(game,
+		 * player); } else if (cause.equalsIgnoreCase("Jäger")) {
+		 * MessagesMain.deathByGunshot(game, player); } else if
+		 * (cause.equalsIgnoreCase("Dorfbewohner")) { MessagesMain.deathByLynchen(game,
+		 * player); } else { MessagesMain.deathByDefault(game, player); }
+		 */
 	}
 
 	@Override
@@ -577,13 +574,13 @@ public class SemiState extends MainState {
 
 							}
 						} else {
-							MessagesMain.errorPlayerAlreadyDead(game, msgChannel);
+							MessagesMain.errorPlayerAlreadyDead(msgChannel);
 						}
 					} else {
-						MessagesMain.errorWrongSyntaxOnKill(game, event);
+						MessagesMain.errorWrongSyntaxOnKill(event);
 					}
 				} else {
-					MessagesMain.errorWrongSyntaxOnKill(game, event);
+					MessagesMain.errorWrongSyntaxOnKill(event);
 				}
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);

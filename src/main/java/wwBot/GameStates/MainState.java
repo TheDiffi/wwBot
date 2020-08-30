@@ -236,5 +236,9 @@ public class MainState extends GameState{
 	public enum DayPhase {
 		FIRST_NIGHT, NORMAL_NIGHT, DAY, MORNING
 	}
+
+	public enum DeathState {
+		ALIVE, PROTECTED, SAVED, AT_RISK
+	}
     
 }
