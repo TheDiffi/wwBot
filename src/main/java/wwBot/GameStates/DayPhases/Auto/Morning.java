@@ -6,6 +6,4 @@ public class Morning {
 
     public Morning(Game game) {
 	}
-
-    
 }

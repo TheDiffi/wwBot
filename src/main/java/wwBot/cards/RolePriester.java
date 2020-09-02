@@ -17,8 +17,7 @@ public class RolePriester extends Role {
 
     @Override
     public void execute(Game game, Player priester) {
-        /// TODO: send mssg
-        priester.user.getPrivateChannel().block().createMessage("TEST");
+        MessagesMain.callPriester(priester);
 
         PrivateCommand priesterCommand = (event, parameters, msgChannel) -> {
             if (parameters.size() != 1) {
@@ -27,7 +26,7 @@ public class RolePriester extends Role {
 
                 // NO
             } else if (parameters.get(0).equalsIgnoreCase("no")) {
-                MessagesMain.sendApproval(msgChannel);
+                MessagesMain.confirm(msgChannel);
                 
                 setDone(game, "Priester");
 
@@ -35,11 +34,11 @@ public class RolePriester extends Role {
 
                 // YES: if the priest chooses to use his ability he gets granted access to the "bless" Command
             } else if (parameters.get(0).equalsIgnoreCase("yes")) {
-                MessagesMain.sendApproval(msgChannel);
+                MessagesMain.confirm(msgChannel);
                 
                 //this Command saves the priests player of choice as the protected player
                 PrivateCommand blessCommand = (event2, parameters2, msgChannel2) -> {
-                    var player = Globals.privateCommandPlayerFinder(event2, parameters2, msgChannel2, game);
+                    var player = Globals.commandPlayerFinder(event2, parameters2, msgChannel2, game);
         
                     if (player != null) {
                         protectedPlayer = player;

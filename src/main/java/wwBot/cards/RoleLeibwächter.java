@@ -18,11 +18,12 @@ public class RoleLeibwächter extends Role {
 
     @Override
     public void execute(Game game, Player leibwächter) {
-        /// TODO: send mssg
+        MessagesMain.callLeibwächter(leibwächter);
+
         leibwächter.user.getPrivateChannel().block().createMessage("TEST");
 
         PrivateCommand leibwächterCommand = (event, parameters, msgChannel) -> {
-            var player = Globals.privateCommandPlayerFinder(event, parameters, msgChannel, game);
+            var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
             if (player != null && (protectingPlayer == null || !player.name.equals(protectingPlayer.name))) {
                 protectingPlayer = player;
@@ -32,7 +33,7 @@ public class RoleLeibwächter extends Role {
                 return true;
 
             } else if (protectingPlayer != null && player.name.equals(protectingPlayer.name)) {
-                MessagesMain.errorChoseIdenticalPlayer();
+                MessagesMain.errorChoseIdenticalPlayer(msgChannel);
                 return false;
 
             } else {

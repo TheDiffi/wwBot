@@ -14,9 +14,7 @@ public class RoleAmor extends Role {
 
     @Override
     public void execute(Game game, Player amor) {
-        /// TODO: send mssg
-        amor.user.getPrivateChannel().block().createMessage("TEST");
-        MessagesMain.triggerAmor(game);
+        MessagesMain.triggerAmor(game, amor);
 
         PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
 

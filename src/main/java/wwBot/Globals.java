@@ -206,7 +206,7 @@ public class Globals {
 	}
 
 	// checks the syntax of a Private command and find the player
-	public static Player privateCommandPlayerFinder(MessageCreateEvent event, List<String> parameters,
+	public static Player commandPlayerFinder(MessageCreateEvent event, List<String> parameters,
 			MessageChannel msgChannel, Game game) {
 		if (parameters == null || parameters.size() > 2) {
 			MessagesMain.errorWrongSyntax(msgChannel);

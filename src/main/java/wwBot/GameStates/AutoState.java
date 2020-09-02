@@ -17,10 +17,8 @@ import wwBot.Interfaces.Command;
 public class AutoState extends MainState {
 
     public Day day = null;
-    
-      public Night night = null; 
-      public Morning morning = null;
-    
+    public Night night = null;
+    public Morning morning = null;
     public FirstNight firstNight = null;
     public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
@@ -45,7 +43,6 @@ public class AutoState extends MainState {
             if (nextPhase == DayPhase.NORMAL_NIGHT) {
 
                 setMuteAllPlayers(game.livingPlayers, true);
-                createWerwolfChat();
 
                 night = new Night(game);
                 dayPhase = DayPhase.NORMAL_NIGHT;
@@ -57,7 +54,7 @@ public class AutoState extends MainState {
                 setMuteAllPlayers(game.livingPlayers, false);
                 deleteWerwolfChat();
 
-                //morning = new Morning(game);
+                // morning = new Morning(game);
                 dayPhase = DayPhase.MORNING;
 
                 MessagesMain.onMorningAuto(game);
@@ -67,7 +64,6 @@ public class AutoState extends MainState {
 
                 day = new Day(game);
                 dayPhase = DayPhase.DAY;
-
 
                 // transitions to 1st Night
             } else if (nextPhase == DayPhase.FIRST_NIGHT) {

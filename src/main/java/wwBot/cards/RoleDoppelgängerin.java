@@ -16,8 +16,7 @@ public class RoleDoppelgängerin extends Role {
 
     @Override
     public void execute(Game game, Player dp){
-        /// TODO: send mssg
-        dp.user.getPrivateChannel().block().createMessage("TEST");
+        MessagesMain.triggerDoppelgängerin(game, dp);
 
         // registers a private commands which asks the player for the name of a player
         PrivateCommand dpCommand = (event, parameters, msgChannel) -> {

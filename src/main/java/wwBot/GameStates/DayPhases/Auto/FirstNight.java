@@ -8,7 +8,7 @@ import wwBot.Game;
 import wwBot.MessagesMain;
 import wwBot.GameStates.MainState.DayPhase;
 
-//---------------- TODO: TEST ----------------------------
+//---------------- FIRST NIGHT ----------------------------
 
 public class FirstNight {
 

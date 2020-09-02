@@ -59,7 +59,7 @@ public class FirstNightSemi  {
         // "inLoveWith" variable of two players to eachother
         if (mapExistingRoles.get("Amor") != null) {
 
-            MessagesMain.triggerAmor(game);
+            MessagesMain.triggerAmor(game, null);
             Command setLoveCommand = (event, parameters, msgChannel) -> {
                 if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                     if (parameters != null && parameters.size() == 2) {
@@ -99,7 +99,7 @@ public class FirstNightSemi  {
         // Doppelgängerin
         if (mapExistingRoles.get("Doppelgängerin") != null) {
 
-            MessagesMain.triggerDoppelgängerin(game);
+            MessagesMain.triggerDoppelgängerin(game, null);
             Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
                 if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                     if (parameters != null && parameters.size() == 1) {

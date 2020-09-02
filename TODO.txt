@@ -88,14 +88,10 @@ NIGHT: unterteilt in preWWPhase , WWPhase, PostWWPhase
         WERWÖLFE (haben alle eine Stimme, welche sie in den Werwolf chat schreiben können)
         WOLFSJUNGES
 
-    ÜBERPRÜFUNG OB EIN PLAYER inDanger IST 
 
     PostWWPhase
         HEXE (einmalig: kann sterbende person retten; einmalig: kann alivePlayer töten)
         MAGIER (wie Hexe)
-
-    ÜBERPRÜFUNG OB EIN PLAYER inDanger IST 
-
 
 
     SONSTIGE:

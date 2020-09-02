@@ -1,0 +1,26 @@
+
+
+
+
+
+//TODO: Idiot
+//TODO: Pazifistin
+
+-------------------- KILL SYSTEM ---------------------
+TODO: every morning set all surviving players.deathstate to ALIVE
+
+//TODO: Prinz
+//TODO: Verfluchter
+//TODO: Seher Lehrling
+//TODO: Wolfsjunges
+//TODO: Aussätzige
+//TODO: Verfluchter
+//TODO: Harter-Bursche
+//TODO: Jäger
+//TODO: Priester
+
+
+
+
+
+

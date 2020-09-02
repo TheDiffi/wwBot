@@ -151,11 +151,17 @@ public class MessagesMain {
 
 	// ---------UNIQUE CARDS MESSAGES--------------------------------------------
 
-	public static void triggerAmor(Game game) {
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. \nTue dies mit \"" + prefix
-						+ "&inLove\" <Player1> <Player2>",
-				false);
+	// AMOR
+	public static void triggerAmor(Game game, Player amor) {
+		if (!game.gameRuleAutomatic) {
+			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+					"[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. \nTue dies mit \"" + prefix
+							+ "&inLove\" <Player1> <Player2>",
+					false);
+		} else {
+			Globals.createMessage(amor.user.getPrivateChannel().block(),
+					"Teile mir nun mit, welche zwei Spieler du sich ineinander verlieben lassen möchtest💕\n Tue dies indem innerhalb einer Nachricht beide Namen nur durch ein Leerzeichen getrennt schreibst; etwa so:\nRomeo Julia");
+		}
 	}
 
 	public static void amorSuccess(Game game, MessageChannel modChannel, Player firstLover, Player secondLover) {
@@ -185,11 +191,17 @@ public class MessagesMain {
 				.block();
 	}
 
-	public static void triggerDoppelgängerin(Game game) {
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"Teile mir mit für welchen Spieler die Doppelgängerin sich entscheidet, damit ich (falls dieser Spieler stirbt) die Rolle der Doppelgängerin ändern kann.\nTue dies mit \""
-						+ prefix + "&Doppelgängerin\" <Player-Chosen-By-The-Doppelgängerin> ",
-				false);
+	// DOPPELGÄNGERIN
+	public static void triggerDoppelgängerin(Game game, Player dp) {
+		if (!game.gameRuleAutomatic) {
+			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+					"Teile mir mit für welchen Spieler die Doppelgängerin sich entscheidet, damit ich (falls dieser Spieler stirbt) die Rolle der Doppelgängerin ändern kann.\nTue dies mit \""
+							+ prefix + "&Doppelgängerin\" <Player-Chosen-By-The-Doppelgängerin> ",
+					false);
+		} else {
+			Globals.createMessage(dp.user.getPrivateChannel().block(),
+					"Als Doppelgängerin kannst du mir nun den Namen eines Spielers deiner Wahl mitteilen. \nFalls diese Person stirbt nimmst du die Rolle dieser Person an. Solltest du so zum Beispiel unabsichtlich einen Werwolf gewählt haben und dieser stirbt, wirst du zum Werwolf und kämpfst anschließend Seite an Seite mit den anderen Werwölfen.\n\nSchreibe nun einen Namen deiner Wahl, auf das sich eure Schicksale für immer verweben.");
+		}
 	}
 
 	public static void doppelgängerinSuccess(Game game, Player dp, Player chosenOne) {
@@ -217,6 +229,7 @@ public class MessagesMain {
 				"Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
 	}
 
+	// GÜNSTLING
 	public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
 			Game game) {
 		var mssg = "";
@@ -234,30 +247,101 @@ public class MessagesMain {
 
 	}
 
+	// MÄRTYRERIN
 	public static void remindAboutMärtyrerin(Game game) {
 		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 				"Vergiss nicht die Märtyrerin zu fragen ob sie sich anstelle der nominierten Person lynchen lassen will.");
 
 	}
 
+	public static void remindMärtyrerin(Game game, Player player, Player mostVoted) {
+
+		Globals.createMessage(player.user.getPrivateChannel().block(), "Auf dem Schafott steht: **" + mostVoted.name
+				+ "!** Nun liegt es an dir...\nWenn du dich anstelle des Spielers opfern willst, tippe **ja** und ansonsten **nein**.");
+		Globals.createMessage(game.mainChannel, "Waiting for the \"Märtyrerin\" to act...");
+
+	}
+
+	// PRINZ
 	public static void remindAboutPrinz(Game game) {
 		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 				"Wenn der Prinz duch \"" + prefix + "lynch\" stirbt, zeigt er seine Identität und überlebt.");
 	}
 
 	public static void prinzSurvivesLynching(Game game) {
-
 		Globals.printCard("Prinz", game.mainChannel);
 		game.mainChannel.createMessage(
 				"Im letzten Moment enthüllt der Prinz Seine Identität. Geblendet von seiner Präsenz (und seinen weißen Zähnen) verschwindet die Wut der Dorfbewohner und der Prinz überlebt.")
 				.block();
 	}
 
+	// HARTER BURSCHE
 	public static void checkHarterBurscheDeath(MessageChannel modChannel) {
 		Globals.createMessage(modChannel,
-				"Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"",
-				false);
+				"Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"");
 	}
+
+	public static void callVettel(Player vettel) {
+		Globals.createMessage(vettel.user.getPrivateChannel().block(),
+				"Schreibe mir den Namen des Spielers den du für den nächsten Tag verbannen möchtest.");
+	}
+
+	public static void showSeher(Player seher, Player found, Game game) {
+		var color = found.role.specs.friendly ? Color.GREEN : Color.RED;
+
+		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "",
+				Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
+		;
+	}
+
+	public static void showAuraSeherin(Player seher, Player found, Game game) {
+		var color = found.role.specs.unique ? Color.GREEN : Color.WHITE;
+		var revelation = found.role.specs.unique ? " ist eine" : " ist keine";
+
+		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, found.name + revelation + " Spezial Rolle",
+				"");
+
+	}
+
+	public static void callLeibwächter(Player leibwächter) {
+		// TODO: FILL
+	}
+
+	public static void callSäufer(Player säufer) {
+		// TODO: FILL
+
+	}
+
+	public static void callAuraSeherin(Player auraSeherin) {
+		// TODO:FILL
+	}
+
+	public static void callPriester(Player priester) {
+		// TODO:FILL
+	}
+
+	public static void callSeher(Player seher) {
+		// TODO:FILL
+	}
+
+	public static void callZaubermeisterin(Player zaubermeisterin) {
+		// TODO:FILL
+	}
+
+	public static void showZaubermeisterin(Player zaubermeisterin, Player player) {
+		// TODO:FILL
+	}
+
+	public static void callErmittler(Player säufer) {
+		// TODO: FILL
+	}
+
+	public static void callHexe(Player hexe, List<Player> atRiskPlayers, Game game) {
+		// TODO: FILL
+		hexe.user.getPrivateChannel().block().createMessage(Globals.playerListToString(atRiskPlayers, "AT RISK", game)
+				+ "\n**&heal <Player>**   to save this player\n**&poison <Player>    to kill Player");
+	}
+
 
 	// ---------DEATH MESSAGES--------------------------------------------
 
@@ -307,7 +391,8 @@ public class MessagesMain {
 
 	public static void deathBySacrifice(Game game, Player player) {
 		Globals.createEmbed(game.mainChannel, Color.RED,
-				"Mutig und voller Entschlossenheit tritt die Mäetyrerin aufs Schafott. Alle Stimmen verstumme als sie mit einer kleinen Träne im Auge nicht vor der Henkersaxt zurück zuckt.", revealId(player, game));
+				"Mutig und voller Entschlossenheit tritt die Mäetyrerin aufs Schafott. Alle Stimmen verstumme als sie mit einer kleinen Träne im Auge nicht vor der Henkersaxt zurück zuckt.",
+				revealId(player, game));
 	}
 
 	public static void onAussätzigeDeath(Game game) {
@@ -595,6 +680,10 @@ public class MessagesMain {
 		msgChannel.createMessage("E: Only the moderator can use this command").block();
 	}
 
+	public static void errorWWCommandOnly(MessageChannel msgChannel) {
+		msgChannel.createMessage("E: Only the moderator can use this command").block();
+	}
+
 	public static void errorPlayerAlreadyDead(MessageChannel msgChannel) {
 		msgChannel.createMessage("E: The Person you Voted for is already dead (Seriously, give him a break)").block();
 	}
@@ -635,30 +724,7 @@ public class MessagesMain {
 
 	}
 
-	public static void showSeher(Player seher, Player found, Game game) {
-		var color = found.role.specs.friendly ? Color.GREEN : Color.RED;
-
-		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "",
-				Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
-		;
-	}
-
-	public static void showAuraSeherin(Player seher, Player found, Game game) {
-		var color = found.role.specs.unique ? Color.GREEN : Color.WHITE;
-		var revelation = found.role.specs.unique ? " ist eine" : " ist keine";
-
-		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, found.name + revelation + " Spezial Rolle" ,"");
-		
-	}
-
-	public static void remindMärtyrerin(Game game, Player player, Player mostVoted) {
-		
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Auf dem Schafott steht: **" + mostVoted.name + "!** Nun liegt es an dir...\nWenn du dich anstelle des Spielers opfern willst, tippe **ja** und ansonsten **nein**.");
-		Globals.createMessage(game.mainChannel, "Waiting for the \"Märtyrerin\" to act...");
-
-	}
-
-	public static void sendApproval(MessageChannel msgChannel) {
+	public static void confirm(MessageChannel msgChannel) {
 
 		var a = Arrays.asList("Okay", "OK", "Alrighty", "You're the Boss", "Done!", "Good Decision ;)");
 		// TODO: MORE APPOVAL AAAAAAAH!!!?!!
@@ -668,10 +734,19 @@ public class MessagesMain {
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
 	}
 
-	public static void errorChoseIdenticalPlayer() {
+
+
+	public static void onWWTurn(MessageChannel mainChannel, TextChannel wwChat) {
+		Globals.createMessage(mainChannel,
+				"Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen **die Werwölfe** aus ihrem Versteck... 🌕");
+
+		Globals.createEmbed(wwChat, Color.black, "DIE WERWÖLFE SCHLAGEN ZU 💀",
+				"Ihr könnt nun **&slay <Spieler>** benutzen um **EINEN** Spieler zu töten.");
 	}
 
+	public static void postWWTurn(MessageChannel mainChannel) {
 
+	}
 
 
 }

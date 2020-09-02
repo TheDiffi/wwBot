@@ -17,11 +17,11 @@ public class RoleSäufer extends Role {
 
     @Override
     public void execute(Game game, Player säufer) {
-        /// TODO: send mssg
+        MessagesMain.callSäufer(säufer);
         säufer.user.getPrivateChannel().block().createMessage("TEST");
 
         PrivateCommand säuferCommand = (event, parameters, msgChannel) -> {
-            var player = Globals.privateCommandPlayerFinder(event, parameters, msgChannel, game);
+            var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
             if (player != null && (drinkingAt == null || !player.name.equals(drinkingAt.name))) {
                 drinkingAt = player;
@@ -31,7 +31,7 @@ public class RoleSäufer extends Role {
                 return true;
 
             } else if (drinkingAt != null && player.name.equals(drinkingAt.name)) {
-                MessagesMain.errorChoseIdenticalPlayer();
+                MessagesMain.errorChoseIdenticalPlayer(msgChannel);
                 return false;
                 
             } else {
