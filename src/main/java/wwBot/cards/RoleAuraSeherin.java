@@ -22,7 +22,7 @@ public class RoleAuraSeherin extends Role {
 
             if (player != null) {
                 // sends the mssg
-                MessagesMain.showSeher(auraSeherin, player, game);
+                MessagesMain.showAuraSeherin(auraSeherin, player, game);
 
                 setDone(game, "Aura-Seherin");
                 return true;

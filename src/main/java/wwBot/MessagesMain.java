@@ -6,10 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.AttributeSet.ColorAttribute;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.TextChannel;
+import wwBot.cards.RoleZauberer;
 
 public class MessagesMain {
 	public static String prefix = Main.prefix;
@@ -286,12 +289,31 @@ public class MessagesMain {
 				"Schreibe mir den Namen des Spielers den du für den nächsten Tag verbannen möchtest.");
 	}
 
-	public static void showSeher(Player seher, Player found, Game game) {
+	// a mightySeher is able to see the exact role of the player, a normal one only
+	// if the player is friendly or not
+	public static void showSeher(Player seher, Player found, Game game, boolean mightySeher) {
 		var color = found.role.specs.friendly ? Color.GREEN : Color.RED;
+		var name = found.role.name;
+		var channel = seher.user.getPrivateChannel().block();
+		var friendly = found.role.specs.friendly ? "Dieser Spieler ist auf der Seite der DORFBEWOHNER"
+				: "Dieser Spieler ist auf der Seite der WERWÖLFE";
 
-		Globals.createEmbed(seher.user.getPrivateChannel().block(), color, "",
-				Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
-		;
+		// Lykantrothin
+		if (name.equalsIgnoreCase("Lykantrophin")) {
+			color = Color.RED;
+			name = "Werwolf";
+			friendly = "Dieser Spieler ist auf der Seite der WERWÖLFE";
+		}
+
+		if (mightySeher) {
+			Globals.createEmbed(channel, color, friendly, "description");
+
+		} else {
+
+			Globals.createEmbed(channel, color, "",
+					Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
+
+		}
 	}
 
 	public static void showAuraSeherin(Player seher, Player found, Game game) {
@@ -336,12 +358,26 @@ public class MessagesMain {
 		// TODO: FILL
 	}
 
-	public static void callHexe(Player hexe, List<Player> atRiskPlayers, Game game) {
-		// TODO: FILL
-		hexe.user.getPrivateChannel().block().createMessage(Globals.playerListToString(atRiskPlayers, "AT RISK", game)
-				+ "\n**&heal <Player>**   to save this player\n**&poison <Player>    to kill Player");
+	public static void callZauberer(Player playerZauberer, RoleZauberer roleZauberer, List<Player> atRiskPlayers, Game game) {
+		var message = "";
+
+		if(!roleZauberer.healUsed){
+			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr", Globals.playerListToString(atRiskPlayers, "AT RISK", game));
+			message +="\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
+		}
+		if(!roleZauberer.poisonUsed){
+			message += "benutze: **&poison <Player>** um einen Spieler deiner Wahl zu töten.\n";
+		}
+
+		message += "benutze: **&continue** um deinen Zug zu beenden und fortzufahren";
+
+		Globals.createMessage(playerZauberer.user.getPrivateChannel().block(), message);
+		
 	}
 
+	public static void callZaubererUsedEverything(PrivateChannel privateChannel) {
+		privateChannel.createMessage("Looks like you already used all your Potions");
+	}
 
 	// ---------DEATH MESSAGES--------------------------------------------
 
@@ -734,8 +770,6 @@ public class MessagesMain {
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
 	}
 
-
-
 	public static void onWWTurn(MessageChannel mainChannel, TextChannel wwChat) {
 		Globals.createMessage(mainChannel,
 				"Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen **die Werwölfe** aus ihrem Versteck... 🌕");
@@ -747,6 +781,9 @@ public class MessagesMain {
 	public static void postWWTurn(MessageChannel mainChannel) {
 
 	}
+
+
+
 
 
 }

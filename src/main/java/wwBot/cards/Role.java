@@ -26,7 +26,9 @@ public class Role {
             case "Wolfjunges":
                 return new RoleWerwolf(true);
             case "Hexe":
-                return new RoleHexe();
+                return new RoleZauberer("Hexe");
+            case "Magier":
+                return new RoleZauberer("Magier");
             case "Doppelgängerin":
                 return new RoleDoppelgängerin();
             case "Priester":
@@ -73,7 +75,7 @@ public class Role {
         } else if (state.dayPhase == DayPhase.NORMAL_NIGHT) {
             state.night.endChecks.replace(role, true);
             state.night.endNightCheck();
-            
+
         } else {
             game.mainChannel.createMessage("ERROR in Role.setDone");
         }

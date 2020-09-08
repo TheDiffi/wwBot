@@ -263,6 +263,8 @@ public class SemiState extends MainState {
 				MessagesMain.deathByWW(game, player);
 			case "Hexe":
 				MessagesMain.deathByMagic(game, player);
+			case "Magier":
+                MessagesMain.deathByMagic(game, player);
 			case "Amor":
 				MessagesMain.deathByLove(game, player);
 			case "Jäger":

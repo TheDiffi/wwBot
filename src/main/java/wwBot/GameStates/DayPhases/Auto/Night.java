@@ -10,12 +10,11 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
-import wwBot.GameStates.GameState;
 import wwBot.GameStates.MainState;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.Command;
-import wwBot.cards.RoleHexe;
+import wwBot.cards.RoleZauberer;
 import wwBot.cards.RolePriester;
 
 public class Night {
@@ -123,21 +122,21 @@ public class Night {
 			if (author.role.specs.name.equalsIgnoreCase("Werwolf") && msgChannel == mainState.wwChat) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
-				
 				if (victim != null) {
-					//updates the DeathState
+					// updates the DeathState
 					if (victim.role.deathState == DeathState.PROTECTED || victim.role.deathState == DeathState.SAVED) {
 						victim.role.deathState = DeathState.SAVED;
 					} else if (victim.role.deathState == DeathState.ALIVE) {
 						victim.role.deathState = DeathState.AT_RISK;
 					}
 
-					//other stuff
+					// other stuff
 					MessagesMain.confirm(msgChannel);
 					endangeredPlayers.add(victim);
 					game.gameCommands.remove("slay");
 
-					changeNightPhase();
+					nightPhase++;
+					changeNightPhaseTo(nightPhase);
 				}
 
 			} else {
@@ -151,15 +150,32 @@ public class Night {
 
 	private void postWWPhase() {
 		MessagesMain.postWWTurn(game.mainChannel);
-		
-		// TODO: Magier
 
-		// Unruhestifterin
+		// Magier
+		if (game.gameState.mapExistingRoles.containsKey("Magier")) {
+			var magier = (RoleZauberer) game.gameState.mapExistingRoles.get("Magier").get(0).role;
+
+			if (!magier.healUsed || !magier.poisonUsed) {
+				initiateRole("Magier");
+
+			} else {
+				var playerMagier = game.gameState.mapExistingRoles.get("Magier").get(0);
+				MessagesMain.callZaubererUsedEverything(playerMagier.user.getPrivateChannel().block());
+
+			}
+		}
+
+		// Hexe
 		if (game.gameState.mapExistingRoles.containsKey("Hexe")) {
-			var hexe = (RoleHexe) game.gameState.mapExistingRoles.get("Hexe").get(0).role;
+			var hexe = (RoleZauberer) game.gameState.mapExistingRoles.get("Hexe").get(0).role;
 
 			if (!hexe.healUsed || !hexe.poisonUsed) {
 				initiateRole("Hexe");
+
+			} else {
+				var playerHexe = game.gameState.mapExistingRoles.get("Hexe").get(0);
+				MessagesMain.callZaubererUsedEverything(playerHexe.user.getPrivateChannel().block());
+
 			}
 		}
 
@@ -181,17 +197,19 @@ public class Night {
 		}
 
 		if (check) {
-			changeNightPhase();
+			nightPhase++;
+			changeNightPhaseTo(nightPhase);
 		}
 	}
 
-	private void changeNightPhase() {
-
-		if (nightPhase == 0) {
+	private void changeNightPhaseTo(int newPhase) {
+		if (newPhase == 0) {
+			preWWPhase();
+		} else if (newPhase == 1) {
 			WWPhase();
-		} else if (nightPhase == 1) {
+		} else if (newPhase == 2) {
 			postWWPhase();
-		} else if (nightPhase == 2) {
+		} else if (newPhase == 3) {
 			game.gameState.changeDayPhase(DayPhase.MORNING);
 		}
 	}

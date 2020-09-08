@@ -12,6 +12,8 @@ public class RoleSeher extends Role {
         super("Seher");
     }
 
+    // a mightySeher is able to see the exact role of the player, a normal one only
+	// if the player is friendly or not
     @Override
     public void execute(Game game, Player seher) {
         MessagesMain.callSeher(seher);
@@ -21,8 +23,7 @@ public class RoleSeher extends Role {
 
             if (player != null) {
                 // sends the mssg
-                //TODO: Lykantrophin
-                MessagesMain.showSeher(seher, player, game);
+                MessagesMain.showSeher(seher, player, game, true);
 
                 setDone(game, "Seher");
                 return true;
