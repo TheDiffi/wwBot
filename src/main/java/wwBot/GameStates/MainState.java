@@ -166,11 +166,11 @@ public class MainState extends GameState{
 		}
 	}
 
-	public void loadGameLists() {
+	public void updateGameLists() {
 		// reloads the living Players
 		livingPlayers.clear();
 		for (var player : game.mapPlayers.entrySet()) {
-			if (player.getValue().role.alive) {
+			if (player.getValue().role.deathDetails.alive) {
 				livingPlayers.put(player.getKey(), player.getValue());
 			}
 		}
@@ -187,11 +187,11 @@ public class MainState extends GameState{
 		for (var entry : livingPlayers.entrySet()) {
 			// prüft ob WW, Dorfbewohner oder Seher, falls nichts von dem bekommt die Rolle
 			// ihre eigene Liste
-			if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().role.alive) {
+			if (entry.getValue().role.name.equalsIgnoreCase("Werwolf") && entry.getValue().role.deathDetails.alive) {
 				listWerwölfe.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Seher") && entry.getValue().role.alive) {
+			} else if (entry.getValue().role.name.equalsIgnoreCase("Seher") && entry.getValue().role.deathDetails.alive) {
 				listSeher.add(entry.getValue());
-			} else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner") && entry.getValue().role.alive) {
+			} else if (entry.getValue().role.name.equalsIgnoreCase("Dorfbewohner") && entry.getValue().role.deathDetails.alive) {
 				listDorfbewohner.add(entry.getValue());
 			} else {
 				var tempList = Arrays.asList(entry.getValue());

@@ -97,13 +97,11 @@ public class DaySemi  {
                     recievedName = Globals.removeDash(parameters.get(0));
 
                     // if the user votes for no one none
-                    if (recievedName.equalsIgnoreCase("no one") || recievedName.equalsIgnoreCase("niemand")
-                            || recievedName.equalsIgnoreCase("null") || recievedName.equalsIgnoreCase("nobody")
-                            || recievedName.equalsIgnoreCase("none")) {
+                    if (isEmptyPlayer(recievedName)) {
                         votedFor = getEmptyPlayer();
                     } else {
                         // finds the player
-                        votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
+                        votedFor = game.findPlayerByNameLiving(recievedName);
                     }
 
                 } else {
@@ -114,12 +112,12 @@ public class DaySemi  {
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-                } else if (!votedFor.role.alive) {
+                } else if (!votedFor.role.deathDetails.alive) {
                     MessagesMain.errorPlayerAlreadyDead(msgChannel);
 
                     // if the player is alive, calls addVote
                     // if the same key gets put in a second time, the first value is dropped
-                } else if (votedFor.role.alive) {
+                } else if (votedFor.role.deathDetails.alive) {
                     addVote(event, voter, votedFor);
                 }
 
@@ -140,11 +138,10 @@ public class DaySemi  {
                 // checks the syntax
                 if (parameters != null && parameters.size() == 1) {
                     // finds the wanted player by name
-                    var unluckyPerson = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
-                            game.livingPlayers, game);
+                    var unluckyPerson = game.findPlayerByNameLiving(parameters.get(0));
                     if (unluckyPerson != null) {
                         // checks if the player is alive
-                        if (unluckyPerson.role.alive) {
+                        if (unluckyPerson.role.deathDetails.alive) {
                             // calls check if dies to consider special roles
                             if (game.gameState.checkIfDies(unluckyPerson, "Dorfbewohner")) {
                                 // lynch kills the player with "Dorfbewohner" being the cause
@@ -285,6 +282,26 @@ public class DaySemi  {
         var emptyPlayer = new Player();
         emptyPlayer.name = "Nobody";
         return emptyPlayer;
+    }
+
+    private boolean isEmptyPlayer(String name) {
+        switch (name.toLowerCase()) {
+            case "no one":
+                return true;
+            case "niemand":
+                return true;
+            case "keiner":
+                return true;
+            case "nobody":
+                return true;
+            case "null":
+                return true;
+            case "none":
+                return true;
+            default:
+                return false;
+
+        }
     }
 
 }

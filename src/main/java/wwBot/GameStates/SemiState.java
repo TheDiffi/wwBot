@@ -42,7 +42,7 @@ public class SemiState extends MainState {
 		// registers Commands; loads the lists and creates the Deathroom
 		registerStateCommands();
 		createDeathChat();
-		loadGameLists();
+		updateGameLists();
 
 		// sends the first messages
 		MessagesMain.onGameStart(game);
@@ -85,7 +85,7 @@ public class SemiState extends MainState {
 		var modChannel = game.userModerator.getPrivateChannel().block();
 
 		// falls der Spieler Tot ist stirbt er nicht
-		if (!unluckyPlayer.role.alive) {
+		if (!unluckyPlayer.role.deathDetails.alive) {
 			dies = false;
 			MessagesMain.errorPlayerAlreadyDead(modChannel);
 		}
@@ -93,11 +93,12 @@ public class SemiState extends MainState {
 		// VERFLUCHTER
 		if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.equalsIgnoreCase("Werwolf")) {
 			dies = false;
+			unluckyPlayer.role = Role.createRole("Werwolf");
 			MessagesMain.verfluchtenMutation(game);
 		}
 
 		// HARTER BURSCHE
-		if (unluckyPlayer.role.name.equals("Harter-Bursche")) {
+		if (unluckyPlayer.role.name.equals("Harter-Bursche") && causedByRole.equalsIgnoreCase("Werwolf")) {
 			dies = false;
 			MessagesMain.checkHarterBurscheDeath(modChannel);
 
@@ -121,7 +122,7 @@ public class SemiState extends MainState {
 		// PRINZ
 		if (unluckyPlayer.role.name.equals("Prinz") && causedByRole.equalsIgnoreCase("Dorfbewohner")) {
 			dies = false;
-			MessagesMain.prinzSurvivesLynching(game);
+			MessagesMain.prinzSurvives(game);
 		}
 
 		return dies;
@@ -131,7 +132,7 @@ public class SemiState extends MainState {
 	public void killPlayer(Player unluckyPlayer, String causedByRole) {
 
 		// kills player
-		unluckyPlayer.role.alive = false;
+		unluckyPlayer.role.deathDetails.alive = false;
 		game.deadPlayers.add(unluckyPlayer);
 
 		updateDeathChat();
@@ -141,7 +142,7 @@ public class SemiState extends MainState {
 		} catch (Exception e) {
 		}
 
-		loadGameLists();
+		updateGameLists();
 
 		// reveals the players death and identity
 		checkDeathMessages(unluckyPlayer, causedByRole);
@@ -152,20 +153,6 @@ public class SemiState extends MainState {
 	}
 
 	private void checkConsequences(Player unluckyPlayer, String causedByRole) {
-
-		// Doppelgängerin
-		if (mapExistingRoles.containsKey("Doppelgängerin")) {
-			var dp = mapExistingRoles.get("Doppelgängerin").get(0);
-			var dpRole = (RoleDoppelgängerin) dp.role;
-
-			// if the dead user equals the one chosen by the DP, the DP gets the role of the
-			// dead player
-			if (dpRole.boundTo.user.getId().equals(unluckyPlayer.user.getId())) {
-				dp.role = Role.createRole(unluckyPlayer.role.name);
-				MessagesMain.onDoppelgängerinTransformation(game, dp, unluckyPlayer);
-			}
-
-		}
 
 		// SEHER LEHRLING
 		if (unluckyPlayer.role.name.equalsIgnoreCase("Seher")) {
@@ -213,13 +200,11 @@ public class SemiState extends MainState {
 							List<String> parameters = new LinkedList<>(Arrays.asList(content.split(" ")));
 							if (content != null && parameters.size() > 0) {
 								// finds the players
-								Player player1 = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
-										game.mapPlayers, game);
+								Player player1 = game.findPlayerByName(parameters.get(0));
 								Player shotPlayer = null;
 								Player player2 = null;
 								if (parameters.size() > 1) {
-									player2 = Globals.findPlayerByName(Globals.removeDash(parameters.get(1)),
-											game.mapPlayers, game);
+									player2 = game.findPlayerByName(parameters.get(1));
 								}
 
 								if (player1 != null) {
@@ -248,9 +233,22 @@ public class SemiState extends MainState {
 		}
 
 		// AMOR
-		if (unluckyPlayer.role.inLoveWith != null && unluckyPlayer.role.inLoveWith.role.alive) {
+		if (unluckyPlayer.role.inLoveWith != null && unluckyPlayer.role.inLoveWith.role.deathDetails.alive) {
 			if (checkIfDies(unluckyPlayer.role.inLoveWith, "Amor")) {
 				killPlayer(unluckyPlayer.role.inLoveWith, "Amor");
+			}
+		}
+
+		// Doppelgängerin
+		if (mapExistingRoles.containsKey("Doppelgängerin")) {
+			var dpPlayer = mapExistingRoles.get("Doppelgängerin").get(0);
+			var dpRole = (RoleDoppelgängerin) dpPlayer.role;
+
+			// if the dead user equals the one chosen by the DP, the DP gets the role of the
+			// dead player
+			if (dpRole.boundTo.user.getId().equals(unluckyPlayer.user.getId())) {
+				dpPlayer.role = Role.createRole(unluckyPlayer.role.name);
+				MessagesMain.onDoppelgängerinTransformation(game, dpPlayer, unluckyPlayer);
 			}
 		}
 
@@ -264,7 +262,7 @@ public class SemiState extends MainState {
 			case "Hexe":
 				MessagesMain.deathByMagic(game, player);
 			case "Magier":
-                MessagesMain.deathByMagic(game, player);
+				MessagesMain.deathByMagic(game, player);
 			case "Amor":
 				MessagesMain.deathByLove(game, player);
 			case "Jäger":
@@ -289,7 +287,7 @@ public class SemiState extends MainState {
 
 	@Override
 	public void changeDayPhase(DayPhase nextPhase) {
-		loadGameLists();
+		updateGameLists();
 		// transitions to Night
 		if (nextPhase == DayPhase.NORMAL_NIGHT) {
 			checkIfGameEnds();
@@ -494,8 +492,7 @@ public class SemiState extends MainState {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
 				// finds the requested Player
-				var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
-						game);
+				var foundPlayer = game.findPlayerByName(parameters.get(0));
 				// mutes the found player
 				if (foundPlayer != null) {
 					foundPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
@@ -514,8 +511,7 @@ public class SemiState extends MainState {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
 				// finds the requested Player
-				var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
-						game);
+				var foundPlayer = game.findPlayerByName(parameters.get(0));
 				// mutes the found player
 				if (foundPlayer != null) {
 					foundPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(false)).block();
@@ -558,8 +554,7 @@ public class SemiState extends MainState {
 				if (parameters.size() == 2 || parameters.size() == 1) {
 
 					// finds the requested Player
-					var unluckyPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
-							game.livingPlayers, game);
+					var unluckyPlayer = game.findPlayerByNameLiving(parameters.get(0));
 
 					// stores the cause
 					var causedBy = "null";
@@ -569,7 +564,7 @@ public class SemiState extends MainState {
 
 					if (unluckyPlayer != null && (Globals.mapRegisteredCardsSpecs.containsKey(causedBy)
 							|| causedBy.equalsIgnoreCase("Null"))) {
-						if (unluckyPlayer.role.alive) {
+						if (unluckyPlayer.role.deathDetails.alive) {
 							if (checkIfDies(unluckyPlayer, causedBy)) {
 								killPlayer(unluckyPlayer, causedBy);
 								event.getMessage().getChannel().block().createMessage("Erfolg!").block();

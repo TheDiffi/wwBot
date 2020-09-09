@@ -4,6 +4,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleAuraSeherin extends Role {
@@ -13,7 +14,7 @@ public class RoleAuraSeherin extends Role {
     }
 
     @Override
-    public void execute(Game game, Player auraSeherin) {
+    public void executePreWW(Player auraSeherin, Game game, AutoState state) {
         MessagesMain.callAuraSeherin(auraSeherin);
         auraSeherin.user.getPrivateChannel().block().createMessage("TEST");
 
@@ -22,9 +23,9 @@ public class RoleAuraSeherin extends Role {
 
             if (player != null) {
                 // sends the mssg
-                MessagesMain.showAuraSeherin(auraSeherin, player, game);
+                MessagesMain.showAuraSeherin(auraSeherin, player);
 
-                setDone(game, "Aura-Seherin");
+                state.setDone(auraSeherin);
                 return true;
 
             } else {

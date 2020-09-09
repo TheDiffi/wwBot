@@ -183,28 +183,6 @@ public class Globals {
 		}
 	}
 
-	// finds a player in a Map by Username. Returns null if it finds noone or
-	// multiple Players
-	public static Player findPlayerByName(String name, Map<Snowflake, Player> map, Game game) {
-		Player foundPlayer = null;
-		var found = 0;
-		for (var entry : map.entrySet()) {
-
-			var displayName = entry.getValue().name;
-			var userName = entry.getValue().user.getUsername();
-
-			if (displayName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name)) {
-				foundPlayer = entry.getValue();
-				found++;
-			}
-
-		}
-		if (found != 1) {
-			foundPlayer = null;
-		}
-		return foundPlayer;
-	}
-
 	// checks the syntax of a Private command and find the player
 	public static Player commandPlayerFinder(MessageCreateEvent event, List<String> parameters,
 			MessageChannel msgChannel, Game game) {
@@ -213,13 +191,13 @@ public class Globals {
 			return null;
 		} else {
 			// finds the player
-			var player = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers, game);
+			var player = game.findPlayerByName(parameters.get(0));
 
 			if (player == null) {
 				MessagesMain.errorPlayerNotFound(msgChannel);
 				return null;
 			}
-			if (!player.role.alive) {
+			if (!player.role.deathDetails.alive) {
 				MessagesMain.errorPlayerAlreadyDead(msgChannel);
 				return null;
 			}

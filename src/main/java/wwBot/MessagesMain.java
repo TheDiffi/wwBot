@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.AttributeSet.ColorAttribute;
-
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
@@ -97,7 +95,7 @@ public class MessagesMain {
 	public static void onNightAuto(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT...🌇",
 				"```In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren```");
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "NACHT", "");
+		
 
 	}
 
@@ -219,14 +217,18 @@ public class MessagesMain {
 	}
 
 	public static void onDoppelgängerinTransformation(Game game, Player doppelgängerin, Player unluckyPlayer) {
+		if (!game.gameRuleAutomatic) {
+			// message to mod
+			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+					"Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
+		}
+
 		// message to DP
 		Globals.createEmbed(doppelgängerin.user.getPrivateChannel().block(), Color.WHITE,
 				"Du hast dich verwandelt!\nDeine neue Rolle ist: " + unluckyPlayer.role.name,
 				"Die Person, welche du am Anfang des Spieles ausgewählt hast, ist gestorben. Durch deine ungwöhnlichen Fähigkeiten hast du seine Identität absorbiert. Du nimmst seine Rolle ein und wirst zu einem/einer "
 						+ unluckyPlayer.role.name);
-		// message to mod
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
+
 		// message to all
 		Globals.createMessage(game.mainChannel,
 				"Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
@@ -271,7 +273,7 @@ public class MessagesMain {
 				"Wenn der Prinz duch \"" + prefix + "lynch\" stirbt, zeigt er seine Identität und überlebt.");
 	}
 
-	public static void prinzSurvivesLynching(Game game) {
+	public static void prinzSurvives(Game game) {
 		Globals.printCard("Prinz", game.mainChannel);
 		game.mainChannel.createMessage(
 				"Im letzten Moment enthüllt der Prinz Seine Identität. Geblendet von seiner Präsenz (und seinen weißen Zähnen) verschwindet die Wut der Dorfbewohner und der Prinz überlebt.")
@@ -316,7 +318,7 @@ public class MessagesMain {
 		}
 	}
 
-	public static void showAuraSeherin(Player seher, Player found, Game game) {
+	public static void showAuraSeherin(Player seher, Player found) {
 		var color = found.role.specs.unique ? Color.GREEN : Color.WHITE;
 		var revelation = found.role.specs.unique ? " ist eine" : " ist keine";
 
@@ -358,21 +360,23 @@ public class MessagesMain {
 		// TODO: FILL
 	}
 
-	public static void callZauberer(Player playerZauberer, RoleZauberer roleZauberer, List<Player> atRiskPlayers, Game game) {
+	public static void callZauberer(Player playerZauberer, RoleZauberer roleZauberer, List<Player> atRiskPlayers,
+			Game game) {
 		var message = "";
 
-		if(!roleZauberer.healUsed){
-			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr", Globals.playerListToString(atRiskPlayers, "AT RISK", game));
-			message +="\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
+		if (!roleZauberer.healUsed) {
+			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr",
+					Globals.playerListToString(atRiskPlayers, "AT RISK", game));
+			message += "\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
 		}
-		if(!roleZauberer.poisonUsed){
+		if (!roleZauberer.poisonUsed) {
 			message += "benutze: **&poison <Player>** um einen Spieler deiner Wahl zu töten.\n";
 		}
 
 		message += "benutze: **&continue** um deinen Zug zu beenden und fortzufahren";
 
 		Globals.createMessage(playerZauberer.user.getPrivateChannel().block(), message);
-		
+
 	}
 
 	public static void callZaubererUsedEverything(PrivateChannel privateChannel) {
@@ -432,10 +436,13 @@ public class MessagesMain {
 	}
 
 	public static void onAussätzigeDeath(Game game) {
+		if (!game.gameRuleAutomatic) {
+			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+					"Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten");
+		}
+
 		Globals.createMessage(game.mainChannel,
 				"Die Werwölfe wurden infiziert und dürfen in der nächsten Nacht niemanden töten", true);
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten");
 
 	}
 
@@ -454,17 +461,21 @@ public class MessagesMain {
 	}
 
 	public static void onWolfsjungesDeath(Game game) {
+		if (!game.gameRuleAutomatic) {
+			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
+					"Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
+					false);
+		}
 		Globals.createMessage(game.mainChannel,
 				"Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
 				true);
-		Globals.createMessage(game.userModerator.getPrivateChannel().block(),
-				"Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
-				false);
+
 	}
 
 	public static void onJägerDeath(Game game, Player player) {
 		Globals.createMessage(game.mainChannel,
-				"Mit letzter kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.", true);
+				"Mit letzter Kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.", true);
+				Globals.createEmbed(player.user.getPrivateChannel().block(), Color.RED, "Du bist gefallen", "Als Jäger kannst du nun noch einen Schuss aus deinem Gewehr abgeben bevor du stirbst.\nSchreibe mir nun den Namen der Person die du töten möchtest!");
 	}
 
 	// ---------VOTE MESSAGES--------------------------------------------
@@ -782,8 +793,10 @@ public class MessagesMain {
 
 	}
 
+	public static void savedByPriester(Player victim, Game game) {
+	}
 
-
-
+	public static void harterBurscheSurvives(Game game) {
+	}
 
 }

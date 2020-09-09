@@ -1,9 +1,9 @@
 package wwBot.cards;
 
 import wwBot.Game;
-import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleAmor extends Role {
@@ -13,7 +13,7 @@ public class RoleAmor extends Role {
     }
 
     @Override
-    public void execute(Game game, Player amor) {
+    public void executeFirstNight(Player amor,Game game, AutoState state) {
         MessagesMain.triggerAmor(game, amor);
 
         PrivateCommand amorCommand = (event, parameters, msgChannel) -> {
@@ -23,8 +23,8 @@ public class RoleAmor extends Role {
                 return false;
             } else {
                 // finds the players
-                var player1 = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers, game);
-                var player2 = Globals.findPlayerByName(Globals.removeDash(parameters.get(1)), game.mapPlayers, game);
+                var player1 = game.findPlayerByName(parameters.get(0));
+                var player2 = game.findPlayerByName(parameters.get(1));
 
                 if (player1 == null || player2 == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
@@ -42,7 +42,7 @@ public class RoleAmor extends Role {
                     // sends a mssg
                     MessagesMain.amorSuccess(game, player1, player2);
 
-                    setDone(game, "Amor");
+                    state.setDone(amor);
                     return true;
 
                 }

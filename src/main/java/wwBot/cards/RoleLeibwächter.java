@@ -5,6 +5,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.PrivateCommand;
 
@@ -17,7 +18,7 @@ public class RoleLeibwächter extends Role {
     }
 
     @Override
-    public void execute(Game game, Player leibwächter) {
+    public void executePreWW(Player leibwächter,Game game, AutoState state) {
         MessagesMain.callLeibwächter(leibwächter);
 
         leibwächter.user.getPrivateChannel().block().createMessage("TEST");
@@ -27,9 +28,9 @@ public class RoleLeibwächter extends Role {
 
             if (player != null && (protectingPlayer == null || !player.name.equals(protectingPlayer.name))) {
                 protectingPlayer = player;
-                protectingPlayer.role.deathState = DeathState.PROTECTED;
+                protectingPlayer.role.deathDetails.deathState = DeathState.PROTECTED;
 
-                setDone(game, "Leibwächter");
+                state.setDone(leibwächter);
                 return true;
 
             } else if (protectingPlayer != null && player.name.equals(protectingPlayer.name)) {

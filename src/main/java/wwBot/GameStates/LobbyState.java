@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import wwBot.Deckbuilder;
 import wwBot.Game;
@@ -396,6 +395,7 @@ public class LobbyState extends GameState {
 
     }
 
+    
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules
     // gibt einen String mit der status-nachricht zurück
@@ -461,11 +461,6 @@ public class LobbyState extends GameState {
         return message;
     }
 
-    public static String startGameCommand(MessageCreateEvent event) {
-        var message = "";
-
-        return message;
-    }
 
     public void close() {
 

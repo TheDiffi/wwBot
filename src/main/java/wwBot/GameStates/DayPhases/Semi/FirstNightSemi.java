@@ -20,6 +20,7 @@ public class FirstNightSemi  {
     Game game;
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(String.CASE_INSENSITIVE_ORDER);
+    
 
     public FirstNightSemi (Game getGame) {
         game = getGame;
@@ -65,10 +66,8 @@ public class FirstNightSemi  {
                     if (parameters != null && parameters.size() == 2) {
 
                         // finds the players
-                        var player1 = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
-                                game);
-                        var player2 = Globals.findPlayerByName(Globals.removeDash(parameters.get(1)), game.mapPlayers,
-                                game);
+                        var player1 = game.findPlayerByName(parameters.get(0));
+                        var player2 = game.findPlayerByName(parameters.get(1));
 
                         // sets the "inLoveWith" variables
                         if (player1 != null && player2 != null) {
@@ -104,8 +103,7 @@ public class FirstNightSemi  {
                 if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                     if (parameters != null && parameters.size() == 1) {
                         // finds the players
-                        var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)),
-                                game.mapPlayers, game);
+                        var foundPlayer = game.findPlayerByName(parameters.get(0));
 
                         if (foundPlayer != null) {
                             var dp = mapExistingRoles.get("Doppelgängerin").get(0);

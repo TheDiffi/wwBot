@@ -4,6 +4,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleSeher extends Role {
@@ -12,10 +13,17 @@ public class RoleSeher extends Role {
         super("Seher");
     }
 
+    @Override
+    public void executeFirstNight(Player seher, Game game, AutoState state)
+    {
+        executePreWW(seher, game, state);
+    }
+
     // a mightySeher is able to see the exact role of the player, a normal one only
 	// if the player is friendly or not
     @Override
-    public void execute(Game game, Player seher) {
+    public void executePreWW(Player seher, Game game, AutoState state) {
+
         MessagesMain.callSeher(seher);
 
         PrivateCommand seherCommand = (event, parameters, msgChannel) -> {
@@ -25,7 +33,7 @@ public class RoleSeher extends Role {
                 // sends the mssg
                 MessagesMain.showSeher(seher, player, game, true);
 
-                setDone(game, "Seher");
+                state.setDone(seher);
                 return true;
 
             } else {

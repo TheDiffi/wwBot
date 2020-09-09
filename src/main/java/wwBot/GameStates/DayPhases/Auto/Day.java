@@ -3,17 +3,16 @@ package wwBot.GameStates.DayPhases.Auto;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;
 
-public class Day {
-    public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
+public class Day extends AutoDayPhase {
     public Map<Player, Player> mapVotes = new HashMap<>();
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
     public Game game;
@@ -97,7 +96,7 @@ public class Day {
                         votedFor = registerEmptyPlayer();
                     } else {
                         // finds the player
-                        votedFor = Globals.findPlayerByName(recievedName, game.livingPlayers, game);
+                        votedFor = game.findPlayerByNameLiving(recievedName);
                     }
 
                 }
@@ -105,7 +104,7 @@ public class Day {
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-                } else if (!votedFor.role.alive) {
+                } else if (!votedFor.role.deathDetails.alive) {
                     MessagesMain.errorPlayerAlreadyDead(msgChannel);
 
                     // if the player is alive, calls addVote
@@ -209,7 +208,7 @@ public class Day {
         if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
 
             var player = game.gameState.mapExistingRoles.get("Märtyrerin").get(0);
-            player.role.execute(game, mostVoted);
+            player.role.executePreWW(mostVoted, game, (AutoState) game.gameState);
 
         } else {
             lynchPlayer(mostVoted, false);

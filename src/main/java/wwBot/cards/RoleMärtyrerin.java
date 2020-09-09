@@ -4,6 +4,7 @@ import wwBot.Game;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.AutoState;
+import wwBot.GameStates.DayPhases.Auto.Day;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleMärtyrerin extends Role {
@@ -12,10 +13,10 @@ public class RoleMärtyrerin extends Role {
         super("Märtyrerin");
     }
 
+
     @Override
-    public void execute(Game game, Player mostVoted) {
+    public void execute(Player mostVoted, Game game, AutoState state) {
         var player = game.gameState.mapExistingRoles.get("Märtyrerin").get(0);
-        var state = (AutoState) game.gameState;
 
         MessagesMain.remindMärtyrerin(game, player, mostVoted);
             PrivateCommand sacrifice = (event, parameters, msgChannel) -> {
@@ -25,13 +26,13 @@ public class RoleMärtyrerin extends Role {
 
                 } else if (parameters.get(0).equalsIgnoreCase("no")) {
                     MessagesMain.confirm(msgChannel);
-                    state.day.lynchPlayer(mostVoted, false);
+                    ((Day) state.aDayPhase).lynchPlayer(mostVoted, false);
 
                     return true;
 
                 } else if (parameters.get(0).equalsIgnoreCase("yes")) {
                     MessagesMain.confirm(msgChannel);
-                    state.day.lynchPlayer(player, true);
+                    ((Day) state.aDayPhase).lynchPlayer(player, true);
 
                     return true;
 

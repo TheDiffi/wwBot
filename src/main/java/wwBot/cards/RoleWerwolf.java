@@ -2,7 +2,7 @@ package wwBot.cards;
 
 public class RoleWerwolf extends Role{
 
-    boolean isJunges;
+    public boolean isJunges;
 
     RoleWerwolf(boolean junges) {
         super("Werwolf");

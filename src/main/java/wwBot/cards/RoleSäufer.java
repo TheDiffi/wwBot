@@ -4,6 +4,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.PrivateCommand;
 
@@ -16,7 +17,7 @@ public class RoleSäufer extends Role {
     }
 
     @Override
-    public void execute(Game game, Player säufer) {
+    public void executePreWW(Player säufer,Game game, AutoState state) {
         MessagesMain.callSäufer(säufer);
         säufer.user.getPrivateChannel().block().createMessage("TEST");
 
@@ -25,9 +26,9 @@ public class RoleSäufer extends Role {
 
             if (player != null && (drinkingAt == null || !player.name.equals(drinkingAt.name))) {
                 drinkingAt = player;
-                säufer.role.deathState = DeathState.PROTECTED;
+                säufer.role.deathDetails.deathState = DeathState.PROTECTED;
 
-                setDone(game, "Säufer");
+                state.setDone(säufer);
                 return true;
 
             } else if (drinkingAt != null && player.name.equals(drinkingAt.name)) {

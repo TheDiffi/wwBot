@@ -6,6 +6,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleZaubermeisterin extends Role {
@@ -15,7 +16,7 @@ public class RoleZaubermeisterin extends Role {
     }
 
     @Override
-    public void execute(Game game, Player zaubermeisterin) {
+    public void executePreWW(Player zaubermeisterin, Game game, AutoState state) {
         MessagesMain.callZaubermeisterin(zaubermeisterin);
 
         PrivateCommand zaubermeisterinCommand = (event, parameters, msgChannel) -> {
@@ -25,7 +26,7 @@ public class RoleZaubermeisterin extends Role {
                 // sends the mssg
                 MessagesMain.showZaubermeisterin(zaubermeisterin, player);
 
-                setDone(game, "Zaubermeisterin");
+                state.setDone(zaubermeisterin);
                 return true;
 
             } else {

@@ -5,6 +5,7 @@ package wwBot.cards;
 import wwBot.Game;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleUnruhestifterin extends Role {
@@ -16,7 +17,7 @@ public class RoleUnruhestifterin extends Role {
     }
 
     @Override
-    public void execute(Game game, Player unruhestifterin) {
+    public void executePreWW(Player unruhestifterin,Game game, AutoState state) {
         MessagesMain.callPriester(unruhestifterin);
 
         PrivateCommand unruhestifterinCommand = (event, parameters, msgChannel) -> {
@@ -28,7 +29,7 @@ public class RoleUnruhestifterin extends Role {
             } else if (parameters.get(0).equalsIgnoreCase("no")) {
                 MessagesMain.confirm(msgChannel);
                 
-                setDone(game, "Unruhestifterin");
+                state.setDone(unruhestifterin);
 
                 return true;
 
@@ -39,7 +40,7 @@ public class RoleUnruhestifterin extends Role {
                 abilityActive = true;
                 abilityUsed = true;
 
-                setDone(game, "Unruhestifterin");
+                state.setDone(unruhestifterin);
 
                 return true;
 

@@ -3,6 +3,7 @@ package wwBot.cards;
 import wwBot.Game;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 
 public class RoleGünstling extends Role {
 
@@ -11,9 +12,9 @@ public class RoleGünstling extends Role {
     }
 
     @Override
-    public void execute(Game game, Player player) {
+    public void executePreWW(Player player, Game game, AutoState state) {
         MessagesMain.günstlingMessage(player.user.getPrivateChannel().block(), game.gameState.mapExistingRoles, game);
 
-        setDone(game, "Günstling");
+        state.setDone(player);
     }
 }

@@ -1,9 +1,9 @@
 package wwBot.cards;
 
 import wwBot.Game;
-import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleDoppelgängerin extends Role {
@@ -15,7 +15,7 @@ public class RoleDoppelgängerin extends Role {
     }
 
     @Override
-    public void execute(Game game, Player dp){
+    public void executeFirstNight(Player dp,Game game, AutoState state){
         MessagesMain.triggerDoppelgängerin(game, dp);
 
         // registers a private commands which asks the player for the name of a player
@@ -26,8 +26,7 @@ public class RoleDoppelgängerin extends Role {
 
             }
             // finds the players
-            var foundPlayer = Globals.findPlayerByName(Globals.removeDash(parameters.get(0)), game.mapPlayers,
-                    game);
+            var foundPlayer = game.findPlayerByName(parameters.get(0));
             if (foundPlayer != null) {
                 // saves the player in boundTo
                 boundTo = foundPlayer;
@@ -35,7 +34,7 @@ public class RoleDoppelgängerin extends Role {
                 //sends the mssg
                 MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
 
-                setDone(game, "Doppelgängerin");
+                state.setDone(dp);
                 return true;
             }
 

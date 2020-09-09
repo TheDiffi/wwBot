@@ -7,6 +7,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleAlteVettel extends Role {
@@ -18,7 +19,7 @@ public class RoleAlteVettel extends Role {
     }
 
     @Override
-    public void execute(Game game, Player vettel) {
+    public void executePreWW(Player vettel, Game game, AutoState state) {
         MessagesMain.callVettel(vettel);
         vettel.user.getPrivateChannel().block().createMessage("TEST");
 
@@ -31,7 +32,7 @@ public class RoleAlteVettel extends Role {
                 banishedPlayer = player;
                 Globals.createEmbed(msgChannel, Color.GREEN, "Erfolg", banishedPlayer.name + " wurde aus dem Dorf verbannt.");
 
-                setDone(game, "AlteVettel");
+                state.setDone(vettel);
                 return true;
 
             } else if (banishedPlayer != null && player.name.equals(banishedPlayer.name)) {

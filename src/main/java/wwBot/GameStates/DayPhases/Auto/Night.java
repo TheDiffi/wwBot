@@ -1,42 +1,30 @@
 package wwBot.GameStates.DayPhases.Auto;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.GameStates.MainState;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.Command;
-import wwBot.cards.RoleZauberer;
-import wwBot.cards.RolePriester;
 
-public class Night {
+public class Night extends AutoDayPhase {
 
 	// TODO: Command to show which role has not acted yet
-	public Map<String, Boolean> endChecks = new HashMap<>();
-	public List<Player> endangeredPlayers = new ArrayList<>();
 	private int nightPhase = 0; // 0 = prePhase / 1 = WWPhase / 2 = postPhase
-
 	public Game game;
-	private MainState mainState;
 
 	public Night(Game getGame) {
 		game = getGame;
 
-		mainState = (MainState) game.gameState;
-		mainState.createWerwolfChat();
-
 		MessagesMain.onNightAuto(game);
 
 		preWWPhase();
-
 	}
 
 	private void preWWPhase() {
@@ -48,95 +36,79 @@ public class Night {
 		// getötet
 		// werden)
 
-		// Seher
-		if (game.gameState.mapExistingRoles.containsKey("Seher")) {
+		// executes for every single card
+		for (var player : game.mapPlayers.values()) {
 
-			initiateRole("Seher");
-		}
-		// Aura-Seherin
-		if (game.gameState.mapExistingRoles.containsKey("Aura-Seherin")) {
-
-			initiateRole("Aura-Seherin");
-		}
-		// ZAUBERMEISTERIN
-		if (game.gameState.mapExistingRoles.containsKey("Zaubermeisterin")) {
-
-			initiateRole("Zaubermeisterin");
-		}
-		// SÄUFER
-		if (game.gameState.mapExistingRoles.containsKey("Säufer")) {
-
-			initiateRole("Säufer");
-		}
-		// Leibwächter
-		if (game.gameState.mapExistingRoles.containsKey("Leibwächter")) {
-
-			initiateRole("Leibwächter");
-		}
-		// Alte-Vettel
-		if (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
-
-			initiateRole("Alte-Vettel");
-		}
-		// PARANOMALER-ERMITTLER
-		if (game.gameState.mapExistingRoles.containsKey("Paranormaler-Ermittler")) {
-
-			initiateRole("Paranormaler-Ermittler");
-		}
-		// Priester
-		if (game.gameState.mapExistingRoles.containsKey("Priester")) {
-			var priest = (RolePriester) game.gameState.mapExistingRoles.get("Priester").get(0).role;
-
-			// if the priest has not yet used his ability, he gets the chance to do so. If
-			// he already used it and it did not trigger (vanish) yet, the protectedPlayer
-			// is PROTECTED
-			if (!priest.usedAbility) {
-				initiateRole("Priester");
-			}
-
-			/*
-			 * if (!priest.abilityVanished) { priest.protectedPlayer.role.deathState =
-			 * DeathState.PROTECTED; }
-			 */
+			var state = (AutoState) game.gameState;
+			state.pending.add(player);
+			player.role.executePreWW(player, game, state);
 
 		}
-		// Alte-Vettel
-		if (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
 
-			initiateRole("Alte-Vettel");
-		}
-		// Unruhestifterin
-		if (game.gameState.mapExistingRoles.containsKey("Unruhestifterin")) {
-
-			initiateRole("Unruhestifterin");
-		}
+		/*
+		 * // Seher if (game.gameState.mapExistingRoles.containsKey("Seher")) {
+		 * 
+		 * initiateRole("Seher"); } // Aura-Seherin if
+		 * (game.gameState.mapExistingRoles.containsKey("Aura-Seherin")) {
+		 * 
+		 * initiateRole("Aura-Seherin"); } // ZAUBERMEISTERIN if
+		 * (game.gameState.mapExistingRoles.containsKey("Zaubermeisterin")) {
+		 * 
+		 * initiateRole("Zaubermeisterin"); } // SÄUFER if
+		 * (game.gameState.mapExistingRoles.containsKey("Säufer")) {
+		 * 
+		 * initiateRole("Säufer"); } // Leibwächter if
+		 * (game.gameState.mapExistingRoles.containsKey("Leibwächter")) {
+		 * 
+		 * initiateRole("Leibwächter"); } // Alte-Vettel if
+		 * (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
+		 * 
+		 * initiateRole("Alte-Vettel"); } // PARANOMALER-ERMITTLER if
+		 * (game.gameState.mapExistingRoles.containsKey("Paranormaler-Ermittler")) {
+		 * 
+		 * initiateRole("Paranormaler-Ermittler"); } // Priester if
+		 * (game.gameState.mapExistingRoles.containsKey("Priester")) {
+		 * 
+		 * initiateRole("Priester");
+		 * 
+		 * } // Alte-Vettel if
+		 * (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
+		 * 
+		 * initiateRole("Alte-Vettel"); } // Unruhestifterin if
+		 * (game.gameState.mapExistingRoles.containsKey("Unruhestifterin")) {
+		 * 
+		 * initiateRole("Unruhestifterin"); }
+		 */
 
 	}
 
+	// TODO: wwEnraged
 	private void WWPhase() {
+		var mainState = (MainState) game.gameState;
 		MessagesMain.onWWTurn(game.mainChannel, mainState.wwChat);
 
 		Command slayCommand = (event, parameters, msgChannel) -> {
-			var author = Globals.findPlayerByName(event.getMessage().getAuthor().get().getUsername(), game.mapPlayers,
-					game);
+			var author = game.findPlayerByName(event.getMessage().getAuthor().get().getUsername());
 			if (author.role.specs.name.equalsIgnoreCase("Werwolf") && msgChannel == mainState.wwChat) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
 				if (victim != null) {
+					var dState = victim.role.deathDetails.deathState;
 					// updates the DeathState
-					if (victim.role.deathState == DeathState.PROTECTED || victim.role.deathState == DeathState.SAVED) {
-						victim.role.deathState = DeathState.SAVED;
-					} else if (victim.role.deathState == DeathState.ALIVE) {
-						victim.role.deathState = DeathState.AT_RISK;
+					if (dState == DeathState.PROTECTED) {
+						dState = DeathState.SAVED;
+
+					} else if (dState == DeathState.ALIVE) {
+						dState = DeathState.AT_RISK;
+						victim.role.deathDetails.killer = author.role.name;
+
 					}
 
 					// other stuff
 					MessagesMain.confirm(msgChannel);
-					endangeredPlayers.add(victim);
 					game.gameCommands.remove("slay");
 
-					nightPhase++;
-					changeNightPhaseTo(nightPhase);
+					changeNightPhase();
 				}
 
 			} else {
@@ -151,55 +123,34 @@ public class Night {
 	private void postWWPhase() {
 		MessagesMain.postWWTurn(game.mainChannel);
 
-		// Magier
-		if (game.gameState.mapExistingRoles.containsKey("Magier")) {
-			var magier = (RoleZauberer) game.gameState.mapExistingRoles.get("Magier").get(0).role;
+		// executes for every single card
+		for (var player : game.mapPlayers.values()) {
 
-			if (!magier.healUsed || !magier.poisonUsed) {
-				initiateRole("Magier");
+			var state = (AutoState) game.gameState;
+			state.pending.add(player);
+			player.role.executePostWW(player, game, state);
 
-			} else {
-				var playerMagier = game.gameState.mapExistingRoles.get("Magier").get(0);
-				MessagesMain.callZaubererUsedEverything(playerMagier.user.getPrivateChannel().block());
-
-			}
 		}
 
-		// Hexe
-		if (game.gameState.mapExistingRoles.containsKey("Hexe")) {
-			var hexe = (RoleZauberer) game.gameState.mapExistingRoles.get("Hexe").get(0).role;
-
-			if (!hexe.healUsed || !hexe.poisonUsed) {
-				initiateRole("Hexe");
-
-			} else {
-				var playerHexe = game.gameState.mapExistingRoles.get("Hexe").get(0);
-				MessagesMain.callZaubererUsedEverything(playerHexe.user.getPrivateChannel().block());
-
-			}
-		}
+		/*
+		 * // Hexe if (game.gameState.mapExistingRoles.containsKey("Hexe")) { var hexe =
+		 * (RoleZauberer) game.gameState.mapExistingRoles.get("Hexe").get(0).role;
+		 * 
+		 * if (!hexe.healUsed || !hexe.poisonUsed) { initiateRole("Hexe");
+		 * 
+		 * } else { var playerHexe = game.gameState.mapExistingRoles.get("Hexe").get(0);
+		 * MessagesMain.callZaubererUsedEverything(playerHexe.user.getPrivateChannel().
+		 * block());
+		 * 
+		 * } }
+		 */
 
 	}
 
-	// puts the role in endChecks and executes it
-	private void initiateRole(String roleName) {
-		var player = game.gameState.mapExistingRoles.get(roleName).get(0);
-		endChecks.put(roleName, false);
-		player.role.execute(game, player);
-	}
+	public void changeNightPhase() {
+		nightPhase++;
+		changeNightPhaseTo(nightPhase);
 
-	public void endNightCheck() {
-		var check = true;
-		for (Entry<String, Boolean> done : endChecks.entrySet()) {
-			if (!done.getValue()) {
-				check = false;
-			}
-		}
-
-		if (check) {
-			nightPhase++;
-			changeNightPhaseTo(nightPhase);
-		}
 	}
 
 	private void changeNightPhaseTo(int newPhase) {
@@ -212,6 +163,16 @@ public class Night {
 		} else if (newPhase == 3) {
 			game.gameState.changeDayPhase(DayPhase.MORNING);
 		}
+	}
+
+	public List<Player> getEndangeredPlayers() {
+		var list = new ArrayList<Player>();
+		for (var entry : game.livingPlayers.entrySet()) {
+			if (entry.getValue().role.deathDetails.deathState == DeathState.AT_RISK) {
+				list.add(entry.getValue());
+			}
+		}
+		return list;
 	}
 
 }

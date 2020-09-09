@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -151,6 +152,40 @@ public class Game {
 
     public boolean closeGame() {
         return gameState.exit();
+    }
+
+	
+    // finds a player in a Map by Username. Returns null if it finds noone or
+	// multiple Players
+	public Player findPlayerByNameLiving(String name) {
+		return findPlayerByName(name, livingPlayers);
+    }
+    
+    public Player findPlayerByName(String name) {
+		return findPlayerByName(name, mapPlayers);
+    }
+
+    // finds a player in a Map by Username. Returns null if it finds noone or
+	// multiple Players
+	private Player findPlayerByName(String name, Map<Snowflake, Player> map) {
+        Globals.removeDash(name);
+		Player foundPlayer = null;
+		var found = 0;
+		for (var entry : map.entrySet()) {
+	
+			var displayName = entry.getValue().name;
+			var userName = entry.getValue().user.getUsername();
+	
+			if (displayName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name)) {
+				foundPlayer = entry.getValue();
+				found++;
+			}
+	
+		}
+		if (found != 1) {
+			foundPlayer = null;
+		}
+		return foundPlayer;
     }
 
 }

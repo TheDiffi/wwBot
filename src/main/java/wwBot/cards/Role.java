@@ -4,14 +4,12 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.Player;
 import wwBot.GameStates.AutoState;
-import wwBot.GameStates.MainState.DayPhase;
-import wwBot.GameStates.MainState.DeathState;
+
 
 public class Role {
     public Card specs;
     public String name;
-    public boolean alive = true;
-    public DeathState deathState = DeathState.ALIVE;
+    public DeathDetails deathDetails;
     public Player inLoveWith;
 
     Role(String roleName) {
@@ -61,24 +59,23 @@ public class Role {
         }
     }
 
-    public void execute(Game game, Player player) {
+    public void execute(Player player, Game game, AutoState state) {
+        state.pending.remove(player);
     }
 
-    public void setDone(Game game, String role) {
-        // sets this roles state to done
-        var state = (AutoState) game.gameState;
-
-        if (state.dayPhase == DayPhase.FIRST_NIGHT) {
-            state.firstNight.endChecks.replace(role, true);
-            state.firstNight.endNightCheck();
-
-        } else if (state.dayPhase == DayPhase.NORMAL_NIGHT) {
-            state.night.endChecks.replace(role, true);
-            state.night.endNightCheck();
-
-        } else {
-            game.mainChannel.createMessage("ERROR in Role.setDone");
-        }
+    public void executeFirstNight(Player player, Game game, AutoState state) {
+        state.pending.remove(player);
     }
+
+	public void executePreWW(Player player, Game game, AutoState state) {
+        state.pending.remove(player);
+    }
+    
+    public void executePostWW(Player player,Game game, AutoState state) {
+        state.pending.remove(player);
+    }
+
+
+    
 
 }

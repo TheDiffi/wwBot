@@ -5,9 +5,9 @@ import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.AutoState;
+import wwBot.GameStates.DayPhases.Auto.Night;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.PrivateCommand;
-
 
 //not sure if this will work / Magier & Hexe in one role
 public class RoleZauberer extends Role {
@@ -19,29 +19,33 @@ public class RoleZauberer extends Role {
     }
 
     @Override
-    public void execute(Game game, Player zauberer) {
-        var state = (AutoState) game.gameState;
+    public void executePostWW(Player zauberer, Game game, AutoState state) {
+        if (!healUsed || !poisonUsed) {
 
-        MessagesMain.callZauberer(zauberer, this, state.night.endangeredPlayers, game);
+            MessagesMain.callZauberer(zauberer, this, ((Night) state.aDayPhase).getEndangeredPlayers(), game);
 
-        if (!healUsed) {
-            PrivateCommand healCommand = (event, parameters, msgChannel) -> {
+            if (!healUsed) {
+                PrivateCommand healCommand = (event, parameters, msgChannel) -> {
 
-                if (parameters != null && parameters.get(0).equalsIgnoreCase("&heal")) {
+                    if (parameters != null && parameters.get(0).equalsIgnoreCase("&heal")) {
 
-                    parameters.remove(0);
-                    var target = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+                        parameters.remove(0);
+                        var target = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
-                    if (target != null) {
-                        if (target.role.deathState == DeathState.AT_RISK) {
-                            // uses the ability to save the player
-                            target.role.deathState = DeathState.SAVED;
-                            healUsed = true;
-                            MessagesMain.confirm(msgChannel);
-                            return true;
+                        if (target != null) {
+                            if (target.role.deathDetails.deathState == DeathState.AT_RISK) {
+                                // uses the ability to save the player
+                                target.role.deathDetails.deathState = DeathState.SAVED;
+                                healUsed = true;
+                                MessagesMain.confirm(msgChannel);
+                                return true;
+
+                            } else {
+                                MessagesMain.errorPlayerNotFound(msgChannel);
+                                return false;
+                            }
 
                         } else {
-                            MessagesMain.errorPlayerNotFound(msgChannel);
                             return false;
                         }
 
@@ -49,56 +53,62 @@ public class RoleZauberer extends Role {
                         return false;
                     }
 
-                } else {
-                    return false;
-                }
+                };
+                game.addPrivateCommand(zauberer.user.getId(), healCommand);
+            }
 
-            };
-            game.addPrivateCommand(zauberer.user.getId(), healCommand);
-        }
+            if (!poisonUsed) {
+                PrivateCommand poisonCommand = (event, parameters, msgChannel) -> {
 
-        if (!poisonUsed) {
-            PrivateCommand poisonCommand = (event, parameters, msgChannel) -> {
+                    if (parameters != null && parameters.get(0).equalsIgnoreCase("&heal")) {
+                        parameters.remove(0);
 
-                if (parameters != null && parameters.get(0).equalsIgnoreCase("&heal")) {
-                    parameters.remove(0);
+                        var target = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
-                    var target = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+                        if (target != null) {
+                            // updates to AT_RISK Status
+                            target.role.deathDetails.deathState = DeathState.AT_RISK;
+                            target.role.deathDetails.killer = zauberer.role.name;
+                            poisonUsed = true;
 
-                    if (target != null) {
-                        target.role.deathState = DeathState.AT_RISK;
-                        poisonUsed = true;
-                        MessagesMain.confirm(msgChannel);
-                        return true;
+                            MessagesMain.confirm(msgChannel);
+                            return true;
+
+                        } else {
+                            return false;
+                        }
 
                     } else {
                         return false;
                     }
 
+                };
+                game.addPrivateCommand(zauberer.user.getId(), poisonCommand);
+
+            }
+
+            PrivateCommand confirmCommand = (event, parameters, msgChannel) -> {
+
+                if (parameters != null && parameters.get(0).equalsIgnoreCase("&continue")) {
+
+                    MessagesMain.confirm(msgChannel);
+
+                    state.setDone(zauberer);
+
+                    return true;
+
                 } else {
                     return false;
                 }
 
             };
-            game.addPrivateCommand(zauberer.user.getId(), poisonCommand);
+            game.addPrivateCommand(zauberer.user.getId(), confirmCommand);
+
+
+        } else {
+            state.setDone(zauberer);
+            MessagesMain.callZaubererUsedEverything(zauberer.user.getPrivateChannel().block());
 
         }
-
-        PrivateCommand poisonCommand = (event, parameters, msgChannel) -> {
-
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("&continue")) {
-
-                MessagesMain.confirm(msgChannel);
-                
-                setDone(game, zauberer.name);
-
-                return true;
-
-            } else {
-                return false;
-            }
-
-        };
-        game.addPrivateCommand(zauberer.user.getId(), poisonCommand);
     }
 }

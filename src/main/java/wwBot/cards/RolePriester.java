@@ -4,67 +4,73 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RolePriester extends Role {
     public boolean usedAbility = false;
     public Player protectedPlayer;
-    public boolean abilityVanished = false;
+    public boolean abilityActive = false;
 
     RolePriester() {
         super("Priester");
     }
 
     @Override
-    public void execute(Game game, Player priester) {
-        MessagesMain.callPriester(priester);
+    public void executePreWW(Player priester, Game game, AutoState state) {
 
-        PrivateCommand priesterCommand = (event, parameters, msgChannel) -> {
-            if (parameters.size() != 1) {
-                MessagesMain.errorWrongAnswer(msgChannel);
-                return false;
+        // if the priest has not yet used his ability, he gets the chance to do so. If
+        // he already used it and it did not trigger (vanish) yet, the protectedPlayer
+        // gets to live once during ifDiesCheck();
+        if (!usedAbility) {
 
-                // NO
-            } else if (parameters.get(0).equalsIgnoreCase("no")) {
-                MessagesMain.confirm(msgChannel);
-                
-                setDone(game, "Priester");
+            MessagesMain.callPriester(priester);
 
-                return true;
+            PrivateCommand priesterCommand = (event, parameters, msgChannel) -> {
+                if (parameters.size() != 1) {
+                    MessagesMain.errorWrongAnswer(msgChannel);
+                    return false;
 
-                // YES: if the priest chooses to use his ability he gets granted access to the "bless" Command
-            } else if (parameters.get(0).equalsIgnoreCase("yes")) {
-                MessagesMain.confirm(msgChannel);
-                
-                //this Command saves the priests player of choice as the protected player
-                PrivateCommand blessCommand = (event2, parameters2, msgChannel2) -> {
-                    var player = Globals.commandPlayerFinder(event2, parameters2, msgChannel2, game);
-        
-                    if (player != null) {
-                        protectedPlayer = player;
-                        usedAbility = true;
-        
-                        setDone(game, "Priester");
-                        return true;
-        
-                    } else {
-                        return false;
-                    }
-        
-                };
-                game.addPrivateCommand(priester.user.getId(), blessCommand);
+                    // NO
+                } else if (parameters.get(0).equalsIgnoreCase("no")) {
+                    MessagesMain.confirm(msgChannel);
 
-                return true;
+                    state.setDone(priester);
 
-            } else {
-                MessagesMain.errorWrongAnswer(msgChannel);
-                return false;
-            }
-        };
-        game.addPrivateCommand(priester.user.getId(), priesterCommand);
+                    return true;
 
+                    // YES: if the priest chooses to use his ability he gets granted access to the
+                    // "bless" Command
+                } else if (parameters.get(0).equalsIgnoreCase("yes")) {
+                    MessagesMain.confirm(msgChannel);
 
+                    // this Command saves the priests player of choice as the protected player
+                    PrivateCommand blessCommand = (event2, parameters2, msgChannel2) -> {
+                        var player = Globals.commandPlayerFinder(event2, parameters2, msgChannel2, game);
+
+                        if (player != null) {
+                            protectedPlayer = player;
+                            usedAbility = true;
+
+                            state.setDone(priester);
+                            return true;
+
+                        } else {
+                            return false;
+                        }
+
+                    };
+                    game.addPrivateCommand(priester.user.getId(), blessCommand);
+
+                    return true;
+
+                } else {
+                    MessagesMain.errorWrongAnswer(msgChannel);
+                    return false;
+                }
+            };
+            game.addPrivateCommand(priester.user.getId(), priesterCommand);
+
+        }
     }
 }
-
-
