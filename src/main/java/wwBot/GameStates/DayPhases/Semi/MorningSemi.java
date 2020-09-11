@@ -36,7 +36,7 @@ public class MorningSemi  {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 MessagesMain.sendHelpMorningMod(msgChannel);
             } else {
-                MessagesMain.sendHelpMorning(msgChannel);
+                MessagesMain.sendHelpMorning(msgChannel, false);
             }
 
         };

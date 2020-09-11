@@ -23,8 +23,6 @@ public class Day extends AutoDayPhase {
         // loads all Commands into the mapCommands
         registerDayCommands();
 
-        MessagesMain.onDayAuto(game);
-
     }
 
     // --------------------- Commands ------------------------
@@ -41,7 +39,7 @@ public class Day extends AutoDayPhase {
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
             // replies to the moderator
-            MessagesMain.sendHelpDay(msgChannel);
+            MessagesMain.sendHelpDay(msgChannel, true);
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
@@ -68,10 +66,10 @@ public class Day extends AutoDayPhase {
             var voter = new Player();
 
             // checks if the player calling this command is allowed to vote
-            for (var entry : game.livingPlayers.entrySet()) {
-                if (entry.getValue().user.getUsername().equals(voterUser.getUsername())) {
+            for (var player : game.livingPlayers.values()){
+                if (player.user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
-                    voter = entry.getValue();
+                    voter = player;
                     break;
                 }
             }

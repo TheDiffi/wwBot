@@ -19,6 +19,7 @@ public class NightSemi {
 	public NightSemi (Game getGame) {
 		game = getGame;
 		registerNightCommands();
+
 		initiateNight();
 
 	}
@@ -56,7 +57,7 @@ public class NightSemi {
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				MessagesMain.sendHelpNightMod(msgChannel);
 			} else {
-				MessagesMain.sendHelpNight(msgChannel);
+				MessagesMain.sendHelpNight(msgChannel, false);
 			}
 		};
 		mapCommands.put("help", helpCommand);

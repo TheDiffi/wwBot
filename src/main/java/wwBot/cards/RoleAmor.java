@@ -42,7 +42,7 @@ public class RoleAmor extends Role {
                     // sends a mssg
                     MessagesMain.amorSuccess(game, player1, player2);
 
-                    state.setDone(amor);
+                    state.setDoneNight(amor);
                     return true;
 
                 }

@@ -22,7 +22,7 @@ public class RoleZauberer extends Role {
     public void executePostWW(Player zauberer, Game game, AutoState state) {
         if (!healUsed || !poisonUsed) {
 
-            MessagesMain.callZauberer(zauberer, this, ((Night) state.aDayPhase).getEndangeredPlayers(), game);
+            MessagesMain.callZauberer(zauberer, this, ((Night) state.dayPhase).getEndangeredPlayers(), game);
 
             if (!healUsed) {
                 PrivateCommand healCommand = (event, parameters, msgChannel) -> {
@@ -93,7 +93,7 @@ public class RoleZauberer extends Role {
 
                     MessagesMain.confirm(msgChannel);
 
-                    state.setDone(zauberer);
+                    state.setDoneNight(zauberer);
 
                     return true;
 
@@ -106,7 +106,7 @@ public class RoleZauberer extends Role {
 
 
         } else {
-            state.setDone(zauberer);
+            state.setDoneNight(zauberer);
             MessagesMain.callZaubererUsedEverything(zauberer.user.getPrivateChannel().block());
 
         }

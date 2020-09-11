@@ -55,8 +55,9 @@ public class GameState {
     public void deleteDeathChat() {
     }
 
-    public void killPlayer(Player unluckyPlayer, String causedByRole) {
-    }
+    public boolean killPlayer(Player unluckyPlayer, String causedByRole) {
+        return false;
+    }   
 
     public boolean checkIfDies(Player unluckyPlayer, String causedByRole) {
         return false;
@@ -66,26 +67,13 @@ public class GameState {
         return false;
     }
 
-    public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-    }
+     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
+    } 
 
     public boolean exit() {
         return true;
     }
 
-    public void endMainGame(int winner) {
-        // unmutes all players
-        setMuteAllPlayers(mapPlayers, false);
-        // deletes deathChat
-        deleteDeathChat();
-        // sends gameover message
-        if (winner == 1) {
-            Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
-        } else if (winner == 2) {
-            Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
-        }
-        // changes gamestate
-        game.changeGameState(new PostGameState(game, winner));
-    }
+    
 
 }

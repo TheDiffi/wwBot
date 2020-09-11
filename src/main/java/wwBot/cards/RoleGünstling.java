@@ -15,6 +15,6 @@ public class RoleGünstling extends Role {
     public void executePreWW(Player player, Game game, AutoState state) {
         MessagesMain.günstlingMessage(player.user.getPrivateChannel().block(), game.gameState.mapExistingRoles, game);
 
-        state.setDone(player);
+        state.setDoneNight(player);
     }
 }

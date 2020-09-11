@@ -27,6 +27,7 @@ public class FirstNightSemi  {
         gameState = game.gameState;
         mapExistingRoles = game.gameState.mapExistingRoles;
         initiateFirstNight();
+        
 
     }
 
@@ -173,7 +174,7 @@ public class FirstNightSemi  {
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
                 MessagesMain.sendHelpFirstNightMod(msgChannel);
             } else {
-                MessagesMain.sendHelpFirstNight(msgChannel);
+                MessagesMain.sendHelpFirstNight(msgChannel, false);
             }
         };
         mapCommands.put("help", helpCommand);

@@ -14,18 +14,41 @@ import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.Command;
 
 public class Night extends AutoDayPhase {
-
-	// TODO: Command to show which role has not acted yet
+	
 	private int nightPhase = 0; // 0 = prePhase / 1 = WWPhase / 2 = postPhase
 	public Game game;
+	private AutoState state;
 
 	public Night(Game getGame) {
 		game = getGame;
+		state = (AutoState) game.gameState;
+
+		// loads the Commands of the state
+        registerCommands();
 
 		MessagesMain.onNightAuto(game);
 
 		preWWPhase();
 	}
+
+	// loads all of the following Commands into mapCommands
+	public void registerCommands() {
+
+		// replys with pong!
+		Command pingCommand = (event, parameters, msgChannel) -> {
+			event.getMessage().getChannel().block().createMessage("Pong! NightPhase").block();
+		};
+		mapCommands.put("ping", pingCommand);
+
+		// help
+		Command helpCommand = (event, parameters, msgChannel) -> {
+			MessagesMain.sendHelpNight(msgChannel, true);
+		};
+		mapCommands.put("help", helpCommand);
+		mapCommands.put("hilfe", helpCommand);
+
+	}
+
 
 	private void preWWPhase() {
 
@@ -38,9 +61,7 @@ public class Night extends AutoDayPhase {
 
 		// executes for every single card
 		for (var player : game.mapPlayers.values()) {
-
-			var state = (AutoState) game.gameState;
-			state.pending.add(player);
+			state.setPending(player);
 			player.role.executePreWW(player, game, state);
 
 		}
@@ -82,14 +103,12 @@ public class Night extends AutoDayPhase {
 
 	}
 
-	// TODO: wwEnraged
 	private void WWPhase() {
-		var mainState = (MainState) game.gameState;
-		MessagesMain.onWWTurn(game.mainChannel, mainState.wwChat);
+		MessagesMain.onWWTurn(game.mainChannel, state.wwChat);
 
 		Command slayCommand = (event, parameters, msgChannel) -> {
 			var author = game.findPlayerByName(event.getMessage().getAuthor().get().getUsername());
-			if (author.role.specs.name.equalsIgnoreCase("Werwolf") && msgChannel == mainState.wwChat) {
+			if (author.role.specs.name.equalsIgnoreCase("Werwolf") && msgChannel == state.wwChat) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
 				if (victim != null) {
@@ -106,9 +125,16 @@ public class Night extends AutoDayPhase {
 
 					// other stuff
 					MessagesMain.confirm(msgChannel);
-					game.gameCommands.remove("slay");
 
-					changeNightPhase();
+					if (state.wwEnraged) {
+						state.wwEnraged = false;
+						MessagesMain.wwEnraged(state.wwChat);
+
+					} else {
+						game.gameCommands.remove("slay");
+						changeNightPhase();
+					}
+
 				}
 
 			} else {
@@ -126,8 +152,7 @@ public class Night extends AutoDayPhase {
 		// executes for every single card
 		for (var player : game.mapPlayers.values()) {
 
-			var state = (AutoState) game.gameState;
-			state.pending.add(player);
+			state.setPending(player);
 			player.role.executePostWW(player, game, state);
 
 		}

@@ -9,6 +9,7 @@ import wwBot.Game;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.MainState.DeathState;
+import wwBot.Interfaces.Command;
 import wwBot.cards.RoleSäufer;
 
 public class Morning extends AutoDayPhase {
@@ -22,26 +23,47 @@ public class Morning extends AutoDayPhase {
         mapExistingRoles = game.gameState.mapExistingRoles;
         MessagesMain.onMorningAuto(game);
 
+        // loads the Commands of the state
+        registerCommands();
+
         calculateEndangeredPlayers();
-        
+
         killEndangeredPlayers();
-        
-        // TODO: end Morning
+
+    }
+
+    // loads all of the following Commands into mapCommands
+    public void registerCommands() {
+
+        // replys with pong!
+        Command pingCommand = (event, parameters, msgChannel) -> {
+            event.getMessage().getChannel().block().createMessage("Pong! MorningPhase").block();
+        };
+        mapCommands.put("ping", pingCommand);
+
+        // help
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            MessagesMain.sendHelpNight(msgChannel, true);
+        };
+        mapCommands.put("help", helpCommand);
+        mapCommands.put("hilfe", helpCommand);
+
     }
 
     private void killEndangeredPlayers() {
 
         for (Player victim : endangeredPlayers) {
-            game.gameState.killPlayer(victim, victim.role.deathDetails.killer);
+            if (!game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
+                game.mainChannel.createMessage("Test: No one died, right?");
+            }
         }
-
     }
 
     private void calculateEndangeredPlayers() {
 
-        for (var entry : game.livingPlayers.entrySet()) {
-            if (entry.getValue().role.deathDetails.deathState == DeathState.AT_RISK) {
-                endangeredPlayers.add(entry.getValue());
+        for (var player : game.livingPlayers.values()) {
+            if (player.role.deathDetails.deathState == DeathState.AT_RISK) {
+                endangeredPlayers.add(player);
             }
         }
 
@@ -54,6 +76,8 @@ public class Morning extends AutoDayPhase {
                 endangeredPlayers.add(mapExistingRoles.get("Säufer").get(0));
             }
         }
+
+        // TODO: Harter-Bursche
 
     }
 }

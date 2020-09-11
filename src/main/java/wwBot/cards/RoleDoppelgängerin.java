@@ -34,7 +34,7 @@ public class RoleDoppelgängerin extends Role {
                 //sends the mssg
                 MessagesMain.doppelgängerinSuccess(game, dp, foundPlayer);
 
-                state.setDone(dp);
+                state.setDoneNight(dp);
                 return true;
             }
 

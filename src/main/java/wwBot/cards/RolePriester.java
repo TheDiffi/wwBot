@@ -35,7 +35,7 @@ public class RolePriester extends Role {
                 } else if (parameters.get(0).equalsIgnoreCase("no")) {
                     MessagesMain.confirm(msgChannel);
 
-                    state.setDone(priester);
+                    state.setDoneNight(priester);
 
                     return true;
 
@@ -52,7 +52,7 @@ public class RolePriester extends Role {
                             protectedPlayer = player;
                             usedAbility = true;
 
-                            state.setDone(priester);
+                            state.setDoneNight(priester);
                             return true;
 
                         } else {

@@ -72,6 +72,8 @@ public class Game {
         }
     }
 
+    //TODO: add admin Commands
+
     // loads the Commands available throughout the game into the map gameCommands
     private void registerGameCommands() {
         final var mapRegisteredCards = Globals.mapRegisteredCardsSpecs;

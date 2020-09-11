@@ -47,7 +47,7 @@ public class DaySemi  {
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				MessagesMain.sendHelpDayMod(msgChannel);
 			} else {
-				MessagesMain.sendHelpDay(msgChannel);
+				MessagesMain.sendHelpDay(msgChannel, false);
 			}
 
         };
@@ -78,10 +78,10 @@ public class DaySemi  {
             var voter = new Player();
 
             // checks if the player calling this command is allowed to vote
-            for (var entry : game.livingPlayers.entrySet()) {
-                if (entry.getValue().user.getUsername().equals(voterUser.getUsername())) {
+            for (var player : game.livingPlayers.values()) {
+                if (player.user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
-                    voter = entry.getValue();
+                    voter = player;
                     break;
                 }
             }

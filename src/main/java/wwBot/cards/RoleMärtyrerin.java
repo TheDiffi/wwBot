@@ -26,13 +26,13 @@ public class RoleMärtyrerin extends Role {
 
                 } else if (parameters.get(0).equalsIgnoreCase("no")) {
                     MessagesMain.confirm(msgChannel);
-                    ((Day) state.aDayPhase).lynchPlayer(mostVoted, false);
+                    ((Day) state.dayPhase).lynchPlayer(mostVoted, false);
 
                     return true;
 
                 } else if (parameters.get(0).equalsIgnoreCase("yes")) {
                     MessagesMain.confirm(msgChannel);
-                    ((Day) state.aDayPhase).lynchPlayer(player, true);
+                    ((Day) state.dayPhase).lynchPlayer(player, true);
 
                     return true;
 

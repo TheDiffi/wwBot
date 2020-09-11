@@ -1,8 +1,11 @@
 package wwBot.GameStates;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
@@ -13,6 +16,7 @@ import wwBot.GameStates.DayPhases.Auto.FirstNight;
 import wwBot.GameStates.DayPhases.Auto.Morning;
 import wwBot.GameStates.DayPhases.Auto.Night;
 import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 import wwBot.cards.Role;
 import wwBot.cards.RoleDoppelgängerin;
 import wwBot.cards.RoleHarterBursche;
@@ -21,14 +25,12 @@ import wwBot.cards.RoleWerwolf;
 
 //----------------------- ! WORK IN PROGRESS ! --------------------------------
 
-//TODO: every morning set all surviving players.deathstate to ALIVE
 //TODO: refractore DayPhases
-//TODO: setDone() an automatic initiate role
 
 public class AutoState extends MainState {
 
-    public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
-    public AutoDayPhase aDayPhase = null;
+    public DayPhase dayPhaseEnum = DayPhase.FIRST_NIGHT;
+    public AutoDayPhase dayPhase = null;
 
     // TODO: mby make a enum out of this
     public boolean wwEnraged = false;
@@ -40,7 +42,7 @@ public class AutoState extends MainState {
         super(game);
         registerStateCommands();
 
-        // TODO: greet Players
+        MessagesMain.onGameStartAuto(game);
         changeDayPhase(DayPhase.FIRST_NIGHT);
     }
 
@@ -51,17 +53,14 @@ public class AutoState extends MainState {
         updateGameLists();
 
         if (!checkIfGameEnds()) {
-            // TODO: clear GameEndChecks
+
             // transitions to Night
 
             if (nextPhase == DayPhase.NORMAL_NIGHT) {
-
-                // TODO: Harter-Bursche
-
                 setMuteAllPlayers(game.livingPlayers, true);
 
-                aDayPhase = new Night(game);
-                dayPhase = DayPhase.NORMAL_NIGHT;
+                dayPhase = new Night(game);
+                dayPhaseEnum = DayPhase.NORMAL_NIGHT;
 
                 MessagesMain.onNightAuto(game);
 
@@ -70,29 +69,76 @@ public class AutoState extends MainState {
                 setMuteAllPlayers(game.livingPlayers, false);
                 deleteWerwolfChat();
 
-                aDayPhase = new Morning(game);
-                dayPhase = DayPhase.MORNING;
+                dayPhase = new Morning(game);
+                dayPhaseEnum = DayPhase.MORNING;
 
                 MessagesMain.onMorningAuto(game);
 
                 // transitions to Day
             } else if (nextPhase == DayPhase.DAY) {
-                wwEnraged = false;
-                wwInfected = false;
+                resetStuff();
 
-                aDayPhase = new Day(game);
-                dayPhase = DayPhase.DAY;
+                dayPhase = new Day(game);
+                dayPhaseEnum = DayPhase.DAY;
+
+                MessagesMain.onDayAuto(game);
 
                 // transitions to 1st Night
             } else if (nextPhase == DayPhase.FIRST_NIGHT) {
                 createWerwolfChat();
 
-                aDayPhase = new FirstNight(game);
-                dayPhase = DayPhase.FIRST_NIGHT;
+                dayPhase = new FirstNight(game);
+                dayPhaseEnum = DayPhase.FIRST_NIGHT;
 
             }
         }
 
+    }
+
+    private void resetStuff() {
+        wwEnraged = false;
+        wwInfected = false;
+
+        for (var player : game.livingPlayers.values()) {
+            player.role.deathDetails.deathState = DeathState.ALIVE;
+        }
+        if (pending != null) {
+            pending.clear();
+        }
+    }
+
+    // -----------------------------------------------------------
+
+    // --------------------- Commands ----------------------------
+
+    @Override
+    public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
+            MessageChannel runningInChannel) {
+        var handeled = false;
+
+        if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())) {
+
+            // finds the Command in the dayPhase
+            var foundCommand = dayPhase.mapCommands.get(requestedCommand);
+            if (foundCommand != null) {
+                foundCommand.execute(event, parameters, runningInChannel);
+                handeled = true;
+
+            } else {
+                handeled = false;
+            }
+
+            // if the Command was not found, it gets send a level up (MainState)
+            if (!handeled) {
+                handeled = super.handleCommand(requestedCommand, event, parameters, runningInChannel);
+            }
+
+        } else {
+            MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
+            handeled = true;
+        }
+
+        return handeled;
     }
 
     // loads the Commands available in this GameState into the map gameStateCommands
@@ -106,25 +152,55 @@ public class AutoState extends MainState {
 
         // zeigt die verfügbaren commands
         Command showCommandsCommand = (event, parameters, msgChannel) -> {
-            // TODO: FILL
+            var mssg = MessagesMain.getCommandsMain();
+            mssg += "\n" + MessagesMain.getCommandsGame();
+            mssg += "\n" + MessagesMain.getCommandsAutoState();
+            mssg += "\n" + MessagesMain.getHelpInfo();
+            Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
+
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
+        gameStateCommands.put("sC", showCommandsCommand);
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            // TODO: Fill
+            Globals.createMessage(msgChannel,
+                    "(E:hAS) Hmmmmm, you should not be seeing this message...\nPlease send TheDiffi#7457 a message informing him about this bug!");
         };
         gameStateCommands.put("help", helpCommand);
         gameStateCommands.put("hilfe", helpCommand);
 
+        // listet die verbleibenden Spieler auf
+        Command lsLivingCommand = (event, parameters, msgChannel) -> {
+            Globals.printPlayersMap(msgChannel, game.livingPlayers, "Am Leben", game, false);
+        };
+        gameStateCommands.put("Alive", lsLivingCommand);
+        gameStateCommands.put("ListLiving", lsLivingCommand);
+        gameStateCommands.put("StillAlive", lsLivingCommand);
+
+        // replys with pong!
+        Command lsPendingCommand = (event, parameters, msgChannel) -> {
+            Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "",
+                    Globals.playerListToString(pending, "Warte auf Spieler", game, false));
+        };
+        gameStateCommands.put("pending", lsPendingCommand);
+        gameStateCommands.put("lsPending", lsPendingCommand);
+
     }
 
-    // TODO: implement kill system
-    // survivalCheck
-    // TODO: kill
-    // TODO: calculate Consequences
+    // -------------------- Kill System --------------------------
+
+    // CheckIfDies --> überprüft in dieser Reihenfolge: ob der Player nicht bereits
+    // Tot ist; ob er eine Spezialkarte ist welche nicht stirbt
+    // KillSwitch --> falls checkIfDies true zurückgibt:
+    // 1) player.alive wird auf false gesetzt; der Spieler wird zur liste der toten
+    // Spieler und zum death-chat hinzugefügt
+    // 2) der Player wird gemuted
+    // 3) der Tot wird verkündet und die Identität gelüftet
+    // 3) checkConsequences wird gerufen. Dies überprüft die Consequenzen
+
     @Override
-    public void killPlayer(Player victim, String cause) {
+    public boolean killPlayer(Player victim, String cause) {
 
         if (checkIfDies(victim, cause)) {
             // kills player
@@ -134,7 +210,10 @@ public class AutoState extends MainState {
             sendDeathMessage(victim, cause);
 
             checkConsequences(victim, cause);
+
+            return true;
         }
+        return false;
 
     }
 
@@ -227,9 +306,27 @@ public class AutoState extends MainState {
             wwInfected = true;
 
         }
-        // TODO: Jäger
+        // Jäger
         if (victim.role.name.equals("Jäger")) {
             MessagesMain.onJägerDeath(game, victim);
+
+            setPending(victim);
+
+            PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
+                var foundPlayer = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+
+                if (foundPlayer != null) {
+                    MessagesMain.confirm(msgChannel);
+                    killPlayer(foundPlayer, "Jäger");
+                    setDone(victim);
+
+                    return true;
+                } else {
+                    return false;
+                }
+
+            };
+            game.addPrivateCommand(victim.user.getId(), jägerCommand);
 
         }
 
@@ -242,6 +339,12 @@ public class AutoState extends MainState {
                 MessagesMain.onDoppelgängerinTransformation(game, dp, victim);
 
             }
+        }
+
+        // Amor
+        if (victim.role.inLoveWith != null && victim.role.inLoveWith.role.deathDetails.alive) {
+            killPlayer(victim.role.inLoveWith, "Amor");
+            MessagesMain.onLoversDeath(game, victim.role.inLoveWith);
         }
 
     }
@@ -270,32 +373,22 @@ public class AutoState extends MainState {
         Globals.printCard(player.role.name, game.mainChannel);
     }
 
-    /*
-     * public void setDone(Game game, String role) { // sets this roles state to
-     * done
-     * 
-     * if (dayPhase == DayPhase.FIRST_NIGHT) { firstNight.endChecks.replace(role,
-     * true); firstNight.endNightCheck();
-     * 
-     * } else if (dayPhase == DayPhase.NORMAL_NIGHT) { night.endChecks.replace(role,
-     * true); night.endNightCheck();
-     * 
-     * } else { game.mainChannel.createMessage("ERROR in Role.setDone"); } }
-     */
-
     public void setPending(Player player) {
         pending.add(player);
     }
 
     public void setDone(Player player) {
         pending.remove(player);
-        endNightCheck();
     }
 
-    public void endNightCheck() {
+    public void setDoneNight(Player player) {
+        pending.remove(player);
+        endNightPhaseCheck();
+    }
 
+    public void endNightPhaseCheck() {
         if (pending.isEmpty()) {
-            aDayPhase.changeNightPhase();
+            dayPhase.changeNightPhase();
         }
     }
 }

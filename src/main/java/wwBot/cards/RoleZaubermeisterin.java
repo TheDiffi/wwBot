@@ -26,7 +26,7 @@ public class RoleZaubermeisterin extends Role {
                 // sends the mssg
                 MessagesMain.showZaubermeisterin(zaubermeisterin, player);
 
-                state.setDone(zaubermeisterin);
+                state.setDoneNight(zaubermeisterin);
                 return true;
 
             } else {

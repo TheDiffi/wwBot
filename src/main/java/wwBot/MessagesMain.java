@@ -39,7 +39,7 @@ public class MessagesMain {
 				.block();
 	}
 
-	public static void onGameStart(Game game) {
+	public static void onGameStartSemi(Game game) {
 
 		// verkündet den Start der ersten Nacht
 		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald", "");
@@ -53,6 +53,14 @@ public class MessagesMain {
 		Globals.createMessage(game.mainChannel,
 				"Es wird angekündigt das von nun an an jedem Morgen ein Dorfbewohner durch Abstimmung gelyncht wird. Somit beginnt die erste Nacht",
 				false);
+
+	}
+
+	public static void onGameStartAuto(Game game) {
+		// TODO: FILL
+
+		// verkündet den Start der ersten Nacht
+		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald", "");
 
 	}
 
@@ -95,7 +103,6 @@ public class MessagesMain {
 	public static void onNightAuto(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT...🌇",
 				"```In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren```");
-		
 
 	}
 
@@ -244,8 +251,8 @@ public class MessagesMain {
 					+ " ";
 		}
 		if (mapExistingRoles.containsKey("Wolfsjunges")) {
-			mssg += mapExistingRoles.get("Werwolf").get(0).user.asMember(game.server.getId()).block().getDisplayName()
-					+ " ";
+			mssg += mapExistingRoles.get("Wolfsjunges").get(0).user.asMember(game.server.getId()).block()
+					.getDisplayName() + " ";
 		}
 
 		Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
@@ -284,6 +291,7 @@ public class MessagesMain {
 	public static void checkHarterBurscheDeath(MessageChannel modChannel) {
 		Globals.createMessage(modChannel,
 				"Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"");
+		Globals.printCard("Harter-Bursche", modChannel);
 	}
 
 	public static void callVettel(Player vettel) {
@@ -411,6 +419,11 @@ public class MessagesMain {
 				revealId(player, game));
 	}
 
+	public static void onLoversDeath(Game game, Player inLoveWith) {
+		Globals.createMessage(game.mainChannel, inLoveWith.name
+				+ " sieht den Leblosen Körper seiner wahren Liebe zu Boden sinken und in ihrer Seele zerbricht etwas...");
+	}
+
 	public static void deathByLove(Game game, Player player) {
 		Globals.createEmbed(game.mainChannel, Color.PINK, player.name
 
@@ -472,10 +485,16 @@ public class MessagesMain {
 
 	}
 
+	public static void wwEnraged(TextChannel wwChat) {
+		Globals.createMessage(wwChat,
+				"Da am Tag das Wolfsjunges getötet wurde, könnt ihr nun einen weiteren Spieler töten.");
+	}
+
 	public static void onJägerDeath(Game game, Player player) {
 		Globals.createMessage(game.mainChannel,
 				"Mit letzter Kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.", true);
-				Globals.createEmbed(player.user.getPrivateChannel().block(), Color.RED, "Du bist gefallen", "Als Jäger kannst du nun noch einen Schuss aus deinem Gewehr abgeben bevor du stirbst.\nSchreibe mir nun den Namen der Person die du töten möchtest!");
+		Globals.createEmbed(player.user.getPrivateChannel().block(), Color.RED, "Du bist gefallen",
+				"Als Jäger kannst du nun noch einen Schuss aus deinem Gewehr abgeben bevor du stirbst.\nSchreibe mir nun den Namen der Person die du töten möchtest!");
 	}
 
 	// ---------VOTE MESSAGES--------------------------------------------
@@ -549,29 +568,51 @@ public class MessagesMain {
 						+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
-	public static void sendHelpFirstNight(MessageChannel channel) {
-		Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
-				"In dieser Phase werden vom Moderator Spezialkarten mit bestimmten Funktionen zu Beginn des Spiels, wie z.B. Amor, aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, allerdings dürfen sie noch niemanden töten. Überprüft ob ihr eine private Nachricht von mir erhalten habt. Falls ja, befinden sich dort genauere Informationen.");
+	public static void sendHelpFirstNight(MessageChannel channel, boolean auto) {
+		if (auto) {
+			Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
+					"In dieser Phase rufe ich bestimmte Spezialkarten mit speziellen Funktionen zu Beginn des Spiels, wie z.B. Amor, auf. \nFür die Werwölfe öffnet sich, wie in jeder Nacht, ein Chatroom im Server, allerdings dürfen sie in der ersten Nacht noch niemanden töten. Überprüft ob ihr eine private Nachricht von mir erhalten habt. Falls ja, befinden sich dort genauere Informationen. Sobald alle aufgerufenen Spieler gehandelt haben, beginnt der erste Tag!");
+		} else {
+			Globals.createEmbed(channel, Color.BLACK, "____ Erste Nacht ____  ",
+					"In dieser Phase werden vom Moderator Spezialkarten mit bestimmten Funktionen zu Beginn des Spiels, wie z.B. Amor, aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, allerdings dürfen sie noch niemanden töten. Überprüft ob ihr eine private Nachricht von mir erhalten habt. Falls ja, befinden sich dort genauere Informationen.");
+		}
 
 	}
 
-	public static void sendHelpNight(MessageChannel channel) {
-		Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
-				"In dieser Phase werden Spezialkarten vom Moderator in bestimmter Reihenfolge aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, wo sie ungestört diskutieren können.");
+	public static void sendHelpNight(MessageChannel channel, boolean auto) {
+		if (auto) {
+			Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
+					"In dieser Phase rufe ich Spezialkarten in bestimmter Reihenfolge auf. Für die Werwölfe öffnet sich, wie in jeder Nacht, ein Chatroom im Server, wo sie ungestört diskutieren können. Sobald alle aufgerufenen Spieler gehandelt haben, beginnt der nächste Tag!");
+		} else {
+			Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
+					"In dieser Phase werden Spezialkarten vom Moderator in bestimmter Reihenfolge aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, wo sie ungestört diskutieren können.");
+		}
+
 	}
 
-	public static void sendHelpMorning(MessageChannel channel) {
-		Globals.createEmbed(channel, Color.BLACK, "____ Morgen ____  ",
-				"Am Morgen verkündet der Moderator die Opfer der Nacht (und spezielle Interaktionen wie Jäger finden statt)");
-
+	public static void sendHelpMorning(MessageChannel channel, boolean auto) {
+		if (auto) {
+			Globals.createEmbed(channel, Color.BLACK, "____ Morgen ____  ",
+					"Am Morgen werden die Opfer der Nacht verkündet. Ebenfalls finde spezielle Interaktionen, wie z.B. der Tod des Jägers, hier statt. Sobald alle Opfer verkündet wurden, beginnt der Tag und die Abstimmung beginnt.");
+		} else {
+			Globals.createEmbed(channel, Color.BLACK, "____ Morgen ____  ",
+					"Am Morgen verkündet der Moderator die Opfer der Nacht (und spezielle Interaktionen wie Jäger finden statt)");
+		}
 	}
 
-	public static void sendHelpDay(MessageChannel channel) {
-		Globals.createEmbed(channel, Color.BLACK, "____ Tag ____  ",
-				"Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
-						+ prefix
-						+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
-						+ prefix + "endDay\" kann der Moderator das Spiel beenden.");
+	public static void sendHelpDay(MessageChannel channel, boolean auto) {
+		if (auto) {
+			Globals.createEmbed(channel, Color.BLACK, "____ Tag ____  ",
+					"Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+							+ prefix
+							+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, wird dieser öffentlich hingerichtet und die Bewohner schlafen wieder ein.");
+		} else {
+			Globals.createEmbed(channel, Color.BLACK, "____ Tag ____  ",
+					"Es ist zurzeit Tag. In dieser Phase versuchen die Dorfbewohner durch Diskussion herauszufinden, wer die Werwölfe sind. Die Werwölfe hingegen versuchen nicht aufzufallen. Jeder Spieler kann jeden Tag mit \""
+							+ prefix
+							+ "vote <Name des Spielers> \" für den Tod eines Mitspielers stimmen. Die Stimme kann hierbei jederzeit durch das erneute Aufrufen des Commands geändert werden.\nSobald alle noch lebenden Spieler abgestimmt haben und eine Mehrheit besteht, kann der Moderator diesen lynchen. Mit \""
+							+ prefix + "endDay\" kann der Moderator das Spiel beenden.");
+		}
 	}
 
 	// Syntax: mssg += "\n" + "`" + prefix + "<Command>" + "`" + "<Description>"
@@ -617,9 +658,21 @@ public class MessagesMain {
 	}
 
 	public static String getCommandsSemiState() {
-		var mssg = " ---- Game ----";
+		var mssg = "\n ---- Day ----";
 		mssg += buildDescription("vote <Player>", "Stimmt für die öffentliche Hinrichtung dieses Spielers");
 		mssg += buildDescription("listVotes", "Listet alle Stimmen auf");
+
+		return mssg;
+	}
+
+	public static String getCommandsAutoState() {
+		var mssg = "\n ---- Day ----";
+		mssg += buildDescription("vote <Player>", "Stimmt für die öffentliche Hinrichtung dieses Spielers");
+		mssg += buildDescription("listVotes", "Listet alle Stimmen auf");
+
+		mssg += "\n ---- Night ----";
+		mssg += buildDescription("listPending",
+				"Listet alle Rollen auf welche noch handeln müssen, bevor es Tag werden kann");
 
 		return mssg;
 	}

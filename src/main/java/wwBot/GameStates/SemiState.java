@@ -1,12 +1,8 @@
 package wwBot.GameStates;
 
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
-import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
@@ -45,7 +41,7 @@ public class SemiState extends MainState {
 		updateGameLists();
 
 		// sends the first messages
-		MessagesMain.onGameStart(game);
+		MessagesMain.onGameStartSemi(game);
 		greetMod(game);
 
 	}
@@ -53,7 +49,7 @@ public class SemiState extends MainState {
 	// greets the mod and waits for the mod to start the first night
 	private void greetMod(Game game) {
 		MessagesMain.greetMod(game);
-		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game);
+		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game, true);
 
 		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -86,31 +82,35 @@ public class SemiState extends MainState {
 
 		// falls der Spieler Tot ist stirbt er nicht
 		if (!unluckyPlayer.role.deathDetails.alive) {
-			dies = false;
 			MessagesMain.errorPlayerAlreadyDead(modChannel);
+			dies = false;
+
 		}
 
 		// VERFLUCHTER
 		if (unluckyPlayer.role.name.equals("Verfluchter") && causedByRole.equalsIgnoreCase("Werwolf")) {
-			dies = false;
 			unluckyPlayer.role = Role.createRole("Werwolf");
 			MessagesMain.verfluchtenMutation(game);
+			dies = false;
 		}
 
 		// HARTER BURSCHE
-		if (unluckyPlayer.role.name.equals("Harter-Bursche") && causedByRole.equalsIgnoreCase("Werwolf")) {
-			dies = false;
+		if (unluckyPlayer.role.name.equals("Harter-Bursche") && !causedByRole.equalsIgnoreCase("Confirmed")) {
 			MessagesMain.checkHarterBurscheDeath(modChannel);
+			dies = false;
 
 			// if confirmed it kills the player. if canceled nothing happenes
 			PrivateCommand confirmCommand = (event, parameters, msgChannel) -> {
+
 				if (parameters != null && parameters.get(0).equalsIgnoreCase("confirm")) {
-					killPlayer(unluckyPlayer, causedByRole);
-					msgChannel.createMessage("confirmed!").block();
+					killPlayer(unluckyPlayer, "Confirmed");
+					MessagesMain.confirm(msgChannel);
 					return true;
+
 				} else if (parameters != null && parameters.get(0).equalsIgnoreCase("cancel")) {
-					Globals.createMessage(modChannel, "Canceled", false);
+					Globals.createMessage(modChannel, "Canceled");
 					return true;
+
 				} else {
 					return false;
 				}
@@ -121,20 +121,22 @@ public class SemiState extends MainState {
 
 		// PRINZ
 		if (unluckyPlayer.role.name.equals("Prinz") && causedByRole.equalsIgnoreCase("Dorfbewohner")) {
-			dies = false;
 			MessagesMain.prinzSurvives(game);
+			dies = false;
+
 		}
 
 		return dies;
 	}
 
 	@Override
-	public void killPlayer(Player unluckyPlayer, String causedByRole) {
+	public boolean killPlayer(Player unluckyPlayer, String causedByRole) {
 
 		// kills player
 		unluckyPlayer.role.deathDetails.alive = false;
 		game.deadPlayers.add(unluckyPlayer);
 
+		updateGameLists();
 		updateDeathChat();
 
 		try {
@@ -142,14 +144,14 @@ public class SemiState extends MainState {
 		} catch (Exception e) {
 		}
 
-		updateGameLists();
-
 		// reveals the players death and identity
 		checkDeathMessages(unluckyPlayer, causedByRole);
-		Globals.printCard(unluckyPlayer.role.name, game.mainChannel);
+		
 
 		// calculates the consequences
 		checkConsequences(unluckyPlayer, causedByRole);
+
+		return true;
 	}
 
 	private void checkConsequences(Player unluckyPlayer, String causedByRole) {
@@ -162,6 +164,7 @@ public class SemiState extends MainState {
 				if (player.getValue().role.name.equalsIgnoreCase("SeherLehrling")) {
 					player.getValue().role = Role.createRole("Seher");
 					MessagesMain.onSeherlehrlingPromotion(game, unluckyPlayer);
+
 				}
 			}
 
@@ -183,10 +186,27 @@ public class SemiState extends MainState {
 
 			}
 
-			// JÄGER //TODO:TEST, very experimantal
+			// JÄGER
 		} else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
 			MessagesMain.onJägerDeath(game, unluckyPlayer);
-			// loads the Bot api
+
+            PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
+                var foundPlayer = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+
+                if (foundPlayer != null) {
+                    MessagesMain.confirm(msgChannel);
+                    killPlayer(foundPlayer, "Jäger");
+
+                    return true;
+                } else {
+                    return false;
+                }
+
+            };
+            game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
+
+			//TODO:TEST, very experimantal
+			/* // loads the Bot api
 			DiscordClient client = DiscordClientBuilder
 					.create("NzA3NjUzNTk1NjQxOTM4MDMx.Xs1bLg.RLbvLwafgTDyhLYsQZl4pi0hluc").build();
 			// (hopefully) waits for the jägers answer
@@ -229,7 +249,7 @@ public class SemiState extends MainState {
 						} catch (Exception e) {
 							event.getMessage().getChannel().block().createMessage("Something went wrong").block();
 						}
-					});
+					}); */
 		}
 
 		// AMOR
@@ -273,16 +293,8 @@ public class SemiState extends MainState {
 				MessagesMain.deathByDefault(game, player);
 		}
 
-		/*
-		 * if (cause.equalsIgnoreCase("Werwolf")) { MessagesMain.deathByWW(game,
-		 * player); } else if (cause.equalsIgnoreCase("Hexe") ||
-		 * cause.equalsIgnoreCase("Magier")) { MessagesMain.deathByMagic(game, player);
-		 * } else if (cause.equalsIgnoreCase("Amor")) { MessagesMain.deathByLove(game,
-		 * player); } else if (cause.equalsIgnoreCase("Jäger")) {
-		 * MessagesMain.deathByGunshot(game, player); } else if
-		 * (cause.equalsIgnoreCase("Dorfbewohner")) { MessagesMain.deathByLynchen(game,
-		 * player); } else { MessagesMain.deathByDefault(game, player); }
-		 */
+		Globals.printCard(player.role.name, game.mainChannel);
+
 	}
 
 	@Override
@@ -336,7 +348,7 @@ public class SemiState extends MainState {
 	@Override
 	public boolean handleCommand(String requestedCommand, MessageCreateEvent event, List<String> parameters,
 			MessageChannel runningInChannel) {
-		var found = false;
+		var handeled = false;
 		if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())
 				|| event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
 
@@ -345,65 +357,58 @@ public class SemiState extends MainState {
 				var foundCommand = morning.mapCommands.get(requestedCommand);
 				if (foundCommand != null) {
 					foundCommand.execute(event, parameters, runningInChannel);
-					found = true;
-				} else if (!found && day != null && day.mapCommands.containsKey(requestedCommand)) {
+					handeled = true;
+				} else if (!handeled && day != null && day.mapCommands.containsKey(requestedCommand)) {
 					event.getMessage().getChannel().block().createMessage("This command is only available during Day")
 							.block();
-					found = true;
+					handeled = true;
 				} else {
-					found = false;
+					handeled = false;
 				}
 			} else if (dayPhase == DayPhase.DAY) {
 				var foundCommand = day.mapCommands.get(requestedCommand);
 				if (foundCommand != null) {
 					foundCommand.execute(event, parameters, runningInChannel);
-					found = true;
-				} else if (!found && night != null && night.mapCommands.containsKey(requestedCommand)) {
+					handeled = true;
+				} else if (!handeled && night != null && night.mapCommands.containsKey(requestedCommand)) {
 					event.getMessage().getChannel().block().createMessage("This command is only available during Night")
 							.block();
-					found = true;
+					handeled = true;
 				} else {
-					found = false;
+					handeled = false;
 				}
 			} else if (dayPhase == DayPhase.NORMAL_NIGHT) {
 				var foundCommand = night.mapCommands.get(requestedCommand);
 				if (foundCommand != null) {
 					foundCommand.execute(event, parameters, runningInChannel);
-					found = true;
-				} else if (!found && morning != null && morning.mapCommands.containsKey(requestedCommand)) {
+					handeled = true;
+				} else if (!handeled && morning != null && morning.mapCommands.containsKey(requestedCommand)) {
 					event.getMessage().getChannel().block()
 							.createMessage("This command is only available during the Morning").block();
-					found = true;
+					handeled = true;
 				} else {
-					found = false;
+					handeled = false;
 				}
 			} else if (dayPhase == DayPhase.FIRST_NIGHT) {
 				var foundCommand = firstNight.mapCommands.get(requestedCommand);
 				if (foundCommand != null) {
 					foundCommand.execute(event, parameters, runningInChannel);
-					found = true;
+					handeled = true;
 				} else {
-					found = false;
+					handeled = false;
 				}
-
-				if (event.getMessage().getContent().get().equalsIgnoreCase("&help")) {
-					event.getMessage().getChannel().block().createMessage("In der ersten Nacht gibt es keine Commands")
-							.block();
-					found = true;
-				}
-
 			}
 
-			if (!found) {
-				found = super.handleCommand(requestedCommand, event, parameters, runningInChannel);
+			if (!handeled) {
+				handeled = super.handleCommand(requestedCommand, event, parameters, runningInChannel);
 			}
 
 		} else {
 			MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
-			found = true;
+			handeled = true;
 		}
 
-		return found;
+		return handeled;
 	}
 
 	private void registerStateCommands() {
@@ -438,35 +443,12 @@ public class SemiState extends MainState {
 		gameStateCommands.put("showModCommands", showModCommandsCommand);
 		gameStateCommands.put("modCommands", showModCommandsCommand);
 
-		/*
-		 * // shows the moderator the list of players (alive or all) Command
-		 * printListCommand = (event, parameters, msgChannel) -> {
-		 * 
-		 * // compares the Snowflake of the Author to the Snowflake of the Moderator if
-		 * (event.getMessage().getAuthor().get().getId().equals(userModerator.getId()))
-		 * { // checks if the syntax is correct if (parameters != null &&
-		 * parameters.size() != 0) { var param = parameters.get(0); // if the user typed
-		 * "Players" it prints a list of all players, if he typed // "Living" it prints
-		 * only the living players if (param.equalsIgnoreCase("Players")) {
-		 * Globals.printPlayersMap(userModerator.getPrivateChannel().block(),
-		 * mapPlayers, "Spieler", game); } else if (param.equalsIgnoreCase("Living")) {
-		 * Globals.printPlayersMap(userModerator.getPrivateChannel().block(),
-		 * livingPlayers, "Noch Lebend", game); } } else {
-		 * userModerator.getPrivateChannel().block()
-		 * .createMessage("Wrong syntax! try \"&showList Players\" or \"&showList Living\""
-		 * ).block();
-		 * 
-		 * } } else { MessagesMain.errorModOnlyCommand(msgChannel); }
-		 * 
-		 * }; gameStateCommands.put("printList", printListCommand);
-		 * gameStateCommands.put("list", printListCommand);
-		 */
 		// prints the living players and their role
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler",
-						game);
+				Globals.printPlayersMap(msgChannel, game.mapPlayers, "Alle Spieler",
+						game, true);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
@@ -477,8 +459,8 @@ public class SemiState extends MainState {
 		Command listLivingCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(userModerator.getPrivateChannel().block(), game.livingPlayers, "Alle Spieler",
-						game);
+				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler",
+						game, true);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}

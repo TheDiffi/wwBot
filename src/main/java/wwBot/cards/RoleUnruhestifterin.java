@@ -29,7 +29,7 @@ public class RoleUnruhestifterin extends Role {
             } else if (parameters.get(0).equalsIgnoreCase("no")) {
                 MessagesMain.confirm(msgChannel);
                 
-                state.setDone(unruhestifterin);
+                state.setDoneNight(unruhestifterin);
 
                 return true;
 
@@ -40,7 +40,7 @@ public class RoleUnruhestifterin extends Role {
                 abilityActive = true;
                 abilityUsed = true;
 
-                state.setDone(unruhestifterin);
+                state.setDoneNight(unruhestifterin);
 
                 return true;
 

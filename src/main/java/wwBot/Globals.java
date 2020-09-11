@@ -96,7 +96,7 @@ public class Globals {
 		return (message);
 	}
 
-	public static String playerListToString(List<Player> list, String title, Game game) {
+	public static String playerListToString(List<Player> list, String title, Game game, boolean revealInformation) {
 		var mssgPlayerList = "";
 
 		// if the list is empty an error message appears, else it goes through every
@@ -113,13 +113,19 @@ public class Globals {
 			for (var entry : list) {
 				mssgPlayerList += "\n";
 
-				if (entry.role.specs.friendly) {
-					mssgPlayerList += "+ ";
-				} else {
-					mssgPlayerList += "- ";
+				if (revealInformation) {
+					if (entry.role.specs.friendly) {
+						mssgPlayerList += "+ ";
+					} else {
+						mssgPlayerList += "- ";
+					}
 				}
 
-				mssgPlayerList += entry.name + " ---> " + entry.role.name;
+				mssgPlayerList += entry.name;
+
+				if (revealInformation) {
+					mssgPlayerList += " ---> " + entry.role.name;
+				}
 
 			}
 			mssgPlayerList += "\n```";
@@ -127,12 +133,12 @@ public class Globals {
 		return mssgPlayerList;
 	}
 
-	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game) {
+	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game, boolean revealInformation) {
 		var tempList = new ArrayList<Player>();
 		for (var entry : map.entrySet()) {
 			tempList.add(entry.getValue());
 		}
-		Globals.createEmbed(channel, Color.LIGHT_GRAY, "", Globals.playerListToString(tempList, title, game));
+		Globals.createEmbed(channel, Color.LIGHT_GRAY, "", Globals.playerListToString(tempList, title, game, revealInformation));
 	}
 
 	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und

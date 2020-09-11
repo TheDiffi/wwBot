@@ -32,7 +32,7 @@ public class RoleAlteVettel extends Role {
                 banishedPlayer = player;
                 Globals.createEmbed(msgChannel, Color.GREEN, "Erfolg", banishedPlayer.name + " wurde aus dem Dorf verbannt.");
 
-                state.setDone(vettel);
+                state.setDoneNight(vettel);
                 return true;
 
             } else if (banishedPlayer != null && player.name.equals(banishedPlayer.name)) {

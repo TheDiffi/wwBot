@@ -30,7 +30,7 @@ public class RoleLeibwächter extends Role {
                 protectingPlayer = player;
                 protectingPlayer.role.deathDetails.deathState = DeathState.PROTECTED;
 
-                state.setDone(leibwächter);
+                state.setDoneNight(leibwächter);
                 return true;
 
             } else if (protectingPlayer != null && player.name.equals(protectingPlayer.name)) {

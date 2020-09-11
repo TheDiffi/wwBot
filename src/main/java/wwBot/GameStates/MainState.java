@@ -28,16 +28,8 @@ public class MainState extends GameState{
         
     }
 
-
-
-    // --------------------- Commands ----------------------------
-
-
-
-
 	// -------------------- Utility --------------------------
 	
-	@Override
 	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
 		// mutes all players at night
 		for (var player : mapPlayers.entrySet()) {
@@ -223,15 +215,30 @@ public class MainState extends GameState{
 		}
 		if (amountWW < 1) {
 			// int winner: 1 = Dorfbewohner, 2 = Werwölfe
-			game.gameState.endMainGame(1);
+			endMainGame(1);
 			return true;
 		} else if (amountWW >= amountGoodPlayers) {
-			game.gameState.endMainGame(2);
+			endMainGame(2);
 			return true;
 		} else {
 			return false;
 		}
 	}
+
+	public void endMainGame(int winner) {
+        // unmutes all players
+        setMuteAllPlayers(mapPlayers, false);
+        // deletes deathChat
+        deleteDeathChat();
+        // sends gameover message
+        if (winner == 1) {
+            Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
+        } else if (winner == 2) {
+            Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
+        }
+        // changes gamestate
+        game.changeGameState(new PostGameState(game, winner));
+    }
 
 	public enum DayPhase {
 		FIRST_NIGHT, NORMAL_NIGHT, DAY, MORNING

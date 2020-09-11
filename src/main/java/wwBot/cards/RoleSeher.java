@@ -33,7 +33,7 @@ public class RoleSeher extends Role {
                 // sends the mssg
                 MessagesMain.showSeher(seher, player, game, true);
 
-                state.setDone(seher);
+                state.setDoneNight(seher);
                 return true;
 
             } else {

@@ -25,7 +25,7 @@ public class RoleAuraSeherin extends Role {
                 // sends the mssg
                 MessagesMain.showAuraSeherin(auraSeherin, player);
 
-                state.setDone(auraSeherin);
+                state.setDoneNight(auraSeherin);
                 return true;
 
             } else {
