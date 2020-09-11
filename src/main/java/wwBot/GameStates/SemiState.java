@@ -205,51 +205,6 @@ public class SemiState extends MainState {
             };
             game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
 
-			//TODO:TEST, very experimantal
-			/* // loads the Bot api
-			DiscordClient client = DiscordClientBuilder
-					.create("NzA3NjUzNTk1NjQxOTM4MDMx.Xs1bLg.RLbvLwafgTDyhLYsQZl4pi0hluc").build();
-			// (hopefully) waits for the jägers answer
-			client.getEventDispatcher().on(MessageCreateEvent.class)
-					.filter(message -> message.getMessage().getAuthor()
-							.map(user -> user.getId().equals(unluckyPlayer.user.getId())).orElse(false))
-					.subscribe(event -> {
-						try {
-							var content = event.getMessage().getContent().get();
-							var messageChannel = event.getMessage().getChannel().block();
-							List<String> parameters = new LinkedList<>(Arrays.asList(content.split(" ")));
-							if (content != null && parameters.size() > 0) {
-								// finds the players
-								Player player1 = game.findPlayerByName(parameters.get(0));
-								Player shotPlayer = null;
-								Player player2 = null;
-								if (parameters.size() > 1) {
-									player2 = game.findPlayerByName(parameters.get(1));
-								}
-
-								if (player1 != null) {
-									shotPlayer = player1;
-								} else if (player2 != null) {
-									shotPlayer = player2;
-								}
-
-								if (shotPlayer != null) {
-									Globals.createMessage(messageChannel, "Erfolg!");
-									Globals.createMessage(game.mainChannel, "Der Schuss trifft" + shotPlayer.name);
-									if (checkIfDies(shotPlayer, "Jäger")) {
-										killPlayer(shotPlayer, "Jäger");
-									}
-								} else {
-									MessagesMain.errorPlayerNotFound(messageChannel);
-								}
-
-							} else {
-								MessagesMain.errorWrongSyntax(messageChannel);
-							}
-						} catch (Exception e) {
-							event.getMessage().getChannel().block().createMessage("Something went wrong").block();
-						}
-					}); */
 		}
 
 		// AMOR

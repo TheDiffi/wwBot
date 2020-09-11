@@ -1,6 +1,5 @@
 package wwBot.GameStates;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import wwBot.Game;
-import wwBot.Globals;
 import wwBot.Player;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.Interfaces.Command;

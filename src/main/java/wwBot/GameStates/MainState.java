@@ -76,7 +76,7 @@ public class MainState extends GameState{
 		// Sends the first messages, explaining this Chat
 		MessagesMain.wwChatGreeting(wwChat);
 		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game));
+				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game, true));
 
 		
 	}
@@ -119,7 +119,7 @@ public class MainState extends GameState{
 
 		// Sends the first messages, explaining this Chat
 		MessagesMain.deathChatGreeting(deathChat, game);
-		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game);
+		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game, true);
 
 	}
 

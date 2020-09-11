@@ -66,7 +66,7 @@ public class Day extends AutoDayPhase {
             var voter = new Player();
 
             // checks if the player calling this command is allowed to vote
-            for (var player : game.livingPlayers.values()){
+            for (var player : game.livingPlayers.values()) {
                 if (player.user.getUsername().equals(voterUser.getUsername())) {
                     allowedToVote = true;
                     voter = player;
@@ -119,6 +119,9 @@ public class Day extends AutoDayPhase {
         mapCommands.put("vote", voteCommand);
 
     }
+
+    // TODO: UNRUHESTIFTERIN (einmalig: darf entscheiden ob nögstem tag 2 personen
+    // getötet werden)
 
     // ----------------- Voting System ----------------
 

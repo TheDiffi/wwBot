@@ -59,25 +59,3 @@ public class FirstNight extends AutoDayPhase {
     }
 
 }
-
-/*
- * // the Günstling gets a list with all the WW if
- * (game.gameState.mapExistingRoles.containsKey("Günstling")) {
- * 
- * initiateRole("Günstling");
- * 
- * } // Seher if (game.gameState.mapExistingRoles.containsKey("Seher")) {
- * 
- * initiateRole("Seher"); } // Amor if
- * (game.gameState.mapExistingRoles.containsKey("Amor")) {
- * 
- * initiateRole("Amor"); } // Doppelgängerin: recieves a plaver in the next mssg
- * that player in her role if
- * (game.gameState.mapExistingRoles.containsKey("Doppelgängerin")) {
- * 
- * initiateRole("Doppelgängerin");
- * 
- * }
- * 
- * endNightCheck(); }
- */

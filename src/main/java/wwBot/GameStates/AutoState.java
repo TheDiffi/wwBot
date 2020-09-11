@@ -35,6 +35,8 @@ public class AutoState extends MainState {
     // TODO: mby make a enum out of this
     public boolean wwEnraged = false;
     public boolean wwInfected = false;
+    public boolean villageAgitated = false;
+
 
     public List<Player> pending = new ArrayList<>();
 
@@ -55,9 +57,9 @@ public class AutoState extends MainState {
         if (!checkIfGameEnds()) {
 
             // transitions to Night
-
             if (nextPhase == DayPhase.NORMAL_NIGHT) {
                 setMuteAllPlayers(game.livingPlayers, true);
+                villageAgitated = false;
 
                 dayPhase = new Night(game);
                 dayPhaseEnum = DayPhase.NORMAL_NIGHT;

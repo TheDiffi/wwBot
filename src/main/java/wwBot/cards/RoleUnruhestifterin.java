@@ -9,7 +9,6 @@ import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleUnruhestifterin extends Role {
-    public boolean abilityActive = false;
     public boolean abilityUsed = false;
 
     RoleUnruhestifterin() {
@@ -37,7 +36,7 @@ public class RoleUnruhestifterin extends Role {
             } else if (parameters.get(0).equalsIgnoreCase("yes")) {
                 MessagesMain.confirm(msgChannel);
                 
-                abilityActive = true;
+                state.villageAgitated = true;
                 abilityUsed = true;
 
                 state.setDoneNight(unruhestifterin);

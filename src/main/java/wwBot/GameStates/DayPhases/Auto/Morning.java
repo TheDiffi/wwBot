@@ -77,7 +77,6 @@ public class Morning extends AutoDayPhase {
             }
         }
 
-        // TODO: Harter-Bursche
 
     }
 }

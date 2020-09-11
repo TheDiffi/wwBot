@@ -8,13 +8,12 @@ import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.AutoState;
-import wwBot.GameStates.MainState;
 import wwBot.GameStates.MainState.DayPhase;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.Command;
 
 public class Night extends AutoDayPhase {
-	
+
 	private int nightPhase = 0; // 0 = prePhase / 1 = WWPhase / 2 = postPhase
 	public Game game;
 	private AutoState state;
@@ -24,7 +23,7 @@ public class Night extends AutoDayPhase {
 		state = (AutoState) game.gameState;
 
 		// loads the Commands of the state
-        registerCommands();
+		registerCommands();
 
 		MessagesMain.onNightAuto(game);
 
@@ -50,57 +49,15 @@ public class Night extends AutoDayPhase {
 	}
 
 
+	// TODO: PARANOMALER-ERMITTLER (einmalig: erwähnt 2 spieler und erfährt ob
+	// mindestens einer der beiden ein ww ist)
 	private void preWWPhase() {
-
-		// preWWPhase:
-		// PARANOMALER-ERMITTLER (einmalig: erwähnt 2 spieler und erfährt ob mindestens
-		// einer der beiden ein ww ist)
-		// TODO: UNRUHESTIFTERIN (einmalig: darf entscheiden ob nögstem tag 2 personen
-		// getötet
-		// werden)
-
 		// executes for every single card
-		for (var player : game.mapPlayers.values()) {
+		for (var player : game.livingPlayers.values()) {
 			state.setPending(player);
 			player.role.executePreWW(player, game, state);
 
 		}
-
-		/*
-		 * // Seher if (game.gameState.mapExistingRoles.containsKey("Seher")) {
-		 * 
-		 * initiateRole("Seher"); } // Aura-Seherin if
-		 * (game.gameState.mapExistingRoles.containsKey("Aura-Seherin")) {
-		 * 
-		 * initiateRole("Aura-Seherin"); } // ZAUBERMEISTERIN if
-		 * (game.gameState.mapExistingRoles.containsKey("Zaubermeisterin")) {
-		 * 
-		 * initiateRole("Zaubermeisterin"); } // SÄUFER if
-		 * (game.gameState.mapExistingRoles.containsKey("Säufer")) {
-		 * 
-		 * initiateRole("Säufer"); } // Leibwächter if
-		 * (game.gameState.mapExistingRoles.containsKey("Leibwächter")) {
-		 * 
-		 * initiateRole("Leibwächter"); } // Alte-Vettel if
-		 * (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
-		 * 
-		 * initiateRole("Alte-Vettel"); } // PARANOMALER-ERMITTLER if
-		 * (game.gameState.mapExistingRoles.containsKey("Paranormaler-Ermittler")) {
-		 * 
-		 * initiateRole("Paranormaler-Ermittler"); } // Priester if
-		 * (game.gameState.mapExistingRoles.containsKey("Priester")) {
-		 * 
-		 * initiateRole("Priester");
-		 * 
-		 * } // Alte-Vettel if
-		 * (game.gameState.mapExistingRoles.containsKey("Alte-Vettel")) {
-		 * 
-		 * initiateRole("Alte-Vettel"); } // Unruhestifterin if
-		 * (game.gameState.mapExistingRoles.containsKey("Unruhestifterin")) {
-		 * 
-		 * initiateRole("Unruhestifterin"); }
-		 */
-
 	}
 
 	private void WWPhase() {
@@ -150,25 +107,12 @@ public class Night extends AutoDayPhase {
 		MessagesMain.postWWTurn(game.mainChannel);
 
 		// executes for every single card
-		for (var player : game.mapPlayers.values()) {
+		for (var player : game.livingPlayers.values()) {
 
 			state.setPending(player);
 			player.role.executePostWW(player, game, state);
 
 		}
-
-		/*
-		 * // Hexe if (game.gameState.mapExistingRoles.containsKey("Hexe")) { var hexe =
-		 * (RoleZauberer) game.gameState.mapExistingRoles.get("Hexe").get(0).role;
-		 * 
-		 * if (!hexe.healUsed || !hexe.poisonUsed) { initiateRole("Hexe");
-		 * 
-		 * } else { var playerHexe = game.gameState.mapExistingRoles.get("Hexe").get(0);
-		 * MessagesMain.callZaubererUsedEverything(playerHexe.user.getPrivateChannel().
-		 * block());
-		 * 
-		 * } }
-		 */
 
 	}
 

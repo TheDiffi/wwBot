@@ -316,13 +316,10 @@ public class MessagesMain {
 		}
 
 		if (mightySeher) {
-			Globals.createEmbed(channel, color, friendly, "description");
+			Globals.createEmbed(channel, color, "", found.name + " ist: " + found.role.name);
 
 		} else {
-
-			Globals.createEmbed(channel, color, "",
-					Globals.playerListToString(Arrays.asList(found), found.name + " ist: " + found.role.name, game));
-
+			Globals.createEmbed(channel, color, "", friendly);
 		}
 	}
 
@@ -374,7 +371,7 @@ public class MessagesMain {
 
 		if (!roleZauberer.healUsed) {
 			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr",
-					Globals.playerListToString(atRiskPlayers, "AT RISK", game));
+					Globals.playerListToString(atRiskPlayers, "AT RISK", game, false));
 			message += "\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
 		}
 		if (!roleZauberer.poisonUsed) {
