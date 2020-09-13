@@ -21,8 +21,6 @@ public class RoleLeibwächter extends Role {
     public void executePreWW(Player leibwächter,Game game, AutoState state) {
         MessagesMain.callLeibwächter(leibwächter);
 
-        leibwächter.user.getPrivateChannel().block().createMessage("TEST");
-
         PrivateCommand leibwächterCommand = (event, parameters, msgChannel) -> {
             var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import wwBot.Game;
+import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
 import wwBot.GameStates.MainState.DeathState;
@@ -53,6 +54,9 @@ public class Morning extends AutoDayPhase {
     private void killEndangeredPlayers() {
 
         for (Player victim : endangeredPlayers) {
+            
+            Globals.sleepWCatch(1500);
+
             if (!game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
                 game.mainChannel.createMessage("Test: No one died, right?");
             }

@@ -17,7 +17,7 @@ public class RoleUnruhestifterin extends Role {
 
     @Override
     public void executePreWW(Player unruhestifterin,Game game, AutoState state) {
-        MessagesMain.callPriester(unruhestifterin);
+        MessagesMain.callUnruhestifterin(unruhestifterin);
 
         PrivateCommand unruhestifterinCommand = (event, parameters, msgChannel) -> {
             if (parameters.size() != 1) {
@@ -25,15 +25,15 @@ public class RoleUnruhestifterin extends Role {
                 return false;
 
                 // NO
-            } else if (parameters.get(0).equalsIgnoreCase("no")) {
+            } else if (parameters.get(0).equalsIgnoreCase("no") || parameters.get(0).equalsIgnoreCase("nein")) {
                 MessagesMain.confirm(msgChannel);
                 
                 state.setDoneNight(unruhestifterin);
 
                 return true;
 
-                // YES: if the priest chooses to use his ability he gets granted access to the "bless" Command
-            } else if (parameters.get(0).equalsIgnoreCase("yes")) {
+                // YES
+            } else if (parameters.get(0).equalsIgnoreCase("yes") || parameters.get(0).equalsIgnoreCase("ja")) {
                 MessagesMain.confirm(msgChannel);
                 
                 state.villageAgitated = true;

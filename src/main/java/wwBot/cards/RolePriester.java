@@ -32,7 +32,7 @@ public class RolePriester extends Role {
                     return false;
 
                     // NO
-                } else if (parameters.get(0).equalsIgnoreCase("no")) {
+                } else if (parameters.get(0).equalsIgnoreCase("no") || parameters.get(0).equalsIgnoreCase("nein")) {
                     MessagesMain.confirm(msgChannel);
 
                     state.setDoneNight(priester);
@@ -41,8 +41,8 @@ public class RolePriester extends Role {
 
                     // YES: if the priest chooses to use his ability he gets granted access to the
                     // "bless" Command
-                } else if (parameters.get(0).equalsIgnoreCase("yes")) {
-                    MessagesMain.confirm(msgChannel);
+                } else if (parameters.get(0).equalsIgnoreCase("yes") || parameters.get(0).equalsIgnoreCase("ja")) {
+                    MessagesMain.confirmPriester(priester);
 
                     // this Command saves the priests player of choice as the protected player
                     PrivateCommand blessCommand = (event2, parameters2, msgChannel2) -> {

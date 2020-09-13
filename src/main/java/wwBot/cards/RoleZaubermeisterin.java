@@ -1,5 +1,4 @@
 
-
 package wwBot.cards;
 
 import wwBot.Game;
@@ -10,6 +9,7 @@ import wwBot.GameStates.AutoState;
 import wwBot.Interfaces.PrivateCommand;
 
 public class RoleZaubermeisterin extends Role {
+    private int seherinnenFound;
 
     RoleZaubermeisterin() {
         super("Zaubermeisterin");
@@ -17,23 +17,32 @@ public class RoleZaubermeisterin extends Role {
 
     @Override
     public void executePreWW(Player zaubermeisterin, Game game, AutoState state) {
-        MessagesMain.callZaubermeisterin(zaubermeisterin);
+        var amountSeherinnen = game.gameState.mapExistingRoles.get("Seherin").size();
 
-        PrivateCommand zaubermeisterinCommand = (event, parameters, msgChannel) -> {
-            var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+        if (!(seherinnenFound == amountSeherinnen)) {
+            MessagesMain.callZaubermeisterin(zaubermeisterin);
 
-            if (player != null) {
-                // sends the mssg
-                MessagesMain.showZaubermeisterin(zaubermeisterin, player);
+            PrivateCommand zaubermeisterinCommand = (event, parameters, msgChannel) -> {
+                var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
-                state.setDoneNight(zaubermeisterin);
-                return true;
+                if (player != null) {
 
-            } else {
-                return false;
-            }
+                    if (player.role.name.equals("Seherin")) {
+                        seherinnenFound++;
+                    }
 
-        };
-        game.addPrivateCommand(zaubermeisterin.user.getId(), zaubermeisterinCommand);
+                    // sends the mssg
+                    MessagesMain.showZaubermeisterin(zaubermeisterin, player);
+
+                    state.setDoneNight(zaubermeisterin);
+                    return true;
+
+                } else {
+                    return false;
+                }
+
+            };
+            game.addPrivateCommand(zaubermeisterin.user.getId(), zaubermeisterinCommand);
+        }
     }
 }

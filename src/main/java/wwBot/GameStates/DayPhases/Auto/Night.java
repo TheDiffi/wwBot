@@ -49,8 +49,7 @@ public class Night extends AutoDayPhase {
 	}
 
 
-	// TODO: PARANOMALER-ERMITTLER (einmalig: erwähnt 2 spieler und erfährt ob
-	// mindestens einer der beiden ein ww ist)
+	// PARANOMALER-ERMITTLER (einmalig: erwähnt drei Süieler und erfährt von zufälligen 2 ob sie friendly sind)
 	private void preWWPhase() {
 		// executes for every single card
 		for (var player : game.livingPlayers.values()) {

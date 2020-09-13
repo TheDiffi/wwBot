@@ -32,7 +32,6 @@ public class AutoState extends MainState {
     public DayPhase dayPhaseEnum = DayPhase.FIRST_NIGHT;
     public AutoDayPhase dayPhase = null;
 
-    // TODO: mby make a enum out of this
     public boolean wwEnraged = false;
     public boolean wwInfected = false;
     public boolean villageAgitated = false;

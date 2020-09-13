@@ -152,7 +152,7 @@
             "unique": "true",
             "priority": "20",
             "minPlayers": "0",
-            "description": " Einmal pro Spiel darf der Paranormale Ermittler in der Nacht auf zwei Spieler zeigen und bekommt die Information, ob wenigstens einer der beiden ausgewählten Spieler ein Werwolf ist.  "
+            "description": " Einmal pro Spiel darf der Paranormale Ermittler in der Nacht nach drei Spielern fragen und erfährt von zufälligen Zweien für welche Partei sie spielen."
         }
     },
     {

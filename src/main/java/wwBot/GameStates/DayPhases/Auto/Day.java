@@ -16,9 +16,15 @@ public class Day extends AutoDayPhase {
     public Map<Player, Player> mapVotes = new HashMap<>();
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
     public Game game;
+    private AutoState state;
 
     public Day(Game getGame) {
         game = getGame;
+        state = (AutoState) game.gameState;
+
+        if (state.villageAgitated) {
+            MessagesMain.announceUnruhe(game);
+        }
 
         // loads all Commands into the mapCommands
         registerDayCommands();
@@ -120,9 +126,6 @@ public class Day extends AutoDayPhase {
 
     }
 
-    // TODO: UNRUHESTIFTERIN (einmalig: darf entscheiden ob nögstem tag 2 personen
-    // getötet werden)
-
     // ----------------- Voting System ----------------
 
     private void addVote(Player voter, Player canidate) {
@@ -198,12 +201,7 @@ public class Day extends AutoDayPhase {
         MessagesMain.announceMajority(game, mostVoted, mapVotes);
 
         // waits for a bit for suspense
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            game.mainChannel.createMessage("error in: Day -> Thread.sleep();");
-            e.printStackTrace();
-        }
+        Globals.sleepWCatch(2000);
 
         // MÄRTYRERIN
         if (game.gameState.mapExistingRoles.containsKey("Märtyrerin")) {
@@ -225,14 +223,30 @@ public class Day extends AutoDayPhase {
         game.gameState.killPlayer(victim, cause);
 
         // waits for a bit b4 changing to night
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            game.mainChannel.createMessage("error in: Day -> Thread.sleep(1000);");
-            e.printStackTrace();
+        Globals.sleepWCatch(5000);
+
+        endDay();
+    }
+
+    private void endDay() {
+
+        // Unruhestifterin
+        if (state.villageAgitated) {
+            // reset
+            resetVotes();
+            state.villageAgitated = false;
+
+        } else {
+            game.gameState.changeDayPhase(DayPhase.NORMAL_NIGHT);
         }
 
-        game.gameState.changeDayPhase(DayPhase.NORMAL_NIGHT);
+    }
+
+    private void resetVotes() {
+        mapVotes.clear();
+        mapAmountVotes.clear();
+
+        MessagesMain.secondVote(game);
     }
 
     // returns an empty player type

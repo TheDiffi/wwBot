@@ -215,6 +215,16 @@ public class Globals {
 
 	}
 
+	public static void sleepWCatch(int ms){
+		// waits for a bit for suspense
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+           System.out.println("error in: Thread.sleep();");
+            e.printStackTrace();
+        }
+	}
+
 	// finds a card in the map of all Cards
 	public static boolean ifCardExists(String name) {
 		var mapCards = Globals.mapRegisteredCardsSpecs;

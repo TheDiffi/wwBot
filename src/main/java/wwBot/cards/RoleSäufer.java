@@ -19,7 +19,6 @@ public class RoleSäufer extends Role {
     @Override
     public void executePreWW(Player säufer,Game game, AutoState state) {
         MessagesMain.callSäufer(säufer);
-        säufer.user.getPrivateChannel().block().createMessage("TEST");
 
         PrivateCommand säuferCommand = (event, parameters, msgChannel) -> {
             var player = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
