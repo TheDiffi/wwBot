@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import discord4j.core.object.entity.Channel;
 import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
@@ -30,6 +31,9 @@ public class Day extends AutoDayPhase {
         registerDayCommands();
 
     }
+
+    // TODO: if majority votes for nobody, nobody dies
+
 
     // --------------------- Commands ------------------------
 
@@ -69,7 +73,7 @@ public class Day extends AutoDayPhase {
 
             var voterUser = event.getMessage().getAuthor().get();
             var allowedToVote = false;
-            var voter = new Player();
+            Player voter = null;
 
             // checks if the player calling this command is allowed to vote
             for (var player : game.livingPlayers.values()) {
@@ -95,6 +99,7 @@ public class Day extends AutoDayPhase {
                     // removes the dash
                     var recievedName = Globals.removeDash(parameters.get(0));
 
+
                     // if the user votes for no one none
                     if (isEmptyPlayer(recievedName)) {
                         votedFor = registerEmptyPlayer();
@@ -108,7 +113,7 @@ public class Day extends AutoDayPhase {
                 // if a player has been found, it checks if this player is alive
                 if (votedFor == null) {
                     MessagesMain.errorPlayerNotFound(msgChannel);
-                } else if (!votedFor.role.deathDetails.alive) {
+                } else if (votedFor.role != null && !votedFor.role.deathDetails.alive) {
                     MessagesMain.errorPlayerAlreadyDead(msgChannel);
 
                     // if the player is alive, calls addVote
@@ -120,6 +125,11 @@ public class Day extends AutoDayPhase {
                 // counts the votes: checks if all players have voted and if there is a mojority
                 countVotes();
             }
+
+            if(msgChannel.getType() != Channel.Type.DM){
+                event.getMessage().delete().block();
+            } 
+            
 
         };
         mapCommands.put("vote", voteCommand);

@@ -43,9 +43,14 @@ public class AutoState extends MainState {
         super(game);
         registerStateCommands();
 
-        MessagesMain.onGameStartAuto(game);
-        changeDayPhase(DayPhase.FIRST_NIGHT);
     }
+
+    public void start() {
+        MessagesMain.onGameStartAuto(game);
+        createDeathChat();
+        changeDayPhase(DayPhase.FIRST_NIGHT);
+	}
+
 
     // --------------------- Day/Night - Cycle ----------------------------
 
@@ -182,7 +187,7 @@ public class AutoState extends MainState {
         // replys with pong!
         Command lsPendingCommand = (event, parameters, msgChannel) -> {
             Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "",
-                    Globals.playerListToString(pending, "Warte auf Spieler", game, false));
+                    Globals.playerListToRoleList(pending, "Warte auf Rolle", game));
         };
         gameStateCommands.put("pending", lsPendingCommand);
         gameStateCommands.put("lsPending", lsPendingCommand);
@@ -355,18 +360,25 @@ public class AutoState extends MainState {
         switch (cause) {
             case "Werwolf":
                 MessagesMain.deathByWW(game, player);
+                break;
             case "Hexe":
                 MessagesMain.deathByMagic(game, player);
+                break;
             case "Magier":
                 MessagesMain.deathByMagic(game, player);
+                break;
             case "Amor":
                 MessagesMain.deathByLove(game, player);
+                break;
             case "Jäger":
                 MessagesMain.deathByGunshot(game, player);
+                break;
             case "Dorfbewohner":
                 MessagesMain.deathByLynchen(game, player);
+                break;
             case "Märtyrerin":
                 MessagesMain.deathBySacrifice(game, player);
+                break;
 
             default:
                 MessagesMain.deathByDefault(game, player);
@@ -388,7 +400,7 @@ public class AutoState extends MainState {
     }
 
     public void endNightPhaseCheck() {
-        if (pending.isEmpty()) {
+        if (pending == null || pending.isEmpty()) {
             dayPhase.changeNightPhase();
         }
     }

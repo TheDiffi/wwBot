@@ -12,7 +12,7 @@ public class RoleGünstling extends Role {
     }
 
     @Override
-    public void executePreWW(Player player, Game game, AutoState state) {
+    public void executeFirstNight(Player player, Game game, AutoState state) {
         MessagesMain.günstlingMessage(player.user.getPrivateChannel().block(), game.gameState.mapExistingRoles, game);
 
         state.setDoneNight(player);

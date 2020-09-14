@@ -20,7 +20,7 @@ public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
     public List<Role> deck = new ArrayList<>();
     public Map<String, Card> mapRegisteredCardsSpecs = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
-    public boolean gameRuleAutomatic = false;
+    public boolean gameRuleAutomatic = true;
     public User userModerator;
 
     public LobbyState(Game game) {
@@ -30,6 +30,8 @@ public class LobbyState extends GameState {
         MessagesMain.newGameStartMessage(game.mainChannel);
 
     }
+
+    //TODO: idea: when it show the deck delete the previous message that showed the deck
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands() {
@@ -174,9 +176,9 @@ public class LobbyState extends GameState {
             // und informiert den User über die Differenz
             var figureDifference = deck.size() - listJoinedUsers.size();
             if (figureDifference < 0) {
-                msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + " Karten zu wenig").block();
             } else if (figureDifference > 0) {
-                msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                msgChannel.createMessage("Es gibt " + figureDifference + " Karten zu viel").block();
             }
 
         };
@@ -240,9 +242,9 @@ public class LobbyState extends GameState {
                     // und informiert den User über die Differenz
                     var figureDifference = deck.size() - listJoinedUsers.size();
                     if (figureDifference < 0) {
-                        msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + "Karten zu wenig").block();
+                        msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + " Karten zu wenig").block();
                     } else if (figureDifference > 0) {
-                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                        msgChannel.createMessage("Es gibt " + figureDifference + " Karten zu viel").block();
                     }
 
                 } else {
@@ -253,6 +255,7 @@ public class LobbyState extends GameState {
             }
         };
         gameStateCommands.put("removeCard", removeCardCommand);
+        gameStateCommands.put("remove", removeCardCommand);
         gameStateCommands.put("rC", removeCardCommand);
 
         // empties the Deck

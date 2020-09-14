@@ -75,7 +75,7 @@ public class FirstNightSemi  {
                             if (player1 != player2) {
                                 player1.role.inLoveWith = player2;
                                 player2.role.inLoveWith = player1;
-                                MessagesMain.amorSuccess(game, game.userModerator.getPrivateChannel().block(), player1,
+                                MessagesMain.amorSuccess(game, player1,
                                         player2);
 
                             } else {

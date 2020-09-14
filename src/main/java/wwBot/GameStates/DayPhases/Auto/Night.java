@@ -25,8 +25,6 @@ public class Night extends AutoDayPhase {
 		// loads the Commands of the state
 		registerCommands();
 
-		MessagesMain.onNightAuto(game);
-
 		preWWPhase();
 	}
 
@@ -64,7 +62,7 @@ public class Night extends AutoDayPhase {
 
 		Command slayCommand = (event, parameters, msgChannel) -> {
 			var author = game.findPlayerByName(event.getMessage().getAuthor().get().getUsername());
-			if (author.role.specs.name.equalsIgnoreCase("Werwolf") && msgChannel == state.wwChat) {
+			if (author.role.name.equalsIgnoreCase("Werwolf") && msgChannel.equals(state.wwChat)) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
 				if (victim != null) {
@@ -98,7 +96,7 @@ public class Night extends AutoDayPhase {
 			}
 
 		};
-		game.gameCommands.put("slay", slayCommand);
+		mapCommands.put("slay", slayCommand);
 
 	}
 
@@ -112,6 +110,8 @@ public class Night extends AutoDayPhase {
 			player.role.executePostWW(player, game, state);
 
 		}
+
+		state.endNightPhaseCheck();
 
 	}
 

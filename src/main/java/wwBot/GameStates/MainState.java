@@ -76,7 +76,7 @@ public class MainState extends GameState{
 		// Sends the first messages, explaining this Chat
 		MessagesMain.wwChatGreeting(wwChat);
 		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-				Globals.playerListToString(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game, true));
+				Globals.playerListToList(mapExistingRoles.get("Werwolf"), "Werwölfe Sind", game, true));
 
 		
 	}
@@ -166,6 +166,8 @@ public class MainState extends GameState{
 				livingPlayers.put(player.getKey(), player.getValue());
 			}
 		}
+
+		
 		game.livingPlayers = livingPlayers;
 
 		// läd jede noch Player der noch lebt als nach der Rolle geordnet in eine Map

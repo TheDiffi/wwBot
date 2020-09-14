@@ -40,6 +40,7 @@ public class RoleAmor extends Role {
                     player2.role.inLoveWith = player1;
 
                     // sends a mssg
+                    MessagesMain.confirm(amor.user.getPrivateChannel().block());
                     MessagesMain.amorSuccess(game, player1, player2);
 
                     state.setDoneNight(amor);

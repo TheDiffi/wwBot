@@ -72,6 +72,9 @@ public class GameState {
         return true;
     }
 
+	public void start() {
+	}
+
     
 
 }

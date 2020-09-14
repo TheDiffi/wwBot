@@ -59,7 +59,8 @@ public class MessagesMain {
 		// TODO: FILL
 
 		// verkündet den Start der ersten Nacht
-		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald", "TODO: FILL");
+		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald",
+				"TODO: FILL");
 
 	}
 
@@ -77,14 +78,14 @@ public class MessagesMain {
 	// FIRST NIGHT
 	public static void onFirstNightAuto(Game game) {
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
-				"In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren");
+				"In dieser Phase erwachen all jene Spezialkarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. Alle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren");
 
 	}
 
 	public static void onFirstNightSemi(Game game, ArrayList<Player> listRolesToBeCalled) {
 		// Nachricht an alle
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "🌙Die Erste Nacht🌙",
-				"```In dieser Phase erwachen all jene SpezialKarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies im Privatchat mit mir, falls es geheim bleiben soll 😉). ");
+				"```In dieser Phase erwachen all jene Spezialkarten, welche in der ersten Nacht eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist, wird der Moderator den Namen deiner Rolle aufrufen. Um die Identität dieser Personen zu wahren, sollten nun alle Spieler ihre Augen schließen oder ihre Webcam deaktivieren.```\nTipp: ihr könnt mich jederzeit mit \"&showCard\" fragen euch eure Rolle zu Zeigen (tut dies im Privatchat mit mir, falls es geheim bleiben soll 😉). ");
 		// der Moderator bekommt eine Liste mit allen Spielern und ihren Rollen, sowie
 		// eine Liste mit allen Rollen, welche aufgerufen werden müssen
 
@@ -122,13 +123,13 @@ public class MessagesMain {
 	}
 
 	public static void onNightAuto(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT...🌘","");
+		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT... 🌘", "");
 
 	}
 
 	public static void onWWTurn(MessageChannel mainChannel, TextChannel wwChat) {
 		Globals.createMessage(mainChannel,
-				"Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen **die Werwölfe** aus ihrem Versteck... 🌕");
+				"```Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen **die Werwölfe** aus ihrem Versteck... 🌕```");
 
 		Globals.createEmbed(wwChat, Color.black, "DIE WERWÖLFE SCHLAGEN ZU 💀",
 				"Ihr könnt nun **&slay <Spieler>** benutzen um **EINEN** Spieler zu töten.");
@@ -136,7 +137,7 @@ public class MessagesMain {
 
 	public static void postWWTurn(MessageChannel mainChannel) {
 		Globals.createMessage(mainChannel,
-				"Die Zeit verstreicht und der Gestank von Blut zieht durch die Gassen... 🌒");
+				"```Die Zeit verstreicht und der Gestank von Blut zieht durch die Gassen... 🌒```");
 	}
 
 	// MORNING
@@ -182,36 +183,26 @@ public class MessagesMain {
 							+ "&inLove\" <Player1> <Player2>",
 					false);
 		} else {
+			// TODO: make more beautiful
 			Globals.createMessage(amor.user.getPrivateChannel().block(),
 					"Teile mir nun mit, welche zwei Spieler du sich ineinander verlieben lassen möchtest💕\n Tue dies indem innerhalb einer Nachricht beide Namen nur durch ein Leerzeichen getrennt schreibst; etwa so:\nRomeo Julia");
 		}
 	}
 
-	public static void amorSuccess(Game game, MessageChannel modChannel, Player firstLover, Player secondLover) {
-
-		Globals.createEmbed(modChannel, Color.PINK, "ERFOLG!",
-				"" + firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
-
-		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
-
-		firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
-				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
-		secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
-				+ "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
-	}
-
 	public static void amorSuccess(Game game, Player firstLover, Player secondLover) {
+		if (game.gameRuleAutomatic) {
+			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.PINK, "ERFOLG!", ""
+					+ firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
+		}
 
-		game.mainChannel.createMessage("Des Amors Liebespfeile haben ihr Ziel gefunden").block();
+		Globals.createEmbed(game.mainChannel, Color.PINK, "Des Amors Liebespfeile haben ihr Ziel gefunden 💘!", "");
 
-		firstLover.user.getPrivateChannel().block().createMessage("Du fällst mit **" + secondLover.name
-				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
-		secondLover.user.getPrivateChannel().block().createMessage("Du triffst dich mit **" + firstLover.name
-				+ "** und verliebst dich Unsterblich in sie/ihn \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt")
-				.block();
+		Globals.createEmbed(game.mainChannel, Color.PINK, "💘", "Du fällst mit **" + secondLover.name
+				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
+
+		Globals.createEmbed(game.mainChannel, Color.PINK, "💘", "Du triffst dich mit **" + firstLover.name
+				+ "** und verliebst dich Unsterblich in sie/ihn \nEure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
+
 	}
 
 	// DOPPELGÄNGERIN
@@ -259,18 +250,17 @@ public class MessagesMain {
 	// GÜNSTLING
 	public static void günstlingMessage(PrivateChannel privateChannel, Map<String, List<Player>> mapExistingRoles,
 			Game game) {
-		var mssg = "";
-		mssg += "Die Werwölfe sind: ";
+		var tempList = new ArrayList<Player>();
+
 		for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
-			mssg += mapExistingRoles.get("Werwolf").get(i).user.asMember(game.server.getId()).block().getDisplayName()
-					+ " ";
+			tempList.add(mapExistingRoles.get("Werwolf").get(i));
 		}
 		if (mapExistingRoles.containsKey("Wolfsjunges")) {
-			mssg += mapExistingRoles.get("Wolfsjunges").get(0).user.asMember(game.server.getId()).block()
-					.getDisplayName() + " ";
+			tempList.add(mapExistingRoles.get("Wolfsjunges").get(0));
 		}
 
-		Globals.createEmbed(privateChannel, Color.GREEN, "Günstling", mssg);
+		Globals.createEmbed(privateChannel, Color.RED, "",
+				Globals.playerListToList(tempList, "Die Werwölfe sind:", game, false));
 
 	}
 
@@ -308,8 +298,10 @@ public class MessagesMain {
 				"Du bist kurz davor den Harten Burschen zu töten. Dieser überlebt bis zum Abend, wenn er Nachts getötet wird. Wenn du dir sicher bist, dass jetzt der richtige moment ist den Harten Burschen zu töten, tippe \"confirm\". Andernfalls tippe \"cancel\"");
 		Globals.printCard("Harter-Bursche", modChannel);
 	}
+
 	public static void harterBurscheSurvives(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.decode("#5b3a29"), "", "Als die Dorfbewohner morgens das Haus verlassen finden sie zu ihrem Entsetzen auf dem Dorfplatz den **Harten Burschen** schwer verwundet am Boden liegen. Dank seiner kräftigen Statur ist der Bursche noch nicht an seinen Wunden erlegen doch es ist klar, dass ihm nichht mehr viel Zeit bleibt... ");
+		Globals.createEmbed(game.mainChannel, Color.decode("#5b3a29"), "",
+				"Als die Dorfbewohner morgens das Haus verlassen finden sie zu ihrem Entsetzen auf dem Dorfplatz den **Harten Burschen** schwer verwundet am Boden liegen. Dank seiner kräftigen Statur ist der Bursche noch nicht an seinen Wunden erlegen doch es ist klar, dass ihm nichht mehr viel Zeit bleibt... ");
 	}
 
 	// ALTE VETTEL
@@ -320,8 +312,10 @@ public class MessagesMain {
 
 	// SEHER
 	public static void callSeher(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nenne mir den Namen eines Spielers über den du mehr herausfinden möchtest.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nenne mir den Namen eines Spielers über den du mehr herausfinden möchtest.");
 	}
+
 	// a mightySeher is able to see the exact role of the player, a normal one only
 	// if the player is friendly or not
 	public static void showSeher(Player seher, Player found, Game game, boolean mightySeher) {
@@ -348,8 +342,10 @@ public class MessagesMain {
 
 	// Aura-Seherin
 	public static void callAuraSeherin(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nenne mir den Namen eines Spielers über den du mehr herausfinden möchtest.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nenne mir den Namen eines Spielers über den du mehr herausfinden möchtest.");
 	}
+
 	public static void showAuraSeherin(Player seher, Player found) {
 		var color = found.role.specs.unique ? Color.GREEN : Color.WHITE;
 		var revelation = found.role.specs.unique ? " ist eine" : " ist keine";
@@ -361,68 +357,88 @@ public class MessagesMain {
 
 	// LEIBWÄCHTER
 	public static void callLeibwächter(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nenne mir den Namen des Spielers den du diese Nacht beschützen möchtest.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nenne mir den Namen des Spielers den du diese Nacht beschützen möchtest.");
 	}
 
 	// SÄUFER
 	public static void callSäufer(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nenne mir den Namen des Spielers bei dem du die AfterParty starten lässt.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nenne mir den Namen des Spielers bei dem du die AfterParty starten lässt.");
 	}
 
 	// UNRUHESTIFTERIN
 	public static void callUnruhestifterin(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
 	}
+
 	public static void announceUnruhe(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.GRAY, "Zweite Abstimmung", "Ein Gerücht hier, eine Anschuldigung da; die Unruhestifterin weiß wie sie Angst sähen muss damit sie fruchtet.\nAufgebracht beschließen die Bewohner, dass heute **zwei** Personen ihr Leben lassen müssen.");
+		Globals.createEmbed(game.mainChannel, Color.GRAY, "Zweite Abstimmung",
+				"Ein Gerücht hier, eine Anschuldigung da; die Unruhestifterin weiß wie sie Angst sähen muss damit sie fruchtet.\nAufgebracht beschließen die Bewohner, dass heute **zwei** Personen ihr Leben lassen müssen.");
 
 	}
+
 	public static void secondVote(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.GRAY, "Zweite Abstimmung", "Die Dorfbewohner beschließen voller Rage, dass noch eine Person heute sterben muss!");
+		Globals.createEmbed(game.mainChannel, Color.GRAY, "Zweite Abstimmung",
+				"Die Dorfbewohner beschließen voller Rage, dass noch eine Person heute sterben muss!");
 	}
-
 
 	// PRIESTER
 	public static void callPriester(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
-	}
-	public static void confirmPriester(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Dann wollen wir mal! Nenne mir nun den Namen des Spielers den du durch die Macht Gottes beschützt haben möchtest.");
-	}
-	public static void savedByPriester(Player victim, Game game) {
-		Globals.createEmbed(game.mainChannel, Color.decode("#FFD700"), "", "Engelsgesang erfüllt die Luft, so wunderschön als wäre es nicht für sterbliche Ohren bestimmt. So plötzlich wie der Gesang kam verschwindet er schließlich wieder und der Priester kniet betend zu Boden und dankt der bevorzugten Gottheit der Spieler, das Leben seines Schützlings gerettet zu haben.\n(TLDR: der Schutz des Priesters wurde ausgelöst.) ");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
 	}
 
+	public static void confirmPriester(Player player) {
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Dann wollen wir mal! Nenne mir nun den Namen des Spielers den du durch die Macht Gottes beschützt haben möchtest.");
+	}
+
+	public static void savedByPriester(Player victim, Game game) {
+		Globals.createEmbed(game.mainChannel, Color.decode("#FFD700"), "",
+				"Engelsgesang erfüllt die Luft, so wunderschön als wäre es nicht für sterbliche Ohren bestimmt. So plötzlich wie der Gesang kam verschwindet er schließlich wieder und der Priester kniet betend zu Boden und dankt der bevorzugten Gottheit der Spieler, das Leben seines Schützlings gerettet zu haben.\n(TLDR: der Schutz des Priesters wurde ausgelöst.) ");
+	}
 
 	// ZAUBERMEISTERIN
 	public static void callZaubermeisterin(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nenne mir den Namen des Spielers über den du mehr herausfinden möchtest.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nenne mir den Namen des Spielers über den du mehr herausfinden möchtest.");
 	}
+
 	public static void showZaubermeisterin(Player zaubermeisterin, Player found) {
-		if(found.role.name.equals("Seherin")){
-			Globals.createEmbed(zaubermeisterin.user.getPrivateChannel().block(), Color.GREEN, found.name + " ist die Seherin!", "");
+		if (found.role.name.equals("Seherin")) {
+			Globals.createEmbed(zaubermeisterin.user.getPrivateChannel().block(), Color.GREEN,
+					found.name + " ist die Seherin!", "");
 		} else {
-			Globals.createMessage(zaubermeisterin.user.getPrivateChannel().block(),"**" + found.name + "** ist **nicht** die Seherin.");
+			Globals.createMessage(zaubermeisterin.user.getPrivateChannel().block(),
+					"**" + found.name + "** ist **nicht** die Seherin.");
 		}
 	}
 
 	// PARANOMALER ERMITTLER
 	public static void callErmittler(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
 
 	}
+
 	public static void confirmErmittler(Player player) {
-		Globals.createMessage(player.user.getPrivateChannel().block(), "Nun gut. Dann schreibe mir jetzt die Namen der drei Personen, die du mit deinen außergewöhnlichen (man könnte auch sagen: paranormalen) Detektivfähigkeiten genauer unter die Lupe nehmen möchtest.\nTipp: deine Nachricht sollte so aussehen **<Player1> <Player2> <Player3>**");
+		Globals.createMessage(player.user.getPrivateChannel().block(),
+				"Nun gut. Dann schreibe mir jetzt die Namen der drei Personen, die du mit deinen außergewöhnlichen (man könnte auch sagen: paranormalen) Detektivfähigkeiten genauer unter die Lupe nehmen möchtest.\nTipp: deine Nachricht sollte so aussehen **<Player1> <Player2> <Player3>**");
 	}
+
 	public static void ermittlerSuccess(Game game, List<Player> tempList, Player ermittler) {
-		var color = !tempList.get(1).role.specs.friendly || !tempList.get(0).role.specs.friendly ? Color.RED : Color.GREEN;
+		var color = !tempList.get(1).role.specs.friendly || !tempList.get(0).role.specs.friendly ? Color.RED
+				: Color.GREEN;
 
 		var mssg1 = tempList.get(0).role.specs.friendly ? tempList.get(0).name + " ist auf der Seite der DORFBEWOHNER"
 				: tempList.get(0).name + " ist auf der Seite der WERWÖLFE";
 		var mssg2 = tempList.get(1).role.specs.friendly ? tempList.get(1).name + " ist auf der Seite der DORFBEWOHNER"
-		: tempList.get(1).name + " ist auf der Seite der WERWÖLFE";
+				: tempList.get(1).name + " ist auf der Seite der WERWÖLFE";
 
-		Globals.createEmbed(ermittler.user.getPrivateChannel().block(), color, "Erfolg", "Als Folge deiner Ermittlung erfährst du folgendes:\n" + mssg1 + "\n" + mssg2);
+		Globals.createEmbed(ermittler.user.getPrivateChannel().block(), color, "Erfolg",
+				"Als Folge deiner Ermittlung erfährst du folgendes:\n" + mssg1 + "\n" + mssg2);
 	}
 
 	// Zauberer (Hexe / Magier)
@@ -432,7 +448,7 @@ public class MessagesMain {
 
 		if (!roleZauberer.healUsed) {
 			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr",
-					Globals.playerListToString(atRiskPlayers, "AT RISK", game, false));
+					Globals.playerListToList(atRiskPlayers, "AT RISK", game, false));
 			message += "\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
 		}
 		if (!roleZauberer.poisonUsed) {
@@ -444,11 +460,11 @@ public class MessagesMain {
 		Globals.createMessage(playerZauberer.user.getPrivateChannel().block(), message);
 
 	}
+
 	public static void callZaubererUsedEverything(PrivateChannel privateChannel) {
 		privateChannel.createMessage("Looks like you already used all your Potions");
 	}
 
-	
 	// ---------DEATH MESSAGES--------------------------------------------
 
 	public static String revealId(Player player, Game game) {
@@ -640,7 +656,7 @@ public class MessagesMain {
 	public static void sendHelpNight(MessageChannel channel, boolean auto) {
 		if (auto) {
 			Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
-					"In dieser Phase erwachen all jene SpezialKarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. \nAlle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren.\n Für die Werwölfe öffnet sich, wie in jeder Nacht, ein Chatroom im Server, wo sie ungestört diskutieren können. Sobald alle aufgerufenen Spieler gehandelt haben, beginnt der nächste Tag!\nTipp: benutze **&pending** un zu erfahren welche Spieler noch handeln müssen.");
+					"In dieser Phase erwachen all jene Spezialkarten, welche Nachts eine Funktion erfüllen. Falls deine Karte eine dieser Spezialkarten ist wirst du von mir eine PrivatNachricht mit weiteren Infos erhalten. \nAlle Spieler welche über Videochat verbunden sind sollten nachts ihre Webcam ausschalten um ihre Identität zu bewahren.\n Für die Werwölfe öffnet sich, wie in jeder Nacht, ein Chatroom im Server, wo sie ungestört diskutieren können. Sobald alle aufgerufenen Spieler gehandelt haben, beginnt der nächste Tag!\nTipp: benutze **&pending** un zu erfahren welche Spieler noch handeln müssen.");
 		} else {
 			Globals.createEmbed(channel, Color.BLACK, "____ Nacht ____  ",
 					"In dieser Phase werden Spezialkarten vom Moderator in bestimmter Reihenfolge aufgerufen. Für die Werwölfe öffnet sich wie in jeder Nacht ein Chatroom im Server, wo sie ungestört diskutieren können.");
@@ -734,7 +750,6 @@ public class MessagesMain {
 
 		return mssg;
 	}
-	
 
 	// -------------------------------------------------------------
 
@@ -811,8 +826,6 @@ public class MessagesMain {
 		return mssg;
 	}
 
-
-	
 	public static void sendGameExplanation(MessageChannel channel) {
 		Globals.createEmbed(channel, Color.BLUE, "Was ist \"WERWÖLFE\"",
 				"Werwölfe ist ein interaktives Deduktionsspiel für zwei Teams: die Dorfbewohner und die Werwölfe. Während die Dorfbewohner nicht wissen, wer die Werwölfe sind, versuchen diese, unentdeckt zu bleiben und einen Dorfbewohner nach dem anderen auszuschalten. Ein Moderator „leitet“ das Spiel (es kann einer der Spieler sein), und erleichtert so den Ablauf von Werwölfe. (Alternativ kann ich diese Rolle übernehmen). Eine Partie Werwölfe verläuft über eine Reihe von „Tagen“ und „Nächten“. Jede Nacht wählen die Werwölfe ein Opfer, während die einsame Seherin Informationen über einen anderen Spieler sammelt und so lernt, ob dieser ein Werwolf ist. Während des Tages versuchen die Spieler gemeinsam herauszufinden, wer von ihnen ein Werwolf ist, um ihn dann nach einer Abstimmung zu lynchen. Das Spiel gewinnt immer eine Gruppe – entweder die Dorf­ bewohner, wenn sie alle Werwölfe gelyncht haben, oder die Werwölfe, wenn sie einen Gleichstand mit den Dorfbewohnern erreicht haben. Bei einer Partie Werwölfe müssen Sie versuchen, die anderen Mitspieler in die Irre zu führen, um das Spiel gewinnen zu können.");
@@ -854,11 +867,14 @@ public class MessagesMain {
 	}
 
 	public static void errorWWCommandOnly(MessageChannel msgChannel) {
-		msgChannel.createMessage("```diff\n-E: Only the moderator can use this command\n```").block();
+		msgChannel.createMessage("```diff\n-E: Only the WW can use this command\n```").block();
 	}
 
 	public static void errorPlayerAlreadyDead(MessageChannel msgChannel) {
-		msgChannel.createMessage("```diff\n-E: The Person you Voted for is already dead (Seriously, give him a break)\n```").block();
+		msgChannel
+				.createMessage(
+						"```diff\n-E: The Person you Voted for is already dead (Seriously, give him a break)\n```")
+				.block();
 	}
 
 	public static void errorWrongSyntax(MessageChannel msgChannel) {
@@ -882,7 +898,8 @@ public class MessagesMain {
 	}
 
 	public static void errorChoseIdenticalPlayer(MessageChannel msgChannel) {
-		msgChannel.createMessage("```diff\n-E: You cannot chose the same player as last round. Try again.\n```").block();
+		msgChannel.createMessage("```diff\n-E: You cannot chose the same player as last round. Try again.\n```")
+				.block();
 	}
 
 	public static void errorCommandNotFound(MessageChannel msgChannel) {
@@ -890,7 +907,6 @@ public class MessagesMain {
 	}
 
 	// ---------Need To Sort--------------------------------------------
-
 
 	public static void confirm(MessageChannel msgChannel) {
 
@@ -901,14 +917,5 @@ public class MessagesMain {
 
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
 	}
-
-
-
-
-
-
-
-
-
 
 }

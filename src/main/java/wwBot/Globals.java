@@ -96,7 +96,49 @@ public class Globals {
 		return (message);
 	}
 
-	public static String playerListToString(List<Player> list, String title, Game game, boolean revealInformation) {
+	public static String stringListToList(List<String> list, String title, Game game) {
+		var mssg = "";
+
+		// if the list is empty an error message appears, else it goes through every
+		// single player and adds them to message
+		if (list.isEmpty()) {
+			mssg += "seems like this bitch empty";
+		} else {
+
+			// header
+			mssg += "-------------------  " + title + "  -------------------";
+			mssg += "```diff\n";
+
+			// lists every player in the list
+			for (var entry : list) {
+				mssg += "\n";
+				mssg += entry;
+
+			}
+			mssg += "\n```";
+		}
+		return mssg;
+	}
+
+	public static String playerListToRoleList(List<Player> listPlayer, String title, Game game) {
+		var tempList = new ArrayList<String>();
+		for (Player player: listPlayer) {
+			tempList.add(player.role.name);
+		}
+
+		return stringListToList(tempList, title, game);
+	}
+
+	public static String playerListToList(List<Player> listPlayer, String title, Game game) {
+		var tempList = new ArrayList<String>();
+		for (Player player: listPlayer) {
+			tempList.add(player.name);
+		}
+
+		return stringListToList(tempList, title, game);
+	}
+
+	public static String playerListToList(List<Player> list, String title, Game game, boolean revealInformation) {
 		var mssgPlayerList = "";
 
 		// if the list is empty an error message appears, else it goes through every
@@ -133,12 +175,14 @@ public class Globals {
 		return mssgPlayerList;
 	}
 
-	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game, boolean revealInformation) {
+	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game,
+			boolean revealInformation) {
 		var tempList = new ArrayList<Player>();
 		for (var entry : map.entrySet()) {
 			tempList.add(entry.getValue());
 		}
-		Globals.createEmbed(channel, Color.LIGHT_GRAY, "", Globals.playerListToString(tempList, title, game, revealInformation));
+		Globals.createEmbed(channel, Color.LIGHT_GRAY, "",
+				Globals.playerListToList(tempList, title, game, revealInformation));
 	}
 
 	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und
@@ -215,14 +259,14 @@ public class Globals {
 
 	}
 
-	public static void sleepWCatch(int ms){
+	public static void sleepWCatch(int ms) {
 		// waits for a bit for suspense
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-           System.out.println("error in: Thread.sleep();");
-            e.printStackTrace();
-        }
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			System.out.println("error in: Thread.sleep();");
+			e.printStackTrace();
+		}
 	}
 
 	// finds a card in the map of all Cards

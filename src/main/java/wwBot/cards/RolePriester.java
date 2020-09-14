@@ -17,6 +17,11 @@ public class RolePriester extends Role {
     }
 
     @Override
+    public void executeFirstNight(Player player, Game game, AutoState state) {
+        executePreWW(player, game, state);
+    }
+
+    @Override
     public void executePreWW(Player priester, Game game, AutoState state) {
 
         // if the priest has not yet used his ability, he gets the chance to do so. If

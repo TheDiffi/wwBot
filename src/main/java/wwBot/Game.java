@@ -139,6 +139,7 @@ public class Game {
     public void changeGameState(GameState nextGameState) {
         gameState.exit();
         gameState = nextGameState;
+        gameState.start();
     }
 
     public void addPrivateCommand(Snowflake id, PrivateCommand command) {
@@ -172,14 +173,17 @@ public class Game {
         Globals.removeDash(name);
 		Player foundPlayer = null;
 		var found = 0;
-		for (var entry : map.entrySet()) {
+		for (var entry : map.values()) {
 	
-			var displayName = entry.getValue().name;
-			var userName = entry.getValue().user.getUsername();
+			var playerName = entry.name;
+            var userName = entry.user.getUsername();
+            var displayName = entry.user.asMember(server.getId()).block().getDisplayName();
+            
 	
-			if (displayName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name)) {
-				foundPlayer = entry.getValue();
-				found++;
+			if (playerName.equalsIgnoreCase(name) || userName.equalsIgnoreCase(name) || displayName.equalsIgnoreCase(name)) {
+				foundPlayer = entry;
+                found++;
+                break;
 			}
 	
 		}

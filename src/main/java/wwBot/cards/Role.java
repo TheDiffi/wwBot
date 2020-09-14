@@ -15,6 +15,7 @@ public class Role {
     Role(String roleName) {
         specs = Globals.mapRegisteredCardsSpecs.get(roleName);
         name = roleName;
+        deathDetails = new DeathDetails();
     }
 
     public static Role createRole(String name) {

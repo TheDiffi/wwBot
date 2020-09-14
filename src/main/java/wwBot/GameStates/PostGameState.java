@@ -14,9 +14,14 @@ public class PostGameState extends GameState {
     PostGameState(Game game, int winner) {
         super(game);
         registerGameCommands();
+        
+    }
+
+    public void start() {
         Globals.createMessage(game.mainChannel, "Statistics Coming Soon ", false);
         Globals.createMessage(game.mainChannel, "Vergiss nicht das Spiel mit \"&DeleteGame\" zu beenden ^^", false);
     }
+
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands() {

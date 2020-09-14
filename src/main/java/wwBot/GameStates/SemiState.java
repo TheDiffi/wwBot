@@ -35,6 +35,9 @@ public class SemiState extends MainState {
 		mapPlayers = game.mapPlayers;
 		userModerator = game.userModerator;
 
+	}
+
+	public void start(){
 		// registers Commands; loads the lists and creates the Deathroom
 		registerStateCommands();
 		createDeathChat();
@@ -43,7 +46,6 @@ public class SemiState extends MainState {
 		// sends the first messages
 		MessagesMain.onGameStartSemi(game);
 		greetMod(game);
-
 	}
 
 	// greets the mod and waits for the mod to start the first night
