@@ -36,7 +36,6 @@ public class AutoState extends MainState {
     public boolean wwInfected = false;
     public boolean villageAgitated = false;
 
-
     public List<Player> pending = new ArrayList<>();
 
     AutoState(Game game) {
@@ -49,8 +48,7 @@ public class AutoState extends MainState {
         MessagesMain.onGameStartAuto(game);
         createDeathChat();
         changeDayPhase(DayPhase.FIRST_NIGHT);
-	}
-
+    }
 
     // --------------------- Day/Night - Cycle ----------------------------
 
@@ -62,7 +60,9 @@ public class AutoState extends MainState {
 
             // transitions to Night
             if (nextPhase == DayPhase.NORMAL_NIGHT) {
-                setMuteAllPlayers(game.livingPlayers, true);
+                if (game.gameRuleMutePlayersAtNight) {
+                    Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
+                }
                 villageAgitated = false;
 
                 dayPhase = new Night(game);
@@ -72,29 +72,32 @@ public class AutoState extends MainState {
 
                 // transitions to Morning
             } else if (nextPhase == DayPhase.MORNING) {
-                setMuteAllPlayers(game.livingPlayers, false);
+                if (game.gameRuleMutePlayersAtNight) {
+                    Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
+                }
                 deleteWerwolfChat();
 
-                dayPhase = new Morning(game);
                 dayPhaseEnum = DayPhase.MORNING;
-
                 MessagesMain.onMorningAuto(game);
+
+                dayPhase = new Morning(game);
 
                 // transitions to Day
             } else if (nextPhase == DayPhase.DAY) {
                 resetStuff();
+                
+                dayPhaseEnum = DayPhase.DAY;
+                MessagesMain.onDayAuto(game);
 
                 dayPhase = new Day(game);
-                dayPhaseEnum = DayPhase.DAY;
 
-                MessagesMain.onDayAuto(game);
 
                 // transitions to 1st Night
             } else if (nextPhase == DayPhase.FIRST_NIGHT) {
                 createWerwolfChat();
+                dayPhaseEnum = DayPhase.FIRST_NIGHT;
 
                 dayPhase = new FirstNight(game);
-                dayPhaseEnum = DayPhase.FIRST_NIGHT;
 
             }
         }
@@ -166,7 +169,7 @@ public class AutoState extends MainState {
 
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
-        gameStateCommands.put("sC", showCommandsCommand);
+        gameStateCommands.put("lsCommands", showCommandsCommand);
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
@@ -215,10 +218,11 @@ public class AutoState extends MainState {
             // reveals the players death and identity
             sendDeathMessage(victim, cause);
 
-            checkConsequences(victim, cause);
+			checkConsequences(victim, cause);
+			
 
             return true;
-        }
+		}
         return false;
 
     }
@@ -229,7 +233,7 @@ public class AutoState extends MainState {
         var dies = true;
 
         if (savedByPriester(victim)) {
-            dies = false;
+            return false;
 
         } else {
 
@@ -293,7 +297,7 @@ public class AutoState extends MainState {
     private void checkConsequences(Player victim, String cause) {
 
         // Wolfsjunges
-        if (victim.role.name.equals("Werwolf") && ((RoleWerwolf) victim.role).isJunges) {
+        if (victim.role.name.equals("Wolfsjunges")) {
             MessagesMain.onWolfsjungesDeath(game);
             wwEnraged = true;
         }
@@ -353,6 +357,12 @@ public class AutoState extends MainState {
             MessagesMain.onLoversDeath(game, victim.role.inLoveWith);
         }
 
+        // game end immediately if the last ww is found
+        if (victim.role.name.equals("Werwolf") || victim.role.name.equals("Wolfsjunges")) {
+            Globals.sleepWCatch(1500);
+        	checkIfGameEnds();
+        }
+
     }
 
     private void sendDeathMessage(Player player, String cause) {
@@ -383,7 +393,9 @@ public class AutoState extends MainState {
             default:
                 MessagesMain.deathByDefault(game, player);
         }
-        Globals.printCard(player.role.name, game.mainChannel);
+        if (game.gameRulePrintCardOnDeath) {
+            Globals.printCard(player.role.name, game.mainChannel);
+        }
     }
 
     public void setPending(Player player) {

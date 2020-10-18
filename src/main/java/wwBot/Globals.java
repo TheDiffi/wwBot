@@ -65,11 +65,11 @@ public class Globals {
 		if (list.isEmpty()) {
 			message += "seems like this bitch empty";
 		} else {
-			message += "-----------------" + title + "----------------------  \n";
+			message += "----------------- " + title + " ----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				message += "**Karte " + (i + 1) + ":** " + list.get(i).name + " ----- **Value:** " + list.get(i).value
-						+ "\n";
+				message += "Karte " + (i + 1) + ": **" + list.get(i).name + "** ----- Value: **" + list.get(i).value
+						+ "**\n";
 			}
 
 		}
@@ -89,8 +89,12 @@ public class Globals {
 			message += "-----------------" + title + "----------------------  \n";
 
 			for (int i = 0; i < list.size(); i++) {
-				message += list.get(i).asMember(game.server.getId()).block().getDisplayName() + " (aka. "
-						+ list.get(i).getUsername() + ")\n";
+				message += list.get(i).asMember(game.server.getId()).block().getDisplayName();
+				
+				if (!list.get(i).getUsername().equals(list.get(i).asMember(game.server.getId()).block().getDisplayName())) {
+					message += " (aka. " + list.get(i).getUsername() + ")";
+				}
+				message += "\n";
 			}
 		}
 		return (message);
@@ -122,7 +126,7 @@ public class Globals {
 
 	public static String playerListToRoleList(List<Player> listPlayer, String title, Game game) {
 		var tempList = new ArrayList<String>();
-		for (Player player: listPlayer) {
+		for (Player player : listPlayer) {
 			tempList.add(player.role.name);
 		}
 
@@ -131,7 +135,7 @@ public class Globals {
 
 	public static String playerListToList(List<Player> listPlayer, String title, Game game) {
 		var tempList = new ArrayList<String>();
-		for (Player player: listPlayer) {
+		for (Player player : listPlayer) {
 			tempList.add(player.name);
 		}
 
@@ -302,6 +306,29 @@ public class Globals {
 			}
 		}
 		return containsCard;
+	}
+
+	public static void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted, Snowflake serverId) {
+		// mutes all players at night
+		var listUsers = new ArrayList<User>();
+		for (var player : mapPlayers.values()) {
+			listUsers.add(player.user);
+		}
+		
+		setMuteAllPlayers(listUsers, isMuted, serverId);
+
+	}
+
+	public static void setMuteAllPlayers(List<User> listUsers, boolean isMuted, Snowflake serverId) {
+		for (var user : listUsers) {
+			try {
+				user.asMember(serverId).block().edit(a -> {
+					a.setMute(isMuted).setDeafen(false);
+				}).block();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

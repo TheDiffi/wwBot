@@ -55,6 +55,7 @@ public class Night extends AutoDayPhase {
 			player.role.executePreWW(player, game, state);
 
 		}
+		state.endNightPhaseCheck();
 	}
 
 	private void WWPhase() {
@@ -73,9 +74,12 @@ public class Night extends AutoDayPhase {
 
 					} else if (dState == DeathState.ALIVE) {
 						dState = DeathState.AT_RISK;
+						
+						    //TODO: überprüfe ob killer gesetzt werden
 						victim.role.deathDetails.killer = author.role.name;
 
 					}
+					victim.role.deathDetails.deathState = dState;
 
 					// other stuff
 					MessagesMain.confirm(msgChannel);
@@ -98,6 +102,7 @@ public class Night extends AutoDayPhase {
 		};
 		mapCommands.put("slay", slayCommand);
 
+		// don't put a endNightPhaseCheck() here
 	}
 
 	private void postWWPhase() {

@@ -56,6 +56,9 @@ public class RolePriester extends Role {
                         if (player != null) {
                             protectedPlayer = player;
                             usedAbility = true;
+                            abilityActive = true;
+
+                            MessagesMain.confirm(msgChannel);
 
                             state.setDoneNight(priester);
                             return true;
@@ -75,6 +78,10 @@ public class RolePriester extends Role {
                 }
             };
             game.addPrivateCommand(priester.user.getId(), priesterCommand);
+
+        } else{
+            
+            state.setDoneNight(priester);
 
         }
     }

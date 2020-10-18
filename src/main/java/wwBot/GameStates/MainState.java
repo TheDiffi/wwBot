@@ -30,18 +30,6 @@ public class MainState extends GameState{
 
 	// -------------------- Utility --------------------------
 	
-	public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-		// mutes all players at night
-		for (var player : mapPlayers.entrySet()) {
-			try {
-				player.getValue().user.asMember(game.server.getId()).block().edit(a -> {
-					a.setMute(isMuted).setDeafen(false);
-				}).block();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	// creates a private MessageChannel and puts all the WW and the Moderator ob the
 	// Whitelist
@@ -63,7 +51,7 @@ public class MainState extends GameState{
 				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
 						PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
 			}
-			if (!game.gameRuleAutomatic) {
+			if (!game.gameRuleAutomaticMod) {
 				overrides.add(
 						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
 								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
@@ -107,7 +95,7 @@ public class MainState extends GameState{
 			overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
 					PermissionSet.of(Permission.VIEW_CHANNEL)));
 
-			if (!game.gameRuleAutomatic) {
+			if (!game.gameRuleAutomaticMod) {
 				overrides.add(
 						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
 								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
@@ -136,7 +124,7 @@ public class MainState extends GameState{
 				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
 						PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
 			}
-			if (!game.gameRuleAutomatic) {
+			if (!game.gameRuleAutomaticMod) {
 				overrides.add(
 						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
 								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
@@ -229,7 +217,7 @@ public class MainState extends GameState{
 
 	public void endMainGame(int winner) {
         // unmutes all players
-        setMuteAllPlayers(mapPlayers, false);
+		Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
         // deletes deathChat
         deleteDeathChat();
         // sends gameover message

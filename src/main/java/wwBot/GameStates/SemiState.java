@@ -37,7 +37,7 @@ public class SemiState extends MainState {
 
 	}
 
-	public void start(){
+	public void start() {
 		// registers Commands; loads the lists and creates the Deathroom
 		registerStateCommands();
 		createDeathChat();
@@ -51,7 +51,8 @@ public class SemiState extends MainState {
 	// greets the mod and waits for the mod to start the first night
 	private void greetMod(Game game) {
 		MessagesMain.greetMod(game);
-		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game, true);
+		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game,
+				true);
 
 		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
 			if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
@@ -148,7 +149,6 @@ public class SemiState extends MainState {
 
 		// reveals the players death and identity
 		checkDeathMessages(unluckyPlayer, causedByRole);
-		
 
 		// calculates the consequences
 		checkConsequences(unluckyPlayer, causedByRole);
@@ -192,20 +192,20 @@ public class SemiState extends MainState {
 		} else if (unluckyPlayer.role.name.equalsIgnoreCase("Jäger")) {
 			MessagesMain.onJägerDeath(game, unluckyPlayer);
 
-            PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
-                var foundPlayer = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
+			PrivateCommand jägerCommand = (event, parameters, msgChannel) -> {
+				var foundPlayer = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
-                if (foundPlayer != null) {
-                    MessagesMain.confirm(msgChannel);
-                    killPlayer(foundPlayer, "Jäger");
+				if (foundPlayer != null) {
+					MessagesMain.confirm(msgChannel);
+					killPlayer(foundPlayer, "Jäger");
 
-                    return true;
-                } else {
-                    return false;
-                }
+					return true;
+				} else {
+					return false;
+				}
 
-            };
-            game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
+			};
+			game.addPrivateCommand(unluckyPlayer.user.getId(), jägerCommand);
 
 		}
 
@@ -250,7 +250,9 @@ public class SemiState extends MainState {
 				MessagesMain.deathByDefault(game, player);
 		}
 
-		Globals.printCard(player.role.name, game.mainChannel);
+		if (game.gameRulePrintCardOnDeath) {
+			Globals.printCard(player.role.name, game.mainChannel);
+		}
 
 	}
 
@@ -260,7 +262,9 @@ public class SemiState extends MainState {
 		// transitions to Night
 		if (nextPhase == DayPhase.NORMAL_NIGHT) {
 			checkIfGameEnds();
-			setMuteAllPlayers(game.livingPlayers, true);
+			if (game.gameRuleMutePlayersAtNight) {
+				Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
+			}
 			createWerwolfChat();
 
 			night = new NightSemi(game);
@@ -268,7 +272,9 @@ public class SemiState extends MainState {
 
 			// transitions to Morning
 		} else if (nextPhase == DayPhase.MORNING) {
-			setMuteAllPlayers(game.livingPlayers, false);
+			if (game.gameRuleMutePlayersAtNight) {
+				Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
+			}
 			deleteWerwolfChat();
 
 			morning = new MorningSemi(game);
@@ -387,7 +393,7 @@ public class SemiState extends MainState {
 			Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
 		};
 		gameStateCommands.put("showCommands", showCommandsCommand);
-		gameStateCommands.put("sC", showCommandsCommand);
+		gameStateCommands.put("lsCommands", showCommandsCommand);
 
 		// zeigt die verfügbaren commands
 		Command showModCommandsCommand = (event, parameters, msgChannel) -> {
@@ -404,8 +410,7 @@ public class SemiState extends MainState {
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(msgChannel, game.mapPlayers, "Alle Spieler",
-						game, true);
+				Globals.printPlayersMap(msgChannel, game.mapPlayers, "Alle Spieler", game, true);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
@@ -416,8 +421,7 @@ public class SemiState extends MainState {
 		Command listLivingCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler",
-						game, true);
+				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler", game, true);
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
@@ -467,7 +471,7 @@ public class SemiState extends MainState {
 		Command muteAllCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				setMuteAllPlayers(mapPlayers, true);
+				Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}
@@ -479,7 +483,7 @@ public class SemiState extends MainState {
 		Command unMuteAllCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				setMuteAllPlayers(mapPlayers, false);
+				Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
 			} else {
 				MessagesMain.errorModOnlyCommand(msgChannel);
 			}

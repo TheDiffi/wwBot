@@ -44,6 +44,8 @@ public class PostGameState extends GameState {
             Globals.createEmbed(msgChannel, Color.CYAN, "Commands", mssg);
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
+        gameStateCommands.put("lsCommands", showCommandsCommand);
+
 
     }
 

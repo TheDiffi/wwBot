@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import discord4j.core.event.domain.channel.TypingStartEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.MessageChannel;
@@ -18,8 +19,8 @@ import wwBot.GameStates.GameState;
 import wwBot.GameStates.LobbyState;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
-import wwBot.cards.Role;
 import wwBot.cards.Card;
+import wwBot.cards.Role;
 
 public class Game {
     public Map<String, Command> gameCommands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -28,10 +29,16 @@ public class Game {
     public List<Player> deadPlayers = new ArrayList<>();
     public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
     public List<Role> deck = new ArrayList<>();
-    public GameState gameState;
+
+    public boolean gameRuleAutomaticMod = false;
+    public boolean gameRulePrintCardOnDeath = false;
+    public boolean gameRuleMutePlayersAtNight = false;
+
+
+
     public Guild server;
     public MessageChannel mainChannel;
-    public boolean gameRuleAutomatic = false;
+    public GameState gameState;
     public User userModerator;
 
     Game(Guild guild, MessageChannel givenChannel) {
@@ -42,6 +49,20 @@ public class Game {
 
         // initializes the first game State
         gameState = new LobbyState(this);
+
+
+
+
+       /*  Main.client.getEventDispatcher().on(TypingStartEvent.class).filter(message -> message.getUser().blockOptional()
+        .map(user -> !user.getId().equals(Main.client.getSelfId().get())).orElse(false)).subscribe(event -> {
+            try {
+                event.getChannel().block().createMessage("You startet Typing\n" + event.toString()).block();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                event.getChannel().block().createMessage("ex in test").block();
+            }
+        }); */
 
     }
 
@@ -97,10 +118,10 @@ public class Game {
             msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
             // prints the moderator if there is one
-            if (!gameRuleAutomatic && userModerator != null) {
+            if (!gameRuleAutomaticMod && userModerator != null) {
                 msgChannel
                         .createMessage("Moderator: " + userModerator.asMember(server.getId()).block().getDisplayName());
-            } else if (!gameRuleAutomatic && userModerator == null) {
+            } else if (!gameRuleAutomaticMod && userModerator == null) {
                 msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
             }
 

@@ -26,7 +26,7 @@ public class RoleSäufer extends Role {
             if (player != null && (drinkingAt == null || !player.name.equals(drinkingAt.name))) {
                 drinkingAt = player;
                 säufer.role.deathDetails.deathState = DeathState.PROTECTED;
-
+                MessagesMain.confirm(msgChannel);
                 state.setDoneNight(säufer);
                 return true;
 

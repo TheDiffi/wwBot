@@ -65,9 +65,6 @@ public class GameState {
         return false;
     }
 
-     public void setMuteAllPlayers(Map<Snowflake, Player> mapPlayers, boolean isMuted) {
-    } 
-
     public boolean exit() {
         return true;
     }

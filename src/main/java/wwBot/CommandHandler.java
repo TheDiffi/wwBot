@@ -9,7 +9,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.util.Snowflake;
 
 public class CommandHandler {
-    public static String prefix = Main.prefix;
+    public static String WWprefix = Main.prefix;
+    public static String amongUsPrefix = "AU";
     public static HashMap<Snowflake, Game> mapRunningGames = Main.mapRunningGames;
 
     public static void handleCommands(MessageCreateEvent event) {
@@ -25,20 +26,25 @@ public class CommandHandler {
         // prüft ob die Nachricht keine DM(DirectMessage) ist
         if (event.getGuildId().isPresent() && event.getMessage().getContent().isPresent()) {
 
-            if (messageContent.startsWith(prefix)) {
+            if (messageContent.startsWith(amongUsPrefix)) {
+                AmongUs.commands(event);
+            }
+
+
+            if (messageContent.startsWith(WWprefix)) {
                 var server = event.getGuild().block();
                 var serverId = event.getGuildId().get();
                 var channel = event.getMessage().getChannel().block();
 
                 // replies with Pong!
-                if (parameters.get(0).equalsIgnoreCase(prefix + "ping")) {
+                if (parameters.get(0).equalsIgnoreCase(WWprefix + "ping")) {
                     event.getMessage().getChannel().block().createMessage("Pong! MAIN").block();
 
                 }
 
                 // überprüft ob auf diesem server bereits ein Game läuft, falls nein erstellt er
                 // ein neues und fügt es zur Map runningGames hinzu
-                if (parameters.get(0).equalsIgnoreCase(prefix + "NewGame")) {
+                if (parameters.get(0).equalsIgnoreCase(WWprefix + "NewGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
                         var game = new Game(server, channel);
@@ -46,14 +52,14 @@ public class CommandHandler {
 
                     } else if (mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage(
-                                "use **" + prefix + "DeleteGame** to delete the current game before starting a new one")
+                                "use **" + WWprefix + "DeleteGame** to delete the current game before starting a new one")
                                 .block();
                     }
 
                 }
 
                 // überprüft ob auf diesem server bereits ein Game läuft, falls ja, löscht er es
-                else if (parameters.get(0).equalsIgnoreCase(prefix + "DeleteGame")) {
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "DeleteGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage("No Game To Delete Found").block();
@@ -71,6 +77,11 @@ public class CommandHandler {
                     }
 
                 }
+                // erklärt den Bot
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "explanation")) {
+                    MessagesMain.sendGameExplanation(channel);
+
+                }
 
                 // falls ein Spiel existiert (also gerade läuft), und der Command auf dem
                 // Server, auf dem das Spiel läuft, geschrieben wurde, wird die Eingabe zum Game
@@ -84,20 +95,20 @@ public class CommandHandler {
 
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)
-                else if (parameters.get(0).equalsIgnoreCase(prefix + "help")) {
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "help")) {
                     MessagesMain.sendHelpMain(channel);
 
                 }
-                // erklärt den Bot
-                else if (parameters.get(0).equalsIgnoreCase(prefix + "explanation")) {
-                    MessagesMain.sendGameExplanation(channel);
-
-                }
                 // prints a list of the commands of this class
-                else if (parameters.get(0).equalsIgnoreCase(prefix + "showCommands")) {
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "showCommands") || parameters.get(0).equalsIgnoreCase(WWprefix + "lsCommands")) {
                     Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesMain.getCommandsMain());
+                } else {
+                    MessagesMain.errorCommandNotFound(channel);
                 }
             }
+
+
+            
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
             // Game befindet
         } else if (!event.getGuildId().isPresent() && event.getMessage().getContent().isPresent()) {
@@ -133,7 +144,7 @@ public class CommandHandler {
 
                     // falls der spieler in einem Spiel ist
                 } else if (game != null && isInGame == 1) {
-                    if (messageContent.startsWith(prefix)) {
+                    if (messageContent.startsWith(WWprefix)) {
                         game.handleCommands(event, event.getMessage().getChannel().block());
 
                     } else {

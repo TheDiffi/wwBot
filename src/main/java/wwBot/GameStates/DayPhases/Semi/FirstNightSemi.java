@@ -33,7 +33,7 @@ public class FirstNightSemi  {
 
     private void initiateFirstNight() {
         // sets mute and creates the WWchat
-        gameState.setMuteAllPlayers(game.livingPlayers, true);
+        Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
         gameState.createWerwolfChat();
 
         // generates which Roles need to be called
@@ -199,7 +199,7 @@ public class FirstNightSemi  {
     private void endFirstNight() {
 
         // unmutes, deletes the WWChat and changes the DayPhase
-        gameState.setMuteAllPlayers(game.livingPlayers, false);
+        Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
         gameState.deleteWerwolfChat();
         gameState.changeDayPhase(DayPhase.DAY);
 

@@ -7,7 +7,6 @@ public class DeathDetails {
     public DeathState deathState;
     public String killer = null;
 
-    //TODO: überprüfe ob killer gesetzt werden
     DeathDetails(){
         alive = true;
         deathState = DeathState.ALIVE;

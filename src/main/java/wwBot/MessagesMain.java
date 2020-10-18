@@ -56,11 +56,15 @@ public class MessagesMain {
 	}
 
 	public static void onGameStartAuto(Game game) {
-		// TODO: FILL
+		var mssg = "";
+		if (!game.gameRuleAutomaticMod) {
+			mssg = "Euer Moderator ist: **" + game.userModerator.getUsername() + "!**";
+		} else {
+			mssg = "Es ist mir eine Ehre euer Moderator zu sein ✨";
+		}
 
 		// verkündet den Start der ersten Nacht
-		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald",
-				"TODO: FILL");
+		Globals.createEmbed(game.mainChannel, Color.BLACK, "Willkommen bei : Die Werwölfe von Düsterwald", mssg);
 
 	}
 
@@ -129,7 +133,7 @@ public class MessagesMain {
 
 	public static void onWWTurn(MessageChannel mainChannel, TextChannel wwChat) {
 		Globals.createMessage(mainChannel,
-				"```Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen **die Werwölfe** aus ihrem Versteck... 🌕```");
+				"```Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen die Werwölfe aus ihrem Versteck... 🌕```");
 
 		Globals.createEmbed(wwChat, Color.black, "DIE WERWÖLFE SCHLAGEN ZU 💀",
 				"Ihr könnt nun **&slay <Spieler>** benutzen um **EINEN** Spieler zu töten.");
@@ -159,7 +163,7 @@ public class MessagesMain {
 		Globals.createEmbed(game.mainChannel, Color.YELLOW, "Es wird TAG...☀️",
 				"Die Dorfbewohner versammeln sich auf dem Dorfplatz und setzen ihre Besprechungen fort. Nun werden alle dazu aufgefordert mit **\""
 						+ prefix
-						+ "vote <playername>\"** für eine Person zu Stimmen. Falls der Name eine oder mehrere Personen ein Lehrzeichen beinhaltet, ist man gebeten dieses durch einen Bindestrich(-) zu ersetzen. Die Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
+						+ "vote <playername>\"** für eine Person zu Stimmen. \n(Falls der Name der Person ein Lehrzeichen beinhaltet, ist man gebeten dieses durch einen Bindestrich \"-\" zu ersetzen.) \nDie Person mit den meisten Stimmen wird am Ende des Tages gelyncht.");
 	}
 
 	public static void onDaySemi(Game game) {
@@ -177,37 +181,37 @@ public class MessagesMain {
 
 	// AMOR
 	public static void triggerAmor(Game game, Player amor) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 					"[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind. \nTue dies mit \"" + prefix
 							+ "&inLove\" <Player1> <Player2>",
 					false);
 		} else {
-			// TODO: make more beautiful
+			// TODO: rework design
 			Globals.createMessage(amor.user.getPrivateChannel().block(),
-					"Teile mir nun mit, welche zwei Spieler du sich ineinander verlieben lassen möchtest💕\n Tue dies indem innerhalb einer Nachricht beide Namen nur durch ein Leerzeichen getrennt schreibst; etwa so:\nRomeo Julia");
+					"*Teile mir nun mit, welche zwei Spieler du sich ineinander verlieben lassen möchtest*💕\nTue dies indem innerhalb einer Nachricht beide Namen nur durch ein Leerzeichen getrennt schreibst; etwa so:\nRomeo Julia");
 		}
 	}
 
 	public static void amorSuccess(Game game, Player firstLover, Player secondLover) {
-		if (game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.PINK, "ERFOLG!", ""
 					+ firstLover.user.getUsername() + " und " + secondLover.name + " haben sich unsterblich verliebt");
 		}
 
 		Globals.createEmbed(game.mainChannel, Color.PINK, "Des Amors Liebespfeile haben ihr Ziel gefunden 💘!", "");
 
-		Globals.createEmbed(game.mainChannel, Color.PINK, "💘", "Du fällst mit **" + secondLover.name
+		Globals.createEmbed(firstLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du fällst mit **" + secondLover.name
 				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
 
-		Globals.createEmbed(game.mainChannel, Color.PINK, "💘", "Du triffst dich mit **" + firstLover.name
+		Globals.createEmbed(secondLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du triffst dich mit **" + firstLover.name
 				+ "** und verliebst dich Unsterblich in sie/ihn \nEure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
 
 	}
 
 	// DOPPELGÄNGERIN
 	public static void triggerDoppelgängerin(Game game, Player dp) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 					"Teile mir mit für welchen Spieler die Doppelgängerin sich entscheidet, damit ich (falls dieser Spieler stirbt) die Rolle der Doppelgängerin ändern kann.\nTue dies mit \""
 							+ prefix + "&Doppelgängerin\" <Player-Chosen-By-The-Doppelgängerin> ",
@@ -219,7 +223,7 @@ public class MessagesMain {
 	}
 
 	public static void doppelgängerinSuccess(Game game, Player dp, Player chosenOne) {
-		if (game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "ERFOLG!",
 					dp.name + " hat sich an " + chosenOne.name + " gebunden.");
 		}
@@ -230,7 +234,7 @@ public class MessagesMain {
 	}
 
 	public static void onDoppelgängerinTransformation(Game game, Player doppelgängerin, Player unluckyPlayer) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			// message to mod
 			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 					"Die Doppelgängerin wurde zu einem/einer " + unluckyPlayer.role.name + "!");
@@ -255,6 +259,7 @@ public class MessagesMain {
 		for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
 			tempList.add(mapExistingRoles.get("Werwolf").get(i));
 		}
+		// there should be no wolfsjunges cuz its a ww
 		if (mapExistingRoles.containsKey("Wolfsjunges")) {
 			tempList.add(mapExistingRoles.get("Wolfsjunges").get(0));
 		}
@@ -370,7 +375,7 @@ public class MessagesMain {
 	// UNRUHESTIFTERIN
 	public static void callUnruhestifterin(Player player) {
 		Globals.createMessage(player.user.getPrivateChannel().block(),
-				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit  **ja**   bzw.   **nein**   antworten.");
 	}
 
 	public static void announceUnruhe(Game game) {
@@ -387,7 +392,7 @@ public class MessagesMain {
 	// PRIESTER
 	public static void callPriester(Player player) {
 		Globals.createMessage(player.user.getPrivateChannel().block(),
-				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit  **ja**   bzw.   **nein**   antworten.");
 	}
 
 	public static void confirmPriester(Player player) {
@@ -419,7 +424,7 @@ public class MessagesMain {
 	// PARANOMALER ERMITTLER
 	public static void callErmittler(Player player) {
 		Globals.createMessage(player.user.getPrivateChannel().block(),
-				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit **ja**   bzw.   **nein**   antworten.");
+				"Möchtest du diese Nacht deine Fähigkeit einsetzen? Du kannst mir mit  **ja**   bzw.   **nein**   antworten.");
 
 	}
 
@@ -468,7 +473,7 @@ public class MessagesMain {
 	// ---------DEATH MESSAGES--------------------------------------------
 
 	public static String revealId(Player player, Game game) {
-		var mssg = player.name + " war ein " + player.role.name;
+		var mssg = player.name + " war ein **" + player.role.name + "**";
 		return mssg;
 	}
 
@@ -489,7 +494,7 @@ public class MessagesMain {
 	}
 
 	public static void deathByLynchen(Game game, Player player) {
-		Globals.createEmbed(game.mainChannel, Color.RED, player.name + " wird öffentlich hingerichtet. ",
+		Globals.createEmbed(game.mainChannel, Color.RED, player.name + " wird öffentlich hingerichtet! ",
 				revealId(player, game));
 	}
 
@@ -523,7 +528,7 @@ public class MessagesMain {
 	}
 
 	public static void onAussätzigeDeath(Game game) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 					"Die Aussätzige ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe niemanden töten");
 		}
@@ -548,7 +553,7 @@ public class MessagesMain {
 	}
 
 	public static void onWolfsjungesDeath(Game game) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createMessage(game.userModerator.getPrivateChannel().block(),
 					"Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
 					false);
@@ -574,7 +579,7 @@ public class MessagesMain {
 	// ---------VOTE MESSAGES--------------------------------------------
 
 	public static void announceMajority(Game game, Player mostVoted, Map<Player, Player> mapVotes) {
-		if (!game.gameRuleAutomatic) {
+		if (!game.gameRuleAutomaticMod) {
 			Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.RED,
 					"Alle Spieler Haben Gewählt!",
 					"Auf dem Schafott steht **" + mostVoted.user.getMention() + "** der ein/eine **"
@@ -597,8 +602,7 @@ public class MessagesMain {
 	}
 
 	public static void votePlayer(Game game, Player voter, Player votedFor) {
-		Globals.createMessage(game.mainChannel,
-				voter.user.getMention() + " will, dass " + votedFor.user.getMention() + " gelyncht wird!");
+		Globals.createMessage(game.mainChannel, voter.user.getMention() + " wählte für " + votedFor.user.getMention());
 	}
 
 	public static void voteNobody(Game game, Player voter) {
@@ -636,9 +640,9 @@ public class MessagesMain {
 						+ prefix
 						+ "buildDeck** generiert mein algorithmus automatisch ein faires Deck. \n Dieses kann anschließend mit **"
 						+ prefix + "addCard <Karte>** und **" + prefix
-						+ "removeCard <Karte>** bearbeitet werden. \n ~~- Mit **" + prefix + "gamerule manual** und **"
+						+ "removeCard <Karte>** bearbeitet werden. \n - Mit **" + prefix + "gamerule manual** und **"
 						+ prefix
-						+ "gamerule automatic** (coming soon) könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein~~ (Coming soon)\n - Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit **"
+						+ "gamerule automatic** könnt ihr den Moderationsmodus des Spiels bestimmen. Bei \"Manual\" moderiert ein menschlicher Spieler den Spielverlauf und ich helfe ihm eine Übersicht zu behalten. Im \"Automatic\" Moderationsmodus nehme ich die Rolle des Moderators ein (Still in test phase)\n - Wenn alle Spieler beigetreten und ein Deck registriert wurde, lasse das Spiel mit **"
 						+ prefix + "start** starten!*" + getHelpInfo());
 	}
 
@@ -828,7 +832,8 @@ public class MessagesMain {
 
 	public static void sendGameExplanation(MessageChannel channel) {
 		Globals.createEmbed(channel, Color.BLUE, "Was ist \"WERWÖLFE\"",
-				"Werwölfe ist ein interaktives Deduktionsspiel für zwei Teams: die Dorfbewohner und die Werwölfe. Während die Dorfbewohner nicht wissen, wer die Werwölfe sind, versuchen diese, unentdeckt zu bleiben und einen Dorfbewohner nach dem anderen auszuschalten. Ein Moderator „leitet“ das Spiel (es kann einer der Spieler sein), und erleichtert so den Ablauf von Werwölfe. (Alternativ kann ich diese Rolle übernehmen). Eine Partie Werwölfe verläuft über eine Reihe von „Tagen“ und „Nächten“. Jede Nacht wählen die Werwölfe ein Opfer, während die einsame Seherin Informationen über einen anderen Spieler sammelt und so lernt, ob dieser ein Werwolf ist. Während des Tages versuchen die Spieler gemeinsam herauszufinden, wer von ihnen ein Werwolf ist, um ihn dann nach einer Abstimmung zu lynchen. Das Spiel gewinnt immer eine Gruppe – entweder die Dorf­ bewohner, wenn sie alle Werwölfe gelyncht haben, oder die Werwölfe, wenn sie einen Gleichstand mit den Dorfbewohnern erreicht haben. Bei einer Partie Werwölfe müssen Sie versuchen, die anderen Mitspieler in die Irre zu führen, um das Spiel gewinnen zu können.");
+				"Werwölfe ist ein interaktives Deduktionsspiel für zwei Teams: die Dorfbewohner und die Werwölfe. Während die Dorfbewohner nicht wissen, wer die Werwölfe sind, versuchen diese, unentdeckt zu bleiben und einen Dorfbewohner nach dem anderen auszuschalten. Ein Moderator „leitet“ das Spiel (es kann einer der Spieler sein), und erleichtert so den Ablauf von Werwölfe. (Alternativ kann ich diese Rolle übernehmen). Eine Partie Werwölfe verläuft über eine Reihe von „Tagen“ und „Nächten“. Jede Nacht wählen die Werwölfe ein Opfer, während die einsame Seherin Informationen über einen anderen Spieler sammelt und so lernt, ob dieser ein Werwolf ist. Während des Tages versuchen die Spieler gemeinsam herauszufinden, wer von ihnen ein Werwolf ist, um ihn dann nach einer Abstimmung zu lynchen. Das Spiel gewinnt immer eine Gruppe – entweder die Dorf­ bewohner, wenn sie alle Werwölfe gelyncht haben, oder die Werwölfe, wenn sie einen Gleichstand mit den Dorfbewohnern erreicht haben. Bei einer Partie Werwölfe müssen Sie versuchen, die anderen Mitspieler in die Irre zu führen, um das Spiel gewinnen zu können.\nTipp: Mit **"
+						+ prefix + "manual** kannst du die komplette Spielanleitung aufrufen.");
 
 	}
 
@@ -911,9 +916,8 @@ public class MessagesMain {
 	public static void confirm(MessageChannel msgChannel) {
 
 		var a = Arrays.asList("Okay", "OK", "Alrighty", "You're the Boss", "Done!", "Good Decision ;)");
-		// TODO: MORE APPOVAL AAAAAAAH!!!?!!
 
-		var randMssg = a.get((int) Math.random() * a.size());
+		var randMssg = a.get((int) (Math.random() * a.size()));
 
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
 	}

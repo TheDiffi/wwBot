@@ -9,6 +9,7 @@ import wwBot.Game;
 import wwBot.Globals;
 import wwBot.MessagesMain;
 import wwBot.Player;
+import wwBot.GameStates.MainState.DayPhase;
 import wwBot.GameStates.MainState.DeathState;
 import wwBot.Interfaces.Command;
 import wwBot.cards.RoleSäufer;
@@ -22,7 +23,6 @@ public class Morning extends AutoDayPhase {
     public Morning(Game getGame) {
         game = getGame;
         mapExistingRoles = game.gameState.mapExistingRoles;
-        MessagesMain.onMorningAuto(game);
 
         // loads the Commands of the state
         registerCommands();
@@ -31,6 +31,7 @@ public class Morning extends AutoDayPhase {
 
         killEndangeredPlayers();
 
+        game.gameState.changeDayPhase(DayPhase.DAY);
     }
 
     // loads all of the following Commands into mapCommands
@@ -44,7 +45,7 @@ public class Morning extends AutoDayPhase {
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-            MessagesMain.sendHelpNight(msgChannel, true);
+            MessagesMain.sendHelpMorning(msgChannel, true);
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
@@ -57,7 +58,7 @@ public class Morning extends AutoDayPhase {
             
             Globals.sleepWCatch(1500);
 
-            if (!game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
+            if (game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
                 game.mainChannel.createMessage("Test: No one died, right?");
             }
         }

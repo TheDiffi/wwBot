@@ -27,6 +27,7 @@ public class RoleLeibwächter extends Role {
             if (player != null && (protectingPlayer == null || !player.name.equals(protectingPlayer.name))) {
                 protectingPlayer = player;
                 protectingPlayer.role.deathDetails.deathState = DeathState.PROTECTED;
+                MessagesMain.confirm(msgChannel);
 
                 state.setDoneNight(leibwächter);
                 return true;

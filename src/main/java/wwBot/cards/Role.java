@@ -22,7 +22,7 @@ public class Role {
         switch (name) {
             case "Werwolf":
                 return new RoleWerwolf(false);
-            case "Wolfjunges":
+            case "Wolfsjunges":
                 return new RoleWerwolf(true);
             case "Hexe":
                 return new RoleZauberer("Hexe");

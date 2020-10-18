@@ -31,7 +31,8 @@ public class LobbyState extends GameState {
 
     }
 
-    //TODO: idea: when it show the deck delete the previous message that showed the deck
+    // TODO: idea: when it show the deck delete the previous message that showed the
+    // deck
 
     // loads the Commands available in this GameState into the map gameStateCommands
     private void registerGameCommands() {
@@ -61,7 +62,7 @@ public class LobbyState extends GameState {
 
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
-        gameStateCommands.put("sC", showCommandsCommand);
+        gameStateCommands.put("lsCommands", showCommandsCommand);
 
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {
@@ -112,12 +113,12 @@ public class LobbyState extends GameState {
         gameStateCommands.put("leave", leaveCommand);
 
         Command listJoinedPlayersCommand = (event, parameters, msgChannel) -> {
-            var mssg = Globals.userListToString(listJoinedUsers, "beigetretene Spieler", game);
+            var mssg = Globals.userListToString(listJoinedUsers, "Beigetretene Spieler", game);
             Globals.createMessage(game.mainChannel, mssg, false);
 
         };
         gameStateCommands.put("joinedPlayers", listJoinedPlayersCommand);
-        gameStateCommands.put("listJoinedPlayers", listJoinedPlayersCommand);
+        gameStateCommands.put("lsJoined", listJoinedPlayersCommand);
         gameStateCommands.put("listJoinedUsers", listJoinedPlayersCommand);
 
         // nimmt die .size der listPlayers und started damit den Deckbuilder algorithmus
@@ -192,31 +193,33 @@ public class LobbyState extends GameState {
         // Der Command addCard fügt dem Deck eine vom User gewählte Karte hinzu
         Command addCardCommand = (event, parameters, msgChannel) -> {
 
-            var cardName = parameters.get(0);
+            if (parameters != null) {
+                // gets the Carda by its namea
+                for (String cardName : parameters) {
+                    var requestedCard = mapRegisteredCardsSpecs.get(cardName);
 
-            if (cardName != null && cardName != "") {
-                // gets the Card by its name
-                var requestedCard = mapRegisteredCardsSpecs.get(cardName);
-                if (requestedCard != null) {
-                    // calls addCardToDeck and recieves the Status message back
-                    String message = addCardToDeck(requestedCard, deck);
-                    msgChannel.createMessage(message).block();
+                    if (requestedCard != null) {
+                        // calls addCardToDeck and recieves the Status message back
+                        String message = addCardToDeck(requestedCard, deck);
+                        msgChannel.createMessage(message).block();
 
-                    // shows new List with added Card
-                    msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
-
-                    // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
-                    // und informiert den User über die Differenz
-                    var figureDifference = deck.size() - listJoinedUsers.size();
-                    if (figureDifference < 0) {
-                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
-                    } else if (figureDifference > 0) {
-                        msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                    } else {
+                        MessagesMain.errorCardNotFound(msgChannel);
                     }
-
-                } else {
-                    MessagesMain.errorCardNotFound(msgChannel);
                 }
+
+                // shows new List with added Card
+                msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
+
+                // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
+                // und informiert den User über die Differenz
+                var figureDifference = deck.size() - listJoinedUsers.size();
+                if (figureDifference < 0) {
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
+                } else if (figureDifference > 0) {
+                    msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu viel").block();
+                }
+
             } else {
                 MessagesMain.errorWrongSyntax(msgChannel);
             }
@@ -291,7 +294,49 @@ public class LobbyState extends GameState {
 
                 msgChannel.createMessage("TODO: add random jobs lol");
             }
+            if (gamerule.equalsIgnoreCase("mute") || gamerule.equalsIgnoreCase("muteplayersatnight")) {
 
+                if (parameters.size() > 1) {
+                    if (parameters.get(1).equalsIgnoreCase("false")) {
+                        game.gameRuleMutePlayersAtNight = false;
+                        Globals.createEmbed(msgChannel, Color.MAGENTA,
+                                "The Gamerule \"Mute Players At Night\" has been set to false.",
+                                "Die Spieler werden Nachts nicht stummgeschaltet werden.");
+
+                    } else if (parameters.get(1).equalsIgnoreCase("true")) {
+                        game.gameRuleMutePlayersAtNight = true;
+                        Globals.createEmbed(msgChannel, Color.MAGENTA,
+                                "The Gamerule \"Mute Players At Night\" has been set to true.",
+                                "Die Spieler werden nun Nachts stummgeschaltet werden.");
+
+                    }
+
+                } else {
+                    MessagesMain.errorWrongSyntax(msgChannel);
+                }
+
+            }
+
+            if (gamerule.equalsIgnoreCase("printCard")) {
+
+                if (parameters.size() > 1) {
+                    if (parameters.get(1).equalsIgnoreCase("false")) {
+                        game.gameRuleMutePlayersAtNight = false;
+                        Globals.createEmbed(msgChannel, Color.MAGENTA,
+                                "The Gamerule \"printCardOnDeath\" has been set to false.", "");
+
+                    } else if (parameters.get(1).equalsIgnoreCase("true")) {
+                        game.gameRuleMutePlayersAtNight = true;
+                        Globals.createEmbed(msgChannel, Color.MAGENTA,
+                                "The Gamerule \"printCardOnDeath\" has been set to true.", "");
+
+                    }
+
+                } else {
+                    MessagesMain.errorWrongSyntax(msgChannel);
+                }
+
+            }
         };
         gameStateCommands.put("gamerule", gameruleCommand);
 
@@ -332,7 +377,6 @@ public class LobbyState extends GameState {
         // empty
         Command startGameCommand = (event, parameters, msgChannel) -> {
             var checkMod = false;
-
             if (gameRuleAutomatic) {
                 checkMod = true;
             } else if (!gameRuleAutomatic && userModerator != null) {
@@ -344,6 +388,11 @@ public class LobbyState extends GameState {
             }
 
             if (checkMod) {
+                if (Math.abs(Globals.totalCardValue(deck)) > 6) {
+                    msgChannel.createMessage("```Value: " + Globals.totalCardValue(deck)
+                            + "\nWith a Value like this the game will be very one-sided!```").block();
+                }
+
                 // first the programm checks if Deck is the same size as listJoinedPlayers, so
                 // that every Player gets a role, no more or less
                 if (deck == null || deck.size() == 0) {
@@ -374,7 +423,7 @@ public class LobbyState extends GameState {
                         // loads the values into the game
                         game.mapPlayers.put(player.user.getId(), player);
                         game.deck = deck;
-                        game.gameRuleAutomatic = gameRuleAutomatic;
+                        game.gameRuleAutomaticMod = gameRuleAutomatic;
                         game.userModerator = userModerator;
 
                         // the player gets a message describing his role
@@ -398,7 +447,6 @@ public class LobbyState extends GameState {
 
     }
 
-    
     // recieves a card and a list and adds the card to the list, acoording to some
     // rules
     // gibt einen String mit der status-nachricht zurück
@@ -420,7 +468,7 @@ public class LobbyState extends GameState {
 
             // falls die karte nicht unique ist oder die liste leer ist wird die Karte ohne
             // überprüfen hinzugegügt
-        } else if ((!cardSpec.unique || cardSpec.name.equalsIgnoreCase("Seher"))|| list == null) {
+        } else if ((!cardSpec.unique || cardSpec.name.equalsIgnoreCase("Seher")) || list == null) {
             list.add(Role.createRole(cardSpec.name));
             message += cardSpec.name + " wurde dem Deck hinzugefügt";
 
@@ -463,7 +511,6 @@ public class LobbyState extends GameState {
 
         return message;
     }
-
 
     public void close() {
 
