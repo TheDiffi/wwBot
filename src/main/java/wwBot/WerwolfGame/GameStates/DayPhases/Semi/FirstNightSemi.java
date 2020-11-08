@@ -1,0 +1,208 @@
+package wwBot.WerwolfGame.GameStates.DayPhases.Semi;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import wwBot.Globals;
+import wwBot.Interfaces.Command;
+import wwBot.WerwolfGame.Game;
+import wwBot.WerwolfGame.MessagesWW;
+import wwBot.WerwolfGame.Player;
+import wwBot.WerwolfGame.GameStates.GameState;
+import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
+import wwBot.WerwolfGame.cards.RoleDoppelgängerin;
+
+public class FirstNightSemi  {
+    GameState gameState;
+    Game game;
+    public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
+    Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(String.CASE_INSENSITIVE_ORDER);
+    
+
+    public FirstNightSemi (Game getGame) {
+        game = getGame;
+        gameState = game.gameState;
+        mapExistingRoles = game.gameState.mapExistingRoles;
+
+        registerNightCommands();
+        initiateFirstNight();
+        
+    }
+
+    private void initiateFirstNight() {
+        // sets mute and creates the WWchat
+        Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
+        gameState.createWerwolfChat();
+
+        // generates which Roles need to be called
+        var listRolesToBeCalled = firstNightRoles();
+        MessagesWW.onFirstNightSemi(game, listRolesToBeCalled);
+
+        // specific cards like the amor are handeled
+        specificCardInteractions();
+
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.orange,
+                "Wenn bu bereit bist die erste Nacht zu beenden tippe den Command \"&endNight\"",
+                "PS: niemand stirbt in der ersten Nacht");
+
+    }
+
+    private void specificCardInteractions() {
+        // the Günstling gets a list with all the WW
+        if (mapExistingRoles.get("Günstling") != null) {
+            var privateChannel = mapExistingRoles.get("Günstling").get(0).user.getPrivateChannel().block();
+            MessagesWW.günstlingMessage(privateChannel, mapExistingRoles, game);
+
+        }
+
+        // if there is a AMOR, the moderator gets access to a command, which sets the
+        // "inLoveWith" variable of two players to eachother
+        if (mapExistingRoles.get("Amor") != null) {
+
+            MessagesWW.triggerAmor(game, null);
+            Command setLoveCommand = (event, parameters, msgChannel) -> {
+                if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                    if (parameters != null && parameters.size() == 2) {
+
+                        // finds the players
+                        var player1 = game.findPlayerByName(parameters.get(0));
+                        var player2 = game.findPlayerByName(parameters.get(1));
+
+                        // sets the "inLoveWith" variables
+                        if (player1 != null && player2 != null) {
+                            if (player1 != player2) {
+                                player1.role.inLoveWith = player2;
+                                player2.role.inLoveWith = player1;
+                                MessagesWW.amorSuccess(game, player1,
+                                        player2);
+
+                            } else {
+                                MessagesWW.errorPlayersIdentical(msgChannel);
+                            }
+                        } else {
+                            MessagesWW.errorPlayerNotFound(msgChannel);
+                        }
+                    } else {
+                        MessagesWW.errorWrongSyntax(msgChannel);
+                    }
+                } else {
+                    MessagesWW.errorModOnlyCommand(msgChannel);
+                }
+            };
+            mapCommands.put("inLove", setLoveCommand);
+            mapCommands.put("Love", setLoveCommand);
+            mapCommands.put("Amor", setLoveCommand);
+        }
+
+        // Doppelgängerin
+        if (mapExistingRoles.get("Doppelgängerin") != null) {
+
+            MessagesWW.triggerDoppelgängerin(game, null);
+            Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
+                if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                    if (parameters != null && parameters.size() == 1) {
+                        // finds the players
+                        var foundPlayer = game.findPlayerByName(parameters.get(0));
+
+                        if (foundPlayer != null) {
+                            var dp = mapExistingRoles.get("Doppelgängerin").get(0);
+
+                            // sets the variable
+                            var dpRole = (RoleDoppelgängerin) dp.role;
+                            dpRole.boundTo = foundPlayer;
+                            MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
+
+                        } else {
+                            MessagesWW.errorPlayerNotFound(msgChannel);
+                        }
+                    } else {
+                        MessagesWW.errorWrongSyntax(msgChannel);
+                    }
+                } else {
+                    MessagesWW.errorModOnlyCommand(msgChannel);
+                }
+            };
+            mapCommands.put("clone", setDoppelgängerinCommand);
+            mapCommands.put("Doppelgängerin", setDoppelgängerinCommand);
+
+        }
+
+    }
+
+    private ArrayList<Player> firstNightRoles() {
+        var uniqueRolesInThisPhase = new ArrayList<String>();
+        var list = new ArrayList<Player>();
+
+        uniqueRolesInThisPhase.add("Günstling");
+        uniqueRolesInThisPhase.add("Amor");
+        uniqueRolesInThisPhase.add("Doppelgängerin");
+        for (String name : uniqueRolesInThisPhase) {
+            if (mapExistingRoles.containsKey(name)) {
+                list.add(mapExistingRoles.get(name).get(0));
+            }
+        }
+
+        if (mapExistingRoles.containsKey("Werwolf")) {
+            for (Player player : mapExistingRoles.get("Werwolf")) {
+                list.add(player);
+            }
+        }
+
+        if (mapExistingRoles.containsKey("Seher")) {
+            for (Player player : mapExistingRoles.get("Seher")) {
+                list.add(player);
+            }
+        }
+        return list;
+
+    }
+    // --------------- Commands -------------------
+
+    public void registerNightCommands() {
+
+        // replys with pong!
+        Command pingCommand = (event, parameters, msgChannel) -> {
+            event.getMessage().getChannel().block().createMessage("Pong! FirstNightPhase").block();
+        };
+        mapCommands.put("ping", pingCommand);
+
+        // shows the available Commands in this Phase
+        Command helpCommand = (event, parameters, msgChannel) -> {
+            // replies to the moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                MessagesWW.sendHelpFirstNightMod(msgChannel);
+            } else {
+                MessagesWW.sendHelpFirstNight(msgChannel, false);
+            }
+        };
+        mapCommands.put("help", helpCommand);
+        mapCommands.put("hilfe", helpCommand);
+
+        // shows the moderator the list of players
+        Command endNightCommand = (event, parameters, msgChannel) -> {
+
+            // compares the Snowflake of the Author to the Snowflake of the Moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                endFirstNight();
+            } else {
+                MessagesWW.errorModOnlyCommand(msgChannel);
+            }
+        };
+        mapCommands.put("endNight", endNightCommand);
+        mapCommands.put("next", endNightCommand);
+        mapCommands.put("end", endNightCommand);
+
+    }
+
+    private void endFirstNight() {
+
+        // unmutes, deletes the WWChat and changes the DayPhase
+        Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
+        gameState.deleteWerwolfChat();
+        gameState.changeDayPhase(DayPhase.DAY);
+
+    }
+}

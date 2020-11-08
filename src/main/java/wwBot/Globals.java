@@ -9,8 +9,12 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
-import wwBot.cards.Card;
-import wwBot.cards.Role;
+import wwBot.WerwolfGame.Game;
+import wwBot.WerwolfGame.MessagesWW;
+import wwBot.WerwolfGame.Player;
+import wwBot.WerwolfGame.ReadJSONCard;
+import wwBot.WerwolfGame.cards.Card;
+import wwBot.WerwolfGame.cards.Role;
 
 //In dieser Klasse werden alle Global nützliche Methoden geseichert
 public class Globals {
@@ -241,18 +245,18 @@ public class Globals {
 	public static Player commandPlayerFinder(MessageCreateEvent event, List<String> parameters,
 			MessageChannel msgChannel, Game game) {
 		if (parameters == null || parameters.size() > 2) {
-			MessagesMain.errorWrongSyntax(msgChannel);
+			MessagesWW.errorWrongSyntax(msgChannel);
 			return null;
 		} else {
 			// finds the player
 			var player = game.findPlayerByName(parameters.get(0));
 
 			if (player == null) {
-				MessagesMain.errorPlayerNotFound(msgChannel);
+				MessagesWW.errorPlayerNotFound(msgChannel);
 				return null;
 			}
 			if (!player.role.deathDetails.alive) {
-				MessagesMain.errorPlayerAlreadyDead(msgChannel);
+				MessagesWW.errorPlayerAlreadyDead(msgChannel);
 				return null;
 			}
 

@@ -7,6 +7,9 @@ import java.util.List;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.util.Snowflake;
+import wwBot.WerwolfGame.Game;
+import wwBot.WerwolfGame.MessagesWW;
+import wwBot.smallerGames.AmongUs;
 
 public class CommandHandler {
     public static String WWprefix = Main.prefix;
@@ -30,7 +33,6 @@ public class CommandHandler {
                 AmongUs.commands(event);
             }
 
-
             if (messageContent.startsWith(WWprefix)) {
                 var server = event.getGuild().block();
                 var serverId = event.getGuildId().get();
@@ -51,9 +53,8 @@ public class CommandHandler {
                         mapRunningGames.put(serverId, game);
 
                     } else if (mapRunningGames.containsKey(serverId)) {
-                        event.getMessage().getChannel().block().createMessage(
-                                "use **" + WWprefix + "DeleteGame** to delete the current game before starting a new one")
-                                .block();
+                        event.getMessage().getChannel().block().createMessage("use **" + WWprefix
+                                + "DeleteGame** to delete the current game before starting a new one").block();
                     }
 
                 }
@@ -79,7 +80,7 @@ public class CommandHandler {
                 }
                 // erklärt den Bot
                 else if (parameters.get(0).equalsIgnoreCase(WWprefix + "explanation")) {
-                    MessagesMain.sendGameExplanation(channel);
+                    MessagesWW.sendGameExplanation(channel);
 
                 }
 
@@ -96,19 +97,18 @@ public class CommandHandler {
                 }
                 // ruft help für main auf(nur wenn noch kein Spiel läuft)
                 else if (parameters.get(0).equalsIgnoreCase(WWprefix + "help")) {
-                    MessagesMain.sendHelpMain(channel);
+                    MessagesWW.sendHelpMain(channel);
 
                 }
                 // prints a list of the commands of this class
-                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "showCommands") || parameters.get(0).equalsIgnoreCase(WWprefix + "lsCommands")) {
-                    Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesMain.getCommandsMain());
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "showCommands")
+                        || parameters.get(0).equalsIgnoreCase(WWprefix + "lsCommands")) {
+                    Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesWW.getCommandsMain());
                 } else {
-                    MessagesMain.errorCommandNotFound(channel);
+                    MessagesWW.errorCommandNotFound(channel);
                 }
             }
 
-
-            
             // falls die Nachricht eine DM ist, wird überprüft ob sich der Speler in einem
             // Game befindet
         } else if (!event.getGuildId().isPresent() && event.getMessage().getContent().isPresent()) {
@@ -163,7 +163,7 @@ public class CommandHandler {
                                 }
                             }
                         } else {
-                            MessagesMain.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
+                            MessagesWW.errorNoAccessToCommand(game, event.getMessage().getChannel().block());
 
                         }
                     }
@@ -174,12 +174,6 @@ public class CommandHandler {
             }
         }
     }
-
-
-
-
-
-
 
     private static void handleMemes(MessageCreateEvent event, List<String> parameters) {
         if (event.getMessage().getContent().isPresent()) {
@@ -203,11 +197,8 @@ public class CommandHandler {
 
             if (parameters.get(0).equalsIgnoreCase("Hello") && parameters.get(1).equalsIgnoreCase("There")) {
 
-                event.getMessage().getChannel().block().createEmbed(spec -> {
-                    spec.setImage(
-                            "https://cdn.discordapp.com/attachments/707699215853289492/728718698646601738/NA9Cn1Q.jpg");
-
-                }).block();
+                event.getMessage().getChannel().block()
+                        .createMessage("https://tenor.com/view/grevious-general-kenobi-star-wars-gif-11406339").block();
 
             }
 
@@ -216,6 +207,34 @@ public class CommandHandler {
                 event.getMessage().getChannel().block()
                         .createMessage("https://tenor.com/view/uno-no-u-reverse-card-reflect-glitch-gif-14951171")
                         .block();
+
+            }
+
+            if (parameters.get(0).equalsIgnoreCase("I") && parameters.get(1).equalsIgnoreCase("am")
+                    && parameters.get(2).equalsIgnoreCase("speed")) {
+
+                event.getMessage().getChannel().block()
+                        .createMessage("https://tenor.com/view/racing-speeding-switchinglanes-drivingcrazy-gif-8850377")
+                        .block();
+
+            }
+
+            if (parameters.get(0).equalsIgnoreCase("howdy")) {
+                var a = 1;
+                try {
+                    if (parameters.size() > 1 && parameters.get(1) != null) {
+                        a = Integer.parseInt(parameters.get(1)) < 30 ? Integer.parseInt(parameters.get(1)) : 1 ;
+                    } 
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+
+                for (int i = 0; i < a; i++) {
+                    event.getMessage().getChannel().block()
+                            .createMessage("https://tenor.com/view/aaa-cowboy-aaa-cowboy-music-video-gif-15142935")
+                            .block();
+                }
 
             }
 
