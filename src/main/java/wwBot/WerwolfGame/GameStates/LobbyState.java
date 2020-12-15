@@ -202,7 +202,8 @@ public class LobbyState extends GameState {
                         // calls addCardToDeck and recieves the Status message back
                         String message = addCardToDeck(requestedCard, deck);
                         msgChannel.createMessage(message).block();
-
+                    } else if(cardName.equals("") || cardName.equals(" ")){
+                        System.out.println("whitespace as cardname found & ignored");
                     } else {
                         MessagesWW.errorCardNotFound(msgChannel);
                     }
@@ -404,7 +405,7 @@ public class LobbyState extends GameState {
                     // Game starts
                 } else if (deck.size() == listJoinedUsers.size()) {
 
-                    msgChannel.createMessage("Einen Moment Geduld...").block();
+                    var loadingMsg = msgChannel.createMessage("Einen Moment Geduld...").block();
                     // creates a temporary copy of the Deck
                     var tempDeck = new ArrayList<Role>(deck);
 
@@ -420,17 +421,22 @@ public class LobbyState extends GameState {
                         player.role = tempDeck.get(rand);
                         tempDeck.remove(rand);
 
-                        // loads the values into the game
+                        // saves the player
                         game.mapPlayers.put(player.user.getId(), player);
-                        game.deck = deck;
-                        game.gameRuleAutomaticMod = gameRuleAutomatic;
-                        game.userModerator = userModerator;
+                        
 
                         // the player gets a message describing his role
                         var privateChannel = player.user.getPrivateChannel().block();
                         privateChannel.createMessage("Es sieht aus als währst du ein/e " + player.role.name).block();
                         Globals.printCard(player.role.name, privateChannel);
                     }
+
+                    // saves values into the game
+                    game.deck = deck;
+                    game.gameRuleAutomaticMod = gameRuleAutomatic;
+                    game.userModerator = userModerator;
+
+                    loadingMsg.delete().block();
                     msgChannel.createMessage("Game Created!").block();
                     // initializes the next game state
                     if (gameRuleAutomatic) {

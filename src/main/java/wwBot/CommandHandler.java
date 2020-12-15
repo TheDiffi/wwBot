@@ -223,12 +223,13 @@ public class CommandHandler {
                 var a = 1;
                 try {
                     if (parameters.size() > 1 && parameters.get(1) != null) {
-                        a = Integer.parseInt(parameters.get(1)) < 30 ? Integer.parseInt(parameters.get(1)) : 1 ;
-                    } 
+                        a = Integer.parseInt(parameters.get(1)) < 3 && Integer.parseInt(parameters.get(1)) > 1
+                                ? Integer.parseInt(parameters.get(1))
+                                : 1;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
 
                 for (int i = 0; i < a; i++) {
                     event.getMessage().getChannel().block()
@@ -268,6 +269,9 @@ public class CommandHandler {
                         }
                         if (youmeanttosay.indexOf("'m") != -1) {
                             youmeanttosay = youmeanttosay.replace("'m", "'re");
+                        }
+                        if (youmeanttosay.indexOf("bin") != -1) {
+                            youmeanttosay = youmeanttosay.replace("bin", "are");
                         }
                     }
                     mssg += "\nI think you meant to say: " + youmeanttosay;

@@ -86,11 +86,10 @@ public class Day extends AutoDayPhase {
             if (!allowedToVote) {
                 MessagesWW.errorNotAllowedToVote(msgChannel);
 
-            } else if (allowedToVote) {
+            } else {
                 // finds the wanted player
                 Player votedFor = null;
-
-                // checks the syntax
+                    // checks the syntax
                 if (parameters == null || parameters.size() != 1) {
                     // wrong syntax
                     MessagesWW.errorWrongSyntax(msgChannel);
@@ -122,15 +121,15 @@ public class Day extends AutoDayPhase {
                     addVote(voter, votedFor);
                 }
 
+                //removes the original message
+                if(msgChannel.getType() != Channel.Type.DM){
+                    event.getMessage().delete().block();
+                } 
+
                 // counts the votes: checks if all players have voted and if there is a mojority
                 countVotes();
+                
             }
-
-            if(msgChannel.getType() != Channel.Type.DM){
-                event.getMessage().delete().block();
-            } 
-            
-
         };
         mapCommands.put("vote", voteCommand);
 
@@ -183,8 +182,7 @@ public class Day extends AutoDayPhase {
             // searches for the person with the highest votes. If there are more than one
             // hasMajority gets set to false
             for (var entry : mapAmountVotes.entrySet()) {
-                //
-                if (!entry.getKey().name.equals("Nobody")) {
+                // TODO: if mojority votes nobody, nobody dies
                     if (votes == entry.getValue()) {
                         hasMajority = false;
                     } else if (votes < entry.getValue()) {
@@ -192,16 +190,17 @@ public class Day extends AutoDayPhase {
                         hasMajority = true;
                         votes = entry.getValue();
                     }
-                }
+                
             }
 
             if (!hasMajority && mostVoted != null) {
-                MessagesWW.voteButNoMajority(game);
+                MessagesWW.voteResultNoMajority(game);
+
+            }else if(hasMajority && mostVoted != null && mostVoted.name=="Nobody"){
+                MessagesWW.voteResultNobody(game);
 
             } else if (hasMajority && mostVoted != null) {
                 checkLynchConditions(mostVoted);
-            } else if (mostVoted == null) {
-                game.gameState.killPlayer(null, "Dorfbewohner");
             }
         }
     }

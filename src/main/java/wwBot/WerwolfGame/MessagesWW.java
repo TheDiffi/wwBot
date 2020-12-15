@@ -128,14 +128,18 @@ public class MessagesWW {
 				"Beende zuerst die Nacht mit **\"&endNight\"**, und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
 	}
 
-	public static void onNightAuto(Game game) {
+	public static void onNightAuto(List<Player> pending, Game game) {
 		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT... 🌘", "");
+
+		Globals.createEmbed(game.mainChannel, Color.LIGHT_GRAY, "",
+				Globals.playerListToRoleList(pending, "Es erwachen", game));
 
 	}
 
 	public static void onWWTurn(MessageChannel mainChannel, TextChannel wwChat) {
 		Globals.createMessage(mainChannel,
 				"```Die Nacht schreitet fort und als das ganze Dorf in einen pechschwarzen Schatten getaucht ist, kriechen die Werwölfe aus ihrem Versteck... 🌕```");
+		Globals.createEmbed(mainChannel, Color.black, "DIE WERWÖLFE SCHLAGEN ZU 💀", "");
 
 		Globals.createEmbed(wwChat, Color.black, "DIE WERWÖLFE SCHLAGEN ZU 💀",
 				"Ihr könnt nun **&slay <Spieler>** benutzen um **EINEN** Spieler zu töten.");
@@ -203,10 +207,12 @@ public class MessagesWW {
 
 		Globals.createEmbed(game.mainChannel, Color.PINK, "Des Amors Liebespfeile haben ihr Ziel gefunden 💘!", "");
 
-		Globals.createEmbed(firstLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du fällst mit **" + secondLover.name
+		Globals.createEmbed(firstLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du fällst mit **"
+				+ secondLover.name
 				+ "** in eine unsterbliche Liebe. \n Eure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
 
-		Globals.createEmbed(secondLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du triffst dich mit **" + firstLover.name
+		Globals.createEmbed(secondLover.user.getPrivateChannel().block(), Color.PINK, "💘", "Du triffst dich mit **"
+				+ firstLover.name
 				+ "** und verliebst dich Unsterblich in sie/ihn \nEure Liebe ist do groß, dass ihr euch kein Leben ohne einander vorstellen könnt und deshalb sterbt sobald euer Partner stirbt");
 
 	}
@@ -248,6 +254,8 @@ public class MessagesWW {
 				"Die Person, welche du am Anfang des Spieles ausgewählt hast, ist gestorben. Durch deine ungwöhnlichen Fähigkeiten hast du seine Identität absorbiert. Du nimmst seine Rolle ein und wirst zu einem/einer "
 						+ unluckyPlayer.role.name);
 
+		Globals.printCard(unluckyPlayer.role.name, doppelgängerin.user.getPrivateChannel().block());
+
 		// message to all
 		Globals.createMessage(game.mainChannel,
 				"Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
@@ -261,7 +269,7 @@ public class MessagesWW {
 		for (int i = 0; i < mapExistingRoles.get("Werwolf").size(); i++) {
 			tempList.add(mapExistingRoles.get("Werwolf").get(i));
 		}
-		// there should be no wolfsjunges cuz its a ww
+
 		if (mapExistingRoles.containsKey("Wolfsjunges")) {
 			tempList.add(mapExistingRoles.get("Wolfsjunges").get(0));
 		}
@@ -562,7 +570,7 @@ public class MessagesWW {
 		}
 		Globals.createMessage(game.mainChannel,
 				"Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
-				true);
+				false);
 
 	}
 
@@ -597,7 +605,7 @@ public class MessagesWW {
 				"Die Würfel sind gefallen \nAuf dem Schafott steht: " + mostVoted.name, mssg);
 	}
 
-	public static void voteButNoMajority(Game game) {
+	public static void voteResultNoMajority(Game game) {
 		Globals.createMessage(game.mainChannel,
 				"Alle Spieler haben abgestimmt, jedoch gibt es **keine klare Mehrheit**. Es wird gebete, dass wenigstens ein Spieler seine Stimme ändert, damit es zu einer klaren Mehrheit kommt.",
 				false);
@@ -922,6 +930,12 @@ public class MessagesWW {
 		var randMssg = a.get((int) (Math.random() * a.size()));
 
 		Globals.createEmbed(msgChannel, Color.GREEN, randMssg, "");
+	}
+
+	public static void voteResultNobody(Game game) {
+		Globals.createMessage(game.mainChannel,
+				"Die Dorfbewohner beschließen, dass heute niemand sterben soll.",
+				false);
 	}
 
 }

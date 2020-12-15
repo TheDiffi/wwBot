@@ -1,11 +1,11 @@
 package wwBot.WerwolfGame.cards;
 
 public class RoleWerwolf extends Role {
-    // TODO: not working
+    // TODO: rethink
     public boolean isJunges;
 
     RoleWerwolf(boolean junges) {
-        super("Werwolf");
+        super(junges ? "Wolfsjunges" : "Werwolf");
         isJunges = junges;
     }
 

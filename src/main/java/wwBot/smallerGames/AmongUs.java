@@ -5,15 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.User;
 import wwBot.Globals;
 
 public class AmongUs {
 
     List<User> players = new ArrayList<>();
-
-    
+    static boolean muted = false;
 
     public static void commands(MessageCreateEvent event) {
         var serverId = event.getGuildId().get();
@@ -27,29 +25,23 @@ public class AmongUs {
 
         }
 
-        
         // gets all users in the authors voice channel & mutes them
         if (parameters.get(1).equalsIgnoreCase("mute")) {
-            var voiceStates = event.getMessage().getAuthor().get().asMember(serverId).block().getVoiceState().block().getChannel().block().getVoiceStates().collectList().block();
-            List<User> listUsers = new ArrayList<>();
-            for (VoiceState voiceState : voiceStates) {
-                listUsers.add(voiceState.getUser().block());
-            }
-        
-            Globals.setMuteAllPlayers(listUsers, true, serverId);
-            event.getMessage().getChannel().block().createMessage("Pong! Among Us").block();
+            Globals.setMuteAllPlayers(Globals.getUsersFromJoinedVoicechannel(serverId, event), true, serverId);
+
         }
 
         // gets all users in the authors voice channel & mutes them
         if (parameters.get(1).equalsIgnoreCase("unmute")) {
-            var voiceStates = event.getMessage().getAuthor().get().asMember(serverId).block().getVoiceState().block().getChannel().block().getVoiceStates().collectList().block();
-            List<User> listUsers = new ArrayList<>();
-            for (VoiceState voiceState : voiceStates) {
-                listUsers.add(voiceState.getUser().block());
-            }
-        
-            Globals.setMuteAllPlayers(listUsers, false, serverId);
-            event.getMessage().getChannel().block().createMessage("Pong! Among Us").block();
+            Globals.setMuteAllPlayers(Globals.getUsersFromJoinedVoicechannel(serverId, event), false, serverId);
+
+        }
+
+        // gets all users in the authors voice channel & mutes them
+        if (parameters.get(1).equalsIgnoreCase("next")) {
+
+            muted = muted ? false : true;
+            Globals.setMuteAllPlayers(Globals.getUsersFromJoinedVoicechannel(serverId, event), muted, serverId);
         }
     }
 

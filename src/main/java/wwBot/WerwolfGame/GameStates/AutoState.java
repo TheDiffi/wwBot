@@ -22,9 +22,6 @@ import wwBot.WerwolfGame.cards.RoleDoppelgängerin;
 import wwBot.WerwolfGame.cards.RoleHarterBursche;
 import wwBot.WerwolfGame.cards.RolePriester;
 
-//----------------------- ! WORK IN PROGRESS ! --------------------------------
-
-//TODO: refractore DayPhases
 
 public class AutoState extends MainState {
 
@@ -63,11 +60,12 @@ public class AutoState extends MainState {
                     Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
                 }
                 villageAgitated = false;
+                createWerwolfChat();
 
                 dayPhase = new Night(game);
                 dayPhaseEnum = DayPhase.NORMAL_NIGHT;
 
-                MessagesWW.onNightAuto(game);
+                MessagesWW.onNightAuto(pending, game);
 
                 // transitions to Morning
             } else if (nextPhase == DayPhase.MORNING) {
@@ -81,15 +79,16 @@ public class AutoState extends MainState {
 
                 dayPhase = new Morning(game);
 
+                changeDayPhase(DayPhase.DAY);
+
                 // transitions to Day
             } else if (nextPhase == DayPhase.DAY) {
                 resetStuff();
-                
+
                 dayPhaseEnum = DayPhase.DAY;
                 MessagesWW.onDayAuto(game);
 
                 dayPhase = new Day(game);
-
 
                 // transitions to 1st Night
             } else if (nextPhase == DayPhase.FIRST_NIGHT) {
@@ -97,6 +96,9 @@ public class AutoState extends MainState {
                 dayPhaseEnum = DayPhase.FIRST_NIGHT;
 
                 dayPhase = new FirstNight(game);
+
+                // does the first check in case noone gets called in the 1st night
+                endNightPhaseCheck();
 
             }
         }
@@ -110,6 +112,7 @@ public class AutoState extends MainState {
         for (var player : game.livingPlayers.values()) {
             player.role.deathDetails.deathState = DeathState.ALIVE;
         }
+        // TODO: read stats for statistics
         if (pending != null) {
             pending.clear();
         }
@@ -124,6 +127,7 @@ public class AutoState extends MainState {
             MessageChannel runningInChannel) {
         var handeled = false;
 
+        // chaecks if called by a player thats still alive
         if (livingPlayers.containsKey(event.getMessage().getAuthor().get().getId())) {
 
             // finds the Command in the dayPhase
@@ -188,8 +192,13 @@ public class AutoState extends MainState {
 
         // replys with pong!
         Command lsPendingCommand = (event, parameters, msgChannel) -> {
-            Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "",
-                    Globals.playerListToRoleList(pending, "Warte auf Rolle", game));
+            if (pending.size() == 0) {
+                Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "", "Noone to wait for.");
+            } else {
+                Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "",
+                        Globals.playerListToRoleList(pending, "Warte auf Rolle", game));
+            }
+
         };
         gameStateCommands.put("pending", lsPendingCommand);
         gameStateCommands.put("lsPending", lsPendingCommand);
@@ -217,11 +226,10 @@ public class AutoState extends MainState {
             // reveals the players death and identity
             sendDeathMessage(victim, cause);
 
-			checkConsequences(victim, cause);
-			
+            checkConsequences(victim, cause);
 
             return true;
-		}
+        }
         return false;
 
     }
@@ -359,7 +367,7 @@ public class AutoState extends MainState {
         // game end immediately if the last ww is found
         if (victim.role.name.equals("Werwolf") || victim.role.name.equals("Wolfsjunges")) {
             Globals.sleepWCatch(1500);
-        	checkIfGameEnds();
+            checkIfGameEnds();
         }
 
     }
@@ -412,7 +420,7 @@ public class AutoState extends MainState {
 
     public void endNightPhaseCheck() {
         if (pending == null || pending.isEmpty()) {
-            dayPhase.changeNightPhase();
+            dayPhase.nextNightPhase();
         }
     }
 }

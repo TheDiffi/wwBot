@@ -20,6 +20,7 @@ public class FirstNight extends AutoDayPhase {
         registerCommands();
 
         initiateRoles();
+
     }
 
     // loads all of the following Commands into mapCommands
@@ -44,16 +45,15 @@ public class FirstNight extends AutoDayPhase {
 
         // executes for every single card
         for (var player : game.mapPlayers.values()) {
-
             var state = (AutoState) game.gameState;
             state.setPending(player);
             player.role.executeFirstNight(player, game, state);
 
         }
-
     }
 
-    public void changeNightPhase() {
+    public void nextNightPhase() {
+        game.gameState.deleteWerwolfChat();
         game.gameState.changeDayPhase(DayPhase.DAY);
 
     }

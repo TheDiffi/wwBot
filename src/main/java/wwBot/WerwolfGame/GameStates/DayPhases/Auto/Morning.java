@@ -10,7 +10,6 @@ import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
 import wwBot.WerwolfGame.Player;
-import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 import wwBot.WerwolfGame.GameStates.MainState.DeathState;
 import wwBot.WerwolfGame.cards.RoleSäufer;
 
@@ -31,7 +30,6 @@ public class Morning extends AutoDayPhase {
 
         killEndangeredPlayers();
 
-        game.gameState.changeDayPhase(DayPhase.DAY);
     }
 
     // loads all of the following Commands into mapCommands
@@ -66,21 +64,31 @@ public class Morning extends AutoDayPhase {
 
     private void calculateEndangeredPlayers() {
 
+        // Säufer
+        if (mapExistingRoles.containsKey("Säufer")) {
+            var säufer = (RoleSäufer) mapExistingRoles.get("Säufer").get(0).role;
+            var player = mapExistingRoles.get("Säufer").get(0);
+
+            // removes the säufer from the list if he is being attacked by WW
+            if(säufer.deathDetails.deathState == DeathState.AT_RISK && säufer.deathDetails.killer.equals("Werwolf")){
+                player.role.deathDetails.deathState = DeathState.SAVED;
+            }
+
+            // adds the säufer to the list if the person he's with gets killed (even by e.g. witch)
+            if (säufer.drinkingAt.role.deathDetails.deathState == DeathState.AT_RISK) {
+                player.role.deathDetails.deathState = DeathState.AT_RISK;
+                
+            }
+        }
+        
+        //TODO: fix- adds the players that die twice to that list (?)
         for (var player : game.livingPlayers.values()) {
             if (player.role.deathDetails.deathState == DeathState.AT_RISK) {
                 endangeredPlayers.add(player);
             }
         }
 
-        // Säufer
-        if (mapExistingRoles.containsKey("Säufer")) {
-            var säufer = (RoleSäufer) mapExistingRoles.get("Säufer").get(0).role;
-
-            if (säufer.drinkingAt.role.deathDetails.deathState == DeathState.AT_RISK) {
-                säufer.deathDetails.deathState = DeathState.AT_RISK;
-                endangeredPlayers.add(mapExistingRoles.get("Säufer").get(0));
-            }
-        }
+        
 
 
     }

@@ -62,23 +62,24 @@ public class Night extends AutoDayPhase {
 		MessagesWW.onWWTurn(game.mainChannel, state.wwChat);
 
 		Command slayCommand = (event, parameters, msgChannel) -> {
-			var author = game.findPlayerByName(event.getMessage().getAuthor().get().getUsername());
-			if (author.role.name.equalsIgnoreCase("Werwolf") && msgChannel.equals(state.wwChat)) {
+			var author = game.mapPlayers.get(event.getMessage().getAuthor().get().getId());
+			if (author.role.name.equalsIgnoreCase("Werwolf") && msgChannel.equals(state.wwChat) && author.role.deathDetails.alive) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
 				if (victim != null) {
+					// gets DeathState
 					var dState = victim.role.deathDetails.deathState;
-					// updates the DeathState
+					// updates DeathState
 					if (dState == DeathState.PROTECTED) {
 						dState = DeathState.SAVED;
 
 					} else if (dState == DeathState.ALIVE) {
 						dState = DeathState.AT_RISK;
 						
-						    //TODO: überprüfe ob killer gesetzt werden
 						victim.role.deathDetails.killer = author.role.name;
 
 					}
+					// sets DeathState
 					victim.role.deathDetails.deathState = dState;
 
 					// other stuff
@@ -90,7 +91,7 @@ public class Night extends AutoDayPhase {
 
 					} else {
 						game.gameCommands.remove("slay");
-						changeNightPhase();
+						nextNightPhase();
 					}
 
 				}
@@ -120,7 +121,7 @@ public class Night extends AutoDayPhase {
 
 	}
 
-	public void changeNightPhase() {
+	public void nextNightPhase() {
 		nightPhase++;
 		changeNightPhaseTo(nightPhase);
 

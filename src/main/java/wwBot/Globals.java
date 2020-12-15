@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
@@ -94,8 +95,9 @@ public class Globals {
 
 			for (int i = 0; i < list.size(); i++) {
 				message += list.get(i).asMember(game.server.getId()).block().getDisplayName();
-				
-				if (!list.get(i).getUsername().equals(list.get(i).asMember(game.server.getId()).block().getDisplayName())) {
+
+				if (!list.get(i).getUsername()
+						.equals(list.get(i).asMember(game.server.getId()).block().getDisplayName())) {
 					message += " (aka. " + list.get(i).getUsername() + ")";
 				}
 				message += "\n";
@@ -114,7 +116,7 @@ public class Globals {
 		} else {
 
 			// header
-			mssg += "-------------------  " + title + "  -------------------";
+			mssg += "----------------  " + title + "  ----------------";
 			mssg += "```diff\n";
 
 			// lists every player in the list
@@ -318,7 +320,7 @@ public class Globals {
 		for (var player : mapPlayers.values()) {
 			listUsers.add(player.user);
 		}
-		
+
 		setMuteAllPlayers(listUsers, isMuted, serverId);
 
 	}
@@ -333,6 +335,18 @@ public class Globals {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static List<User> getUsersFromJoinedVoicechannel(Snowflake serverId, MessageCreateEvent event) {
+		var voiceStates = event.getMessage().getAuthor().get().asMember(serverId).block().getVoiceState().block()
+				.getChannel().block().getVoiceStates().collectList().block();
+
+		List<User> listUsers = new ArrayList<>();
+		for (VoiceState voiceState : voiceStates) {
+			listUsers.add(voiceState.getUser().block());
+		}
+		
+		return listUsers;
 	}
 
 }

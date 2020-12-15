@@ -13,8 +13,8 @@ public class ReactionHandler {
 
     public static void reactionAdded(ReactionAddEvent event) {
         
-        Message x = event.getChannel().block().createMessage("reacted! " + event.getEmoji().asUnicodeEmoji().get().getRaw()).block();
-        list.put(event.getMessage().block(), x);
+       // Message x = event.getChannel().block().createMessage("reacted! " + event.getEmoji().asUnicodeEmoji().get().getRaw()).block();
+       // list.put(event.getMessage().block(), x);
 	}
 
 	public static void reactionRemoved(ReactionRemoveEvent event) {

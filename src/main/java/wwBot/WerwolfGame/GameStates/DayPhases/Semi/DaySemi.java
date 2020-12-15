@@ -205,7 +205,7 @@ public class DaySemi  {
             }
 
             if (!hasMajority && mostVoted != null) {
-                MessagesWW.voteButNoMajority(game);
+                MessagesWW.voteResultNoMajority(game);
             }
 
             if (hasMajority && mostVoted != null) {
