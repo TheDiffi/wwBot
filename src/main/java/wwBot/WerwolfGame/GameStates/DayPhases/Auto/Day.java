@@ -34,7 +34,6 @@ public class Day extends AutoDayPhase {
 
     // TODO: if majority votes for nobody, nobody dies
 
-
     // --------------------- Commands ------------------------
 
     // loads all of the following Commands into mapCommands
@@ -89,7 +88,7 @@ public class Day extends AutoDayPhase {
             } else {
                 // finds the wanted player
                 Player votedFor = null;
-                    // checks the syntax
+                // checks the syntax
                 if (parameters == null || parameters.size() != 1) {
                     // wrong syntax
                     MessagesWW.errorWrongSyntax(msgChannel);
@@ -98,13 +97,12 @@ public class Day extends AutoDayPhase {
                     // removes the dash
                     var recievedName = Globals.removeDash(parameters.get(0));
 
-
                     // if the user votes for no one none
                     if (isEmptyPlayer(recievedName)) {
                         votedFor = registerEmptyPlayer();
                     } else {
                         // finds the player
-                        votedFor = game.findPlayerByNameLiving(recievedName);
+                        votedFor = game.findPlayerByName(recievedName);
                     }
 
                 }
@@ -121,14 +119,14 @@ public class Day extends AutoDayPhase {
                     addVote(voter, votedFor);
                 }
 
-                //removes the original message
-                if(msgChannel.getType() != Channel.Type.DM){
+                // removes the original message
+                if (msgChannel.getType() != Channel.Type.DM) {
                     event.getMessage().delete().block();
-                } 
+                }
 
                 // counts the votes: checks if all players have voted and if there is a mojority
                 countVotes();
-                
+
             }
         };
         mapCommands.put("vote", voteCommand);
@@ -183,20 +181,20 @@ public class Day extends AutoDayPhase {
             // hasMajority gets set to false
             for (var entry : mapAmountVotes.entrySet()) {
                 // TODO: if mojority votes nobody, nobody dies
-                    if (votes == entry.getValue()) {
-                        hasMajority = false;
-                    } else if (votes < entry.getValue()) {
-                        mostVoted = entry.getKey();
-                        hasMajority = true;
-                        votes = entry.getValue();
-                    }
-                
+                if (votes == entry.getValue()) {
+                    hasMajority = false;
+                } else if (votes < entry.getValue()) {
+                    mostVoted = entry.getKey();
+                    hasMajority = true;
+                    votes = entry.getValue();
+                }
+
             }
 
             if (!hasMajority && mostVoted != null) {
                 MessagesWW.voteResultNoMajority(game);
 
-            }else if(hasMajority && mostVoted != null && mostVoted.name=="Nobody"){
+            } else if (hasMajority && mostVoted != null && mostVoted.name == "Nobody") {
                 MessagesWW.voteResultNobody(game);
 
             } else if (hasMajority && mostVoted != null) {
@@ -260,8 +258,18 @@ public class Day extends AutoDayPhase {
 
     // returns an empty player type
     private Player registerEmptyPlayer() {
-        var emptyPlayer = new Player();
-        emptyPlayer.name = "Nobody";
+        Player emptyPlayer = null;
+        for (var entry : mapAmountVotes.entrySet()) {
+            if (entry.getKey().name.equals("Nobody")) {
+                emptyPlayer = entry.getKey();
+            }
+        }
+
+        if (emptyPlayer == null) {
+            emptyPlayer = new Player();
+            emptyPlayer.name = "Nobody";
+        }
+
         return emptyPlayer;
     }
 

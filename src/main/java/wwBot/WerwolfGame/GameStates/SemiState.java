@@ -51,7 +51,7 @@ public class SemiState extends MainState {
 	// greets the mod and waits for the mod to start the first night
 	private void greetMod(Game game) {
 		MessagesWW.greetMod(game);
-		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", game,
+		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler",
 				true);
 
 		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
@@ -145,6 +145,7 @@ public class SemiState extends MainState {
 		try {
 			unluckyPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
 		} catch (Exception e) {
+			System.out.println("Failed to mute " + unluckyPlayer.user.toString());
 		}
 
 		// reveals the players death and identity
@@ -394,6 +395,8 @@ public class SemiState extends MainState {
 		};
 		gameStateCommands.put("showCommands", showCommandsCommand);
 		gameStateCommands.put("lsCommands", showCommandsCommand);
+		gameStateCommands.put("Commands", showCommandsCommand);
+
 
 		// zeigt die verfügbaren commands
 		Command showModCommandsCommand = (event, parameters, msgChannel) -> {
@@ -410,7 +413,7 @@ public class SemiState extends MainState {
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(msgChannel, game.mapPlayers, "Alle Spieler", game, true);
+				Globals.printPlayersMap(msgChannel, game.mapPlayers, "Alle Spieler", true);
 			} else {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
@@ -421,7 +424,7 @@ public class SemiState extends MainState {
 		Command listLivingCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler", game, true);
+				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler",  true);
 			} else {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}

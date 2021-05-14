@@ -51,13 +51,17 @@ public class Morning extends AutoDayPhase {
     }
 
     private void killEndangeredPlayers() {
+        if (endangeredPlayers.size() == 0) {
+            game.mainChannel.createMessage("Test: No one died, right?");
 
-        for (Player victim : endangeredPlayers) {
-            
-            Globals.sleepWCatch(1500);
+        } else {
+            for (Player victim : endangeredPlayers) {
 
-            if (game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
-                game.mainChannel.createMessage("Test: No one died, right?");
+                Globals.sleepWCatch(game.avgDelaytime);
+
+                if (game.gameState.killPlayer(victim, victim.role.deathDetails.killer)) {
+                    game.mainChannel.createMessage("Test: No one died, right?");
+                }
             }
         }
     }
@@ -69,27 +73,27 @@ public class Morning extends AutoDayPhase {
             var säufer = (RoleSäufer) mapExistingRoles.get("Säufer").get(0).role;
             var player = mapExistingRoles.get("Säufer").get(0);
 
-            // removes the säufer from the list if he is being attacked by WW
-            if(säufer.deathDetails.deathState == DeathState.AT_RISK && säufer.deathDetails.killer.equals("Werwolf")){
+            //removes the säufer from the list if he is being attacked by WW
+            //TODO: it didnt send the säufer survives mssg
+            if (säufer.deathDetails.deathState == DeathState.AT_RISK && säufer.deathDetails.killer.equalsIgnoreCase("Werwolf")) {
                 player.role.deathDetails.deathState = DeathState.SAVED;
+                MessagesWW.säuferSurvives(game, player);
             }
 
-            // adds the säufer to the list if the person he's with gets killed (even by e.g. witch)
+            // adds the säufer to the list if the person he's with gets killed (even by e.g.
+            // witch)
             if (säufer.drinkingAt.role.deathDetails.deathState == DeathState.AT_RISK) {
                 player.role.deathDetails.deathState = DeathState.AT_RISK;
-                
+                player.role.deathDetails.killer = "Säufer";
+
             }
         }
-        
-        //TODO: fix- adds the players that die twice to that list (?)
+
         for (var player : game.livingPlayers.values()) {
             if (player.role.deathDetails.deathState == DeathState.AT_RISK) {
                 endangeredPlayers.add(player);
             }
         }
-
-        
-
 
     }
 }

@@ -15,7 +15,7 @@ public class RoleDoppelgängerin extends Role {
     }
 
     @Override
-    public void executeFirstNight(Player dp,Game game, AutoState state){
+    public void executeFirstNight(Player dp, Game game, AutoState state) {
         MessagesWW.triggerDoppelgängerin(game, dp);
 
         // registers a private commands which asks the player for the name of a player
@@ -27,21 +27,29 @@ public class RoleDoppelgängerin extends Role {
             }
             // finds the players
             var foundPlayer = game.findPlayerByName(parameters.get(0));
+
             if (foundPlayer != null) {
-                // saves the player in boundTo
-                boundTo = foundPlayer;
+                //checks if player chose himself
+                if (foundPlayer.user.getId().equals(dp.user.getId())) {
+                    MessagesWW.errorChoseSelf(msgChannel);
+                    return false;
 
-                //sends the mssg
-                MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
+                } else {
+                    // saves the player in boundTo
+                    boundTo = foundPlayer;
 
-                state.setDoneNight(dp);
-                return true;
+                    // sends the mssg
+                    MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
+
+                    state.setDoneNight(dp);
+                    return true;
+                }
             }
 
             MessagesWW.errorPlayerNotFound(msgChannel);
             return false;
         };
         game.addPrivateCommand(dp.user.getId(), dpCommand);
-       
+
     }
 }

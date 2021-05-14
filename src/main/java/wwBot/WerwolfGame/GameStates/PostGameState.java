@@ -45,6 +45,8 @@ public class PostGameState extends GameState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
         gameStateCommands.put("lsCommands", showCommandsCommand);
+        gameStateCommands.put("Commands", showCommandsCommand);
+
 
 
     }

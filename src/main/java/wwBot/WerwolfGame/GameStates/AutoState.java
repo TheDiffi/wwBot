@@ -43,6 +43,8 @@ public class AutoState extends MainState {
     public void start() {
         MessagesWW.onGameStartAuto(game);
         createDeathChat();
+
+        Globals.sleepWCatch(game.avgDelaytime);
         changeDayPhase(DayPhase.FIRST_NIGHT);
     }
 
@@ -62,10 +64,12 @@ public class AutoState extends MainState {
                 villageAgitated = false;
                 createWerwolfChat();
 
+                MessagesWW.onNightAuto(pending, game.mainChannel);
+
                 dayPhase = new Night(game);
                 dayPhaseEnum = DayPhase.NORMAL_NIGHT;
 
-                MessagesWW.onNightAuto(pending, game);
+                
 
                 // transitions to Morning
             } else if (nextPhase == DayPhase.MORNING) {
@@ -173,6 +177,8 @@ public class AutoState extends MainState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
         gameStateCommands.put("lsCommands", showCommandsCommand);
+        gameStateCommands.put("Commands", showCommandsCommand);
+
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
@@ -184,24 +190,26 @@ public class AutoState extends MainState {
 
         // listet die verbleibenden Spieler auf
         Command lsLivingCommand = (event, parameters, msgChannel) -> {
-            Globals.printPlayersMap(msgChannel, game.livingPlayers, "Am Leben", game, false);
+            Globals.printPlayersMap(msgChannel, game.livingPlayers, "Am Leben", false);
         };
         gameStateCommands.put("Alive", lsLivingCommand);
         gameStateCommands.put("ListLiving", lsLivingCommand);
         gameStateCommands.put("StillAlive", lsLivingCommand);
 
-        // replys with pong!
+        // lists the pending players
         Command lsPendingCommand = (event, parameters, msgChannel) -> {
             if (pending.size() == 0) {
                 Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "", "Noone to wait for.");
             } else {
                 Globals.createEmbed(msgChannel, Color.LIGHT_GRAY, "",
-                        Globals.playerListToRoleList(pending, "Warte auf Rolle", game));
+                        Globals.playerListToRoleList(pending, "Warte auf Rolle"));
             }
 
         };
         gameStateCommands.put("pending", lsPendingCommand);
+        gameStateCommands.put("listPending", lsPendingCommand);
         gameStateCommands.put("lsPending", lsPendingCommand);
+
 
     }
 
@@ -218,6 +226,11 @@ public class AutoState extends MainState {
 
     @Override
     public boolean killPlayer(Player victim, String cause) {
+
+        if (cause == null){
+            cause = "";
+            System.out.println("This was not supposed to happen: Cause is null at AutoState:killPlayer 232");
+        }
 
         if (checkIfDies(victim, cause)) {
             // kills player
@@ -239,10 +252,11 @@ public class AutoState extends MainState {
     public boolean checkIfDies(Player victim, String cause) {
         var dies = true;
 
+
         if (savedByPriester(victim)) {
             return false;
 
-        } else {
+        } else if (cause != null){
 
             // Verfluchter
             if (victim.role.name.equalsIgnoreCase("Verfluchter") && cause.equalsIgnoreCase("Werwolf")) {
@@ -279,8 +293,8 @@ public class AutoState extends MainState {
             var priester = (RolePriester) mapExistingRoles.get("Priester").get(0).role;
 
             if (priester.abilityActive && victim == priester.protectedPlayer) {
-                MessagesWW.savedByPriester(victim, game);
                 priester.abilityActive = false;
+                MessagesWW.savedByPriester(victim, game);
                 return true;
 
             }
@@ -298,6 +312,7 @@ public class AutoState extends MainState {
         try {
             victim.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
         } catch (Exception e) {
+            System.out.println("Failed to mute " + victim.user.toString());
         }
     }
 
@@ -318,7 +333,10 @@ public class AutoState extends MainState {
         }
 
         // Aussätzige
-        if (victim.role.name.equals("Aussätzige") && cause.equalsIgnoreCase("Werwolf")) {
+        if(cause == null){
+            System.out.println("This was not supposed to happen: Cause is null at AutoState:Aussätzige 335");
+        }
+        else if (victim.role.name.equals("Aussätzige") && cause.equalsIgnoreCase("Werwolf")) {
             MessagesWW.onAussätzigeDeath(game);
             wwInfected = true;
 
@@ -366,14 +384,17 @@ public class AutoState extends MainState {
 
         // game end immediately if the last ww is found
         if (victim.role.name.equals("Werwolf") || victim.role.name.equals("Wolfsjunges")) {
-            Globals.sleepWCatch(1500);
+            Globals.sleepWCatch(game.avgDelaytime);
             checkIfGameEnds();
         }
 
     }
 
+    //TODO: when killed and sved by priest it still wants to save a mssg?
     private void sendDeathMessage(Player player, String cause) {
-
+        if(cause == null){
+            cause = "";
+        }
         switch (cause) {
             case "Werwolf":
                 MessagesWW.deathByWW(game, player);

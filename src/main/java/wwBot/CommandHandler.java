@@ -102,7 +102,7 @@ public class CommandHandler {
                 }
                 // prints a list of the commands of this class
                 else if (parameters.get(0).equalsIgnoreCase(WWprefix + "showCommands")
-                        || parameters.get(0).equalsIgnoreCase(WWprefix + "lsCommands")) {
+                        || parameters.get(0).equalsIgnoreCase(WWprefix + "lsCommands")|| parameters.get(0).equalsIgnoreCase(WWprefix + "Commands")) {
                     Globals.createEmbed(channel, Color.CYAN, "Commands", MessagesWW.getCommandsMain());
                 } else {
                     MessagesWW.errorCommandNotFound(channel);
@@ -132,10 +132,10 @@ public class CommandHandler {
                     }
                 }
 
-                if (isInGame == 0 && game.userModerator.getId().equals(event.getMessage().getAuthor().get().getId())) {
+                if (isInGame == 0) {
                     event.getMessage().getChannel().block()
                             .createMessage(
-                                    "It looks like you are not in a game or that your game is still in lobby phase")
+                                    "It looks like you are not in a game yet")
                             .block();
 
                 } else if (isInGame > 1) {
@@ -185,7 +185,8 @@ public class CommandHandler {
                                 + "! Didiididn't see you the-re 😳. Yeah.. let's do this~! *blushes*")
                         .block();
             }
-
+            
+            /* siehe Stuben Bot
             if (parameters.get(0).equalsIgnoreCase("F")) {
 
                 event.getMessage().getChannel().block().createEmbed(spec -> {
@@ -239,6 +240,15 @@ public class CommandHandler {
 
             }
 
+            if ((event.getMessage().getContent().get().indexOf("comerade") != -1)
+                    || (event.getMessage().getContent().get().indexOf("Comerade") != -1)
+                    || (event.getMessage().getContent().get().indexOf("COMERADE") != -1)) {
+
+                event.getMessage().getChannel().block().createMessage(
+                        "https://tenor.com/view/russian-soldiers-russian-soldiers-soviet-russia-dance-gif-10348779")
+                        .block();
+            }
+
             // test (remove after)
             if (event.getMessage().getContent().get().indexOf("I ") != -1
                     || event.getMessage().getContent().get().indexOf("I'") != -1) {
@@ -277,10 +287,11 @@ public class CommandHandler {
                     mssg += "\nI think you meant to say: " + youmeanttosay;
 
                     spec.setContent(mssg);
-                    spec.setEmbed(b -> {
-                        b.setImage("https://i.imgur.com/8doX74q.jpg");
-
+                    
+                    spec.setEmbed(b -> { b.setImage("https://i.imgur.com/8doX74q.jpg");
+                     
                     });
+                    
                 }).block();
 
             } else if (event.getMessage().getContent().get().indexOf("idk") != -1) {
@@ -291,7 +302,7 @@ public class CommandHandler {
                 event.getMessage().delete().block();
                 event.getMessage().getChannel().block()
                         .createMessage(event.getMember().get().getMention() + " **WE** don't care").block();
-            }
+            } */
         }
     }
 

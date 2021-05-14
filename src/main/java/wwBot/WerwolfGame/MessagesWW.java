@@ -128,11 +128,13 @@ public class MessagesWW {
 				"Beende zuerst die Nacht mit **\"&endNight\"**, und versichere dich, dass alle Spieler wach sind bevor du den Spieler tötest und somit auch die Identität des Spielers preisgibst. Die Werwölfe haben Nachts immer auf einen Werwolf-Chat zugriff.");
 	}
 
-	public static void onNightAuto(List<Player> pending, Game game) {
-		Globals.createEmbed(game.mainChannel, Color.decode("#191970"), "Es wird NACHT... 🌘", "");
+	public static void onNightAuto(List<Player> pending, MessageChannel channel) {
+		Globals.createEmbed(channel, Color.decode("#191970"), "Es wird NACHT... 🌘", "");
 
-		Globals.createEmbed(game.mainChannel, Color.LIGHT_GRAY, "",
-				Globals.playerListToRoleList(pending, "Es erwachen", game));
+	}
+
+	public static void erwachenSpieler(MessageChannel mainChannel, List<Player> erwachen) {
+		Globals.createEmbed(mainChannel, Color.LIGHT_GRAY, "", Globals.playerListToRoleList(erwachen, "Es erwachen"));
 
 	}
 
@@ -152,12 +154,12 @@ public class MessagesWW {
 
 	// MORNING
 	public static void onMorningAuto(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
+		Globals.createEmbed(game.mainChannel, Color.decode("#cf9b2b"), "Der MORGEN Bricht An...🌅",
 				"Die Dorfbewohner erwachen, froh es durch die Nacht geschafft zu haben. Wer wird heute von ihnen gegangen sein?");
 	}
 
 	public static void onMorningSemi(Game game) {
-		Globals.createEmbed(game.mainChannel, Color.ORANGE, "Der MORGEN Bricht An...🌅",
+		Globals.createEmbed(game.mainChannel, Color.decode("#cf9b2b"), "Der MORGEN Bricht An...🌅",
 				"Die Dorfbewohner erwachen und ihnen schwant übles. Wer wird heute von ihnen gegangen sein?");
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.ORANGE, "MORGEN",
 				"```In dieser Phase tötest du die Spieler welche in der vorherigen Nacht getötet wurden.```\nBeende diese Phase mit \""
@@ -226,7 +228,7 @@ public class MessagesWW {
 					false);
 		} else {
 			Globals.createMessage(dp.user.getPrivateChannel().block(),
-					"Als Doppelgängerin kannst du mir nun den Namen eines Spielers deiner Wahl mitteilen. \nFalls diese Person stirbt nimmst du die Rolle dieser Person an. Solltest du so zum Beispiel unabsichtlich einen Werwolf gewählt haben und dieser stirbt, wirst du zum Werwolf und kämpfst anschließend Seite an Seite mit den anderen Werwölfen.\n\nSchreibe nun einen Namen deiner Wahl, auf das sich eure Schicksale für immer verweben.");
+					"Als Doppelgängerin kannst du mir nun den Namen eines Spielers deiner Wahl mitteilen. \nFalls diese Person stirbt nimmst du die Rolle dieser Person an. \nSolltest du so zum Beispiel unabsichtlich einen Werwolf gewählt haben und dieser stirbt, wirst du zum Werwolf und kämpfst anschließend Seite an Seite mit den anderen Werwölfen.\n\n~ __Schreibe nun einen Namen deiner Wahl, auf das sich eure Schicksale für immer verweben.__ ~");
 		}
 	}
 
@@ -257,7 +259,7 @@ public class MessagesWW {
 		Globals.printCard(unluckyPlayer.role.name, doppelgängerin.user.getPrivateChannel().block());
 
 		// message to all
-		Globals.createMessage(game.mainChannel,
+		Globals.createEmbed(game.mainChannel, Color.decode("#9b1f74"), "",
 				"Unbemerkt saugt die Doppelgängerin die Identität des Toten auf und verwandelt sich... ");
 	}
 
@@ -275,7 +277,7 @@ public class MessagesWW {
 		}
 
 		Globals.createEmbed(privateChannel, Color.RED, "",
-				Globals.playerListToList(tempList, "Die Werwölfe sind:", game, false));
+				Globals.playerListToList(tempList, "Die Werwölfe sind:", false));
 
 	}
 
@@ -463,7 +465,7 @@ public class MessagesWW {
 
 		if (!roleZauberer.healUsed) {
 			Globals.createEmbed(playerZauberer.user.getPrivateChannel().block(), Color.RED, "In Todesgefahr",
-					Globals.playerListToList(atRiskPlayers, "AT RISK", game, false));
+					Globals.playerListToList(atRiskPlayers, "AT RISK", false));
 			message += "\nbenutze: **&heal <Player>** um einen Spieler der obigen Liste vor dem sicheren Tod zu bewahren.\n";
 		}
 		if (!roleZauberer.poisonUsed) {
@@ -483,7 +485,7 @@ public class MessagesWW {
 	// ---------DEATH MESSAGES--------------------------------------------
 
 	public static String revealId(Player player, Game game) {
-		var mssg = player.name + " war ein **" + player.role.name + "**";
+		var mssg = player.name + " war **" + player.role.name + "**";
 		return mssg;
 	}
 
@@ -568,9 +570,8 @@ public class MessagesWW {
 					"Das Wolfsjunges ist gestorben! Vergiss nicht, in der nächsten Nacht dürfen die Werwölfe zwei Personen töten.",
 					false);
 		}
-		Globals.createMessage(game.mainChannel,
-				"Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.",
-				false);
+		Globals.createEmbed(game.mainChannel, Color.red, "",
+				"Die Werwölfmutter ist über ihren Verlust entsetzt und die Werwölfe beschließen, dass es in der nächsten Nacht 2 Tode geben wird.");
 
 	}
 
@@ -581,9 +582,13 @@ public class MessagesWW {
 
 	public static void onJägerDeath(Game game, Player player) {
 		Globals.createMessage(game.mainChannel,
-				"Mit letzter Kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.", true);
+				"Mit letzter Kraft zückt der Jäger sein Gewehr. Schreibe mir nun wen du töten möchtest.", false);
 		Globals.createEmbed(player.user.getPrivateChannel().block(), Color.RED, "Du bist gefallen",
 				"Als Jäger kannst du nun noch einen Schuss aus deinem Gewehr abgeben bevor du stirbst.\nSchreibe mir nun den Namen der Person die du töten möchtest!");
+	}
+
+	public static void säuferSurvives(Game game, Player player) {
+		Globals.createMessage(game.mainChannel, "TODO: fill säuferSurvives", false);
 	}
 
 	// ---------VOTE MESSAGES--------------------------------------------
@@ -716,9 +721,9 @@ public class MessagesWW {
 	public static String getCommandsGame() {
 		var mssg = "\n ---- Utility ----";
 		mssg += buildDescription("showCard <Cardname>", "Zeigt die Details einer Karte");
-		mssg += buildDescription("showDeck", "Zeigt das aktuelle Kartendeck");
 		mssg += buildDescription("allCards", "Listet ALLE Spielkarten auf");
 		mssg += buildDescription("manual", "Zeigt die Spielanleitung");
+		mssg += buildDescription("showDeck", "Zeigt das aktuelle Kartendeck");
 
 		return mssg;
 	}
@@ -759,8 +764,8 @@ public class MessagesWW {
 		mssg += buildDescription("listVotes", "Listet alle Stimmen auf");
 
 		mssg += "\n ---- Night ----";
-		mssg += buildDescription("listPending",
-				"Listet alle Rollen auf welche noch handeln müssen, bevor es Tag werden kann");
+		mssg += buildDescription("listPending", "Listet alle Rollen welche in dieser Nacht noch handeln müssen");
+		mssg += buildDescription("listLiving", "Listet alle lebenden Spieler auf");
 
 		return mssg;
 	}
@@ -913,8 +918,12 @@ public class MessagesWW {
 	}
 
 	public static void errorChoseIdenticalPlayer(MessageChannel msgChannel) {
-		msgChannel.createMessage("```diff\n-E: You cannot chose the same player as last round. Try again.\n```")
+		msgChannel.createMessage("```diff\n-E: You cannot choose the same player as last round. Try again.\n```")
 				.block();
+	}
+
+	public static void errorChoseSelf(MessageChannel msgChannel) {
+		msgChannel.createMessage("```diff\n-E: You cannot choose yourself. Try again.\n```").block();
 	}
 
 	public static void errorCommandNotFound(MessageChannel msgChannel) {
@@ -925,7 +934,7 @@ public class MessagesWW {
 
 	public static void confirm(MessageChannel msgChannel) {
 
-		var a = Arrays.asList("Okay", "OK", "Alrighty", "You're the Boss", "Done!", "Good Decision ;)");
+		var a = Arrays.asList("Okay", "OK", "Alrighty", "You're the Boss", "Done!", "Good Decision ;)", "Nice!");
 
 		var randMssg = a.get((int) (Math.random() * a.size()));
 
@@ -933,8 +942,7 @@ public class MessagesWW {
 	}
 
 	public static void voteResultNobody(Game game) {
-		Globals.createMessage(game.mainChannel,
-				"Die Dorfbewohner beschließen, dass heute niemand sterben soll.",
+		Globals.createMessage(game.mainChannel, "Die Dorfbewohner beschließen, dass heute niemand sterben soll.",
 				false);
 	}
 

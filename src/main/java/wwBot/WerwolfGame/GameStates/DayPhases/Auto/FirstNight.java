@@ -1,5 +1,6 @@
 package wwBot.WerwolfGame.GameStates.DayPhases.Auto;
 
+import wwBot.Globals;
 import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
@@ -11,15 +12,21 @@ import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 public class FirstNight extends AutoDayPhase {
 
     private Game game;
+    private AutoState state;
+
 
     public FirstNight(Game getGame) {
         game = getGame;
+        state = (AutoState) game.gameState;
         MessagesWW.onFirstNightAuto(game);
 
         // loads the Commands of the state
         registerCommands();
 
         initiateRoles();
+
+        Globals.sleepWCatch(game.avgDelaytime);
+        MessagesWW.erwachenSpieler(game.mainChannel, state.pending);
 
     }
 

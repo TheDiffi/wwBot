@@ -69,6 +69,8 @@ public class Main {
 
                 });
 
+        System.out.println("--- READY ---");
+
         // DO NOT REMOVE
         client.login().block();
     }

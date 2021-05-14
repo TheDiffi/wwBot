@@ -40,6 +40,7 @@ public class Game {
     public MessageChannel mainChannel;
     public GameState gameState;
     public User userModerator;
+    public int avgDelaytime = 1000;
 
     public Game(Guild guild, MessageChannel givenChannel) {
 
@@ -68,6 +69,7 @@ public class Game {
 
     public void handleCommands(MessageCreateEvent event, MessageChannel msgChannel) {
 
+        
         String messageContent = event.getMessage().getContent().orElse("");
         List<String> parameters = new LinkedList<>(Arrays.asList(messageContent.split(" ")));
         var requestedCommand = parameters.remove(0);

@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 import discord4j.core.object.PermissionOverwrite;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
@@ -78,7 +76,7 @@ public class MainState extends GameState {
 		// Sends the first messages, explaining this Chat
 		MessagesWW.wwChatGreeting(wwChat);
 		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-				Globals.playerListToList(tempList, "Werwölfe Sind", game, true));
+				Globals.playerListToList(tempList, "Werwölfe Sind", true));
 
 	}
 
@@ -120,7 +118,7 @@ public class MainState extends GameState {
 
 		// Sends the first messages, explaining this Chat
 		MessagesWW.deathChatGreeting(deathChat, game);
-		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", game, true);
+		Globals.printPlayersMap(deathChat, game.mapPlayers, "Alle Spieler", true);
 
 	}
 
@@ -218,7 +216,12 @@ public class MainState extends GameState {
 			}
 		}
 
-		// endMainGame: @param1 int winner: 1 = Dorfbewohner, 2 = Werwölfe
+		// endMainGame: @param1 int winner: 1 = Dorfbewohner, 2 = Werwölfe, 3 = Ausgleich
+		if(livingPlayers.size() == 0){
+			endMainGame(3);
+			return true;
+
+		}
 		if (amountWW < 1) {
 			endMainGame(1);
 			return true;
@@ -242,6 +245,8 @@ public class MainState extends GameState {
 			Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
 		} else if (winner == 2) {
 			Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
+		} else if (winner == 3){
+			Globals.createEmbed(game.mainChannel, Color.GRAY, "GAME END: UNENTSCHIEDEN!", "");
 		}
 		// changes gamestate
 		game.changeGameState(new PostGameState(game, winner));

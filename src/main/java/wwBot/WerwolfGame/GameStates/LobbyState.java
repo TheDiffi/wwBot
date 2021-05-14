@@ -63,6 +63,7 @@ public class LobbyState extends GameState {
         };
         gameStateCommands.put("showCommands", showCommandsCommand);
         gameStateCommands.put("lsCommands", showCommandsCommand);
+        gameStateCommands.put("Commands", showCommandsCommand);
 
         // join füght den user zu listJoinedUsers hinzu
         Command joinCommand = (event, parameters, msgChannel) -> {

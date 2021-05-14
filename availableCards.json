@@ -8,7 +8,7 @@
             "value": "-6",
             "minPlayers": "0",
             "friendly": "false",
-            "description": "Während der ersten Nacht wird für die Werwölfe ein eigener Textchannel geöffnet. In jeder folgenden Nacht müssen sich die Werwölfe gemeinsam auf ein Opfer einigen, das daraufhin getötet wird. Die Werwölfe dürfen während der Nacht keinen anderen Werwolf als Opfer auswählen. Werwölfe versuchen während des Tages ihren wahren Charakter zu verheimlichen."
+            "description": "Während der ersten Nacht wird für die Werwölfe **ein eigener Textchannel auf dem Server** geöffnet. In jeder folgenden Nacht müssen sich die Werwölfe gemeinsam auf ein Opfer einigen, das daraufhin getötet wird. Die Werwölfe dürfen während der Nacht keinen anderen Werwolf als Opfer auswählen. Werwölfe versuchen während des Tages ihren wahren Charakter zu verheimlichen."
         }
     },
     {

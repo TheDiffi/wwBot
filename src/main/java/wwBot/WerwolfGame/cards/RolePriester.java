@@ -54,14 +54,19 @@ public class RolePriester extends Role {
                         var player = Globals.commandPlayerFinder(event2, parameters2, msgChannel2, game);
 
                         if (player != null) {
-                            protectedPlayer = player;
-                            usedAbility = true;
-                            abilityActive = true;
+                            if (player.equals(priester)) {
+                                MessagesWW.errorChoseSelf(msgChannel);
+                                return false;
+                            } else {
+                                protectedPlayer = player;
+                                usedAbility = true;
+                                abilityActive = true;
 
-                            MessagesWW.confirm(msgChannel);
+                                MessagesWW.confirm(msgChannel);
 
-                            state.setDoneNight(priester);
-                            return true;
+                                state.setDoneNight(priester);
+                                return true;
+                            }
 
                         } else {
                             return false;
@@ -79,8 +84,8 @@ public class RolePriester extends Role {
             };
             game.addPrivateCommand(priester.user.getId(), priesterCommand);
 
-        } else{
-            
+        } else {
+
             state.setDoneNight(priester);
 
         }

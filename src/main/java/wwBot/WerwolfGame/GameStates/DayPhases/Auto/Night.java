@@ -11,6 +11,7 @@ import wwBot.WerwolfGame.Player;
 import wwBot.WerwolfGame.GameStates.AutoState;
 import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 import wwBot.WerwolfGame.GameStates.MainState.DeathState;
+import wwBot.WerwolfGame.cards.RoleWerwolf;
 
 public class Night extends AutoDayPhase {
 
@@ -55,7 +56,12 @@ public class Night extends AutoDayPhase {
 			player.role.executePreWW(player, game, state);
 
 		}
-		state.endNightPhaseCheck();
+		if(!state.pending.isEmpty()){
+			MessagesWW.erwachenSpieler(game.mainChannel, state.pending);
+		}
+		if (state.pending == null || state.pending.isEmpty()) {
+            nextNightPhase();
+        }
 	}
 
 	private void WWPhase() {
@@ -63,7 +69,7 @@ public class Night extends AutoDayPhase {
 
 		Command slayCommand = (event, parameters, msgChannel) -> {
 			var author = game.mapPlayers.get(event.getMessage().getAuthor().get().getId());
-			if (author.role.name.equalsIgnoreCase("Werwolf") && msgChannel.equals(state.wwChat) && author.role.deathDetails.alive) {
+			if (author.role.getClass() == RoleWerwolf.class && msgChannel.equals(state.wwChat) && author.role.deathDetails.alive) {
 				var victim = Globals.commandPlayerFinder(event, parameters, msgChannel, game);
 
 				if (victim != null) {
@@ -75,10 +81,12 @@ public class Night extends AutoDayPhase {
 
 					} else if (dState == DeathState.ALIVE) {
 						dState = DeathState.AT_RISK;
-						
-						victim.role.deathDetails.killer = author.role.name;
+						victim.role.deathDetails.killer = "Werwolf";
+
+					} else if (dState == DeathState.AT_RISK && victim.role.deathDetails.killer.equalsIgnoreCase("Werwolf")) {
 
 					}
+
 					// sets DeathState
 					victim.role.deathDetails.deathState = dState;
 

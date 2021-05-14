@@ -106,7 +106,7 @@ public class Globals {
 		return (message);
 	}
 
-	public static String stringListToList(List<String> list, String title, Game game) {
+	public static String stringListToList(List<String> list, String title) {
 		var mssg = "";
 
 		// if the list is empty an error message appears, else it goes through every
@@ -130,25 +130,25 @@ public class Globals {
 		return mssg;
 	}
 
-	public static String playerListToRoleList(List<Player> listPlayer, String title, Game game) {
+	public static String playerListToRoleList(List<Player> listPlayer, String title) {
 		var tempList = new ArrayList<String>();
 		for (Player player : listPlayer) {
 			tempList.add(player.role.name);
 		}
 
-		return stringListToList(tempList, title, game);
+		return stringListToList(tempList, title);
 	}
 
-	public static String playerListToList(List<Player> listPlayer, String title, Game game) {
+	public static String playerListToList(List<Player> listPlayer, String title) {
 		var tempList = new ArrayList<String>();
 		for (Player player : listPlayer) {
 			tempList.add(player.name);
 		}
 
-		return stringListToList(tempList, title, game);
+		return stringListToList(tempList, title);
 	}
 
-	public static String playerListToList(List<Player> list, String title, Game game, boolean revealInformation) {
+	public static String playerListToList(List<Player> list, String title, boolean revealInformation) {
 		var mssgPlayerList = "";
 
 		// if the list is empty an error message appears, else it goes through every
@@ -185,14 +185,14 @@ public class Globals {
 		return mssgPlayerList;
 	}
 
-	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, Game game,
+	public static void printPlayersMap(MessageChannel channel, Map<Snowflake, Player> map, String title, 
 			boolean revealInformation) {
 		var tempList = new ArrayList<Player>();
 		for (var entry : map.entrySet()) {
 			tempList.add(entry.getValue());
 		}
 		Globals.createEmbed(channel, Color.LIGHT_GRAY, "",
-				Globals.playerListToList(tempList, title, game, revealInformation));
+				Globals.playerListToList(tempList, title, revealInformation));
 	}
 
 	// erhält den Namen einer Karte, sucht diese in allen verfügbaren Karten und
