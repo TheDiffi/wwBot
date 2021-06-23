@@ -46,7 +46,7 @@ public class CommandHandler {
 
                 // überprüft ob auf diesem server bereits ein Game läuft, falls nein erstellt er
                 // ein neues und fügt es zur Map runningGames hinzu
-                if (parameters.get(0).equalsIgnoreCase(WWprefix + "NewGame")) {
+                else if (parameters.get(0).equalsIgnoreCase(WWprefix + "NewGame")) {
 
                     if (!mapRunningGames.containsKey(serverId)) {
                         var game = new Game(server, channel);
@@ -177,7 +177,6 @@ public class CommandHandler {
 
     private static void handleMemes(MessageCreateEvent event, List<String> parameters) {
         if (event.getMessage().getContent().isPresent()) {
-            var content = event.getMessage().getContent().get();
             if (event.getMessage().getContent().get()
                     .contains("Hey @WerwolfBot! lets do this game together, shall we?")) {
                 event.getMessage().getChannel().block()

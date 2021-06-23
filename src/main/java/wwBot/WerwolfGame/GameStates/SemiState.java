@@ -2,6 +2,8 @@ package wwBot.WerwolfGame.GameStates;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
@@ -28,6 +30,7 @@ public class SemiState extends MainState {
 	public DayPhase dayPhase = DayPhase.FIRST_NIGHT;
 
 	public User userModerator;
+	public Map<String, Command> modCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
 
 	SemiState(Game game) {
 		// sets variables
@@ -42,28 +45,7 @@ public class SemiState extends MainState {
 		registerStateCommands();
 		createDeathChat();
 		updateGameLists();
-
-		// sends the first messages
-		MessagesWW.onGameStartSemi(game);
-		greetMod(game);
-	}
-
-	// greets the mod and waits for the mod to start the first night
-	private void greetMod(Game game) {
-		MessagesWW.greetMod(game);
-		Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler",
-				true);
-
-		PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
-			if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
-				changeDayPhase(DayPhase.FIRST_NIGHT);
-				return true;
-
-			} else {
-				return false;
-			}
-		};
-		game.addPrivateCommand(userModerator.getId(), readyCommand);
+		changeDayPhase(DayPhase.FIRST_NIGHT);
 
 	}
 
@@ -263,20 +245,12 @@ public class SemiState extends MainState {
 		// transitions to Night
 		if (nextPhase == DayPhase.NORMAL_NIGHT) {
 			checkIfGameEnds();
-			if (game.gameRuleMutePlayersAtNight) {
-				Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
-			}
-			createWerwolfChat();
 
 			night = new NightSemi(game);
 			dayPhase = DayPhase.NORMAL_NIGHT;
 
 			// transitions to Morning
 		} else if (nextPhase == DayPhase.MORNING) {
-			if (game.gameRuleMutePlayersAtNight) {
-				Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
-			}
-			deleteWerwolfChat();
 
 			morning = new MorningSemi(game);
 			dayPhase = DayPhase.MORNING;
@@ -363,6 +337,17 @@ public class SemiState extends MainState {
 				}
 			}
 
+			// if mod then mod commands
+			if (!handeled && event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+				var foundModCommand = modCommands.get(requestedCommand);
+				if (foundModCommand != null) {
+					foundModCommand.execute(event, parameters, runningInChannel);
+					handeled = true;
+				}
+				handeled = false;
+			}
+
+			// if not mod and not command in dayphase look in gamestatecommands
 			if (!handeled) {
 				handeled = super.handleCommand(requestedCommand, event, parameters, runningInChannel);
 			}
@@ -384,10 +369,15 @@ public class SemiState extends MainState {
 		};
 		gameStateCommands.put("ping", pingCommand);
 
+		// ------------------------ HELP --------------------------------
+
 		// zeigt die verfügbaren commands
 		Command showCommandsCommand = (event, parameters, msgChannel) -> {
-			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
-			mssg += "\n" + MessagesWW.getCommandsMain();
+			var mssg = "";
+			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
+				mssg += MessagesWW.getModCommands() + "\n";
+			}
+			mssg += MessagesWW.getCommandsMain();
 			mssg += "\n" + MessagesWW.getCommandsGame();
 			mssg += "\n" + MessagesWW.getCommandsSemiState();
 			mssg += "\n" + MessagesWW.getHelpInfo();
@@ -397,17 +387,15 @@ public class SemiState extends MainState {
 		gameStateCommands.put("lsCommands", showCommandsCommand);
 		gameStateCommands.put("Commands", showCommandsCommand);
 
-
 		// zeigt die verfügbaren commands
 		Command showModCommandsCommand = (event, parameters, msgChannel) -> {
-			var mssg = "**To show Moderator Commands type \"&modCommands\"** ";
-			mssg += "\n" + MessagesWW.getModCommands();
-			mssg += "\n" + MessagesWW.getHelpInfo();
-
+			var mssg = MessagesWW.getModCommands();
 			Globals.createEmbed(msgChannel, Color.ORANGE, "Moderator Commands", mssg);
 		};
-		gameStateCommands.put("showModCommands", showModCommandsCommand);
-		gameStateCommands.put("modCommands", showModCommandsCommand);
+		modCommands.put("showModCommands", showModCommandsCommand);
+		modCommands.put("modCommands", showModCommandsCommand);
+
+		// ---------------------- MOD COMMANDS ----------------------------------
 
 		// prints the living players and their role
 		Command listPlayersCommand = (event, parameters, msgChannel) -> {
@@ -418,19 +406,19 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("listPlayers", listPlayersCommand);
+		modCommands.put("listPlayers", listPlayersCommand);
 
 		// prints the living players and their role
 		Command listLivingCommand = (event, parameters, msgChannel) -> {
 			// compares the Snowflake of the Author to the Snowflake of the Moderator
 			if (event.getMessage().getAuthor().get().getId().equals(userModerator.getId())) {
-				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler",  true);
+				Globals.printPlayersMap(msgChannel, game.livingPlayers, "Alle Spieler", true);
 			} else {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("listliving", listLivingCommand);
-		gameStateCommands.put("listlivingPlayers", listLivingCommand);
+		modCommands.put("listliving", listLivingCommand);
+		modCommands.put("listlivingPlayers", listLivingCommand);
 
 		// ummutes a specific player
 		Command muteCommand = (event, parameters, msgChannel) -> {
@@ -449,8 +437,8 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("mute", muteCommand);
-		gameStateCommands.put("stfu", muteCommand);
+		modCommands.put("mute", muteCommand);
+		modCommands.put("stfu", muteCommand);
 
 		// ummutes a specific player
 		Command unMuteCommand = (event, parameters, msgChannel) -> {
@@ -468,7 +456,7 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("unMute", unMuteCommand);
+		modCommands.put("unMute", unMuteCommand);
 
 		// shows the moderator the list of players
 		Command muteAllCommand = (event, parameters, msgChannel) -> {
@@ -479,8 +467,8 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("muteAll", muteAllCommand);
-		gameStateCommands.put("stfuAll", muteAllCommand);
+		modCommands.put("muteAll", muteAllCommand);
+		modCommands.put("stfuAll", muteAllCommand);
 
 		// shows the moderator the list of players
 		Command unMuteAllCommand = (event, parameters, msgChannel) -> {
@@ -491,7 +479,7 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("unMuteAll", unMuteAllCommand);
+		modCommands.put("unMuteAll", unMuteAllCommand);
 
 		// lets the moderator kill a person and checks the consequences
 		Command killCommand = (event, parameters, msgChannel) -> {
@@ -529,7 +517,70 @@ public class SemiState extends MainState {
 				MessagesWW.errorModOnlyCommand(msgChannel);
 			}
 		};
-		gameStateCommands.put("kill", killCommand);
+		modCommands.put("kill", killCommand);
+
+		// used by the mod to make 2 ppl fall in love (amor effect)
+		Command setLoveCommand = (event, parameters, msgChannel) -> {
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				if (parameters != null && parameters.size() == 2) {
+
+					// finds the players
+					var player1 = game.findPlayerByName(parameters.get(0));
+					var player2 = game.findPlayerByName(parameters.get(1));
+
+					// sets the "inLoveWith" variables
+					if (player1 != null && player2 != null) {
+						if (player1 != player2) {
+							player1.role.inLoveWith = player2;
+							player2.role.inLoveWith = player1;
+							MessagesWW.amorSuccess(game, player1, player2);
+
+						} else {
+							MessagesWW.errorPlayersIdentical(msgChannel);
+						}
+					} else {
+						MessagesWW.errorPlayerNotFound(msgChannel);
+					}
+				} else {
+					MessagesWW.errorWrongSyntax(msgChannel);
+				}
+			} else {
+				MessagesWW.errorModOnlyCommand(msgChannel);
+			}
+		};
+		modCommands.put("inLove", setLoveCommand);
+		modCommands.put("Amor", setLoveCommand);
+
+		//set the doublegangers secret identity
+		Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				if (parameters != null && parameters.size() == 1) {
+					// finds the players
+					var foundPlayer = game.findPlayerByName(parameters.get(0));
+
+					if (foundPlayer != null) {
+						var dp = mapExistingRoles.get("Doppelgängerin").get(0);
+
+						// sets the variable
+						var dpRole = (RoleDoppelgängerin) dp.role;
+						dpRole.boundTo = foundPlayer;
+						MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
+
+					} else {
+						MessagesWW.errorPlayerNotFound(msgChannel);
+					}
+				} else {
+					MessagesWW.errorWrongSyntax(msgChannel);
+				}
+			} else {
+				MessagesWW.errorModOnlyCommand(msgChannel);
+			}
+		};
+		modCommands.put("clone", setDoppelgängerinCommand);
+		modCommands.put("Doppelgängerin", setDoppelgängerinCommand);
+
+
+		// ---------------------- OTHER COMMANDS ----------------------------------
 
 	}
 

@@ -20,7 +20,6 @@ public class LobbyState extends GameState {
     public List<User> listJoinedUsers = new ArrayList<>();
     public List<Role> deck = new ArrayList<>();
     public Map<String, Card> mapRegisteredCardsSpecs = new TreeMap<String, Card>(String.CASE_INSENSITIVE_ORDER);
-    public boolean gameRuleAutomatic = true;
     public User userModerator;
 
     public LobbyState(Game game) {
@@ -31,7 +30,7 @@ public class LobbyState extends GameState {
 
     }
 
-    // TODO: idea: when it show the deck delete the previous message that showed the
+    // TODO: idea: when it show the deck, delete the previous message that showed the
     // deck
 
     // loads the Commands available in this GameState into the map gameStateCommands
@@ -70,7 +69,7 @@ public class LobbyState extends GameState {
             User user = event.getMessage().getAuthor().get();
             var bool = true;
             // falls es einen moderator gibt darf dieser nicht joinen
-            if (!gameRuleAutomatic && userModerator != null && user.getId().equals(userModerator.getId())) {
+            if (!game.gameRuleAutomaticMod && userModerator != null && user.getId().equals(userModerator.getId())) {
                 bool = false;
 
             }
@@ -146,14 +145,14 @@ public class LobbyState extends GameState {
                 msgChannel.createMessage(messageSpec -> {
                     messageSpec.setContent(
                             "noch nicht genügend Spieler wurden registriert, probiere nach draußen zu gehen und ein paar Freunde zu finden (mindestens 5)")
-                            .setTts(true);
+                            .setTts(false);
                 }).block();
 
             } else if (listJoinedUsers.size() >= 35) {
                 msgChannel.createMessage(messageSpec -> {
                     messageSpec.setContent(
                             "theoretisch könnte der Bot mehr als 35 Spieler schaffen, dies ist aber aufgrund der Vorschriften der @Nsa und des @Fbi jedoch deaktiviert")
-                            .setTts(true);
+                            .setTts(false);
                 }).block();
             }
 
@@ -167,10 +166,10 @@ public class LobbyState extends GameState {
             msgChannel.createMessage(Globals.cardListToString(deck, "Deck", true)).block();
 
             // prints the moderator if there is one
-            if (!gameRuleAutomatic && userModerator != null) {
+            if (!game.gameRuleAutomaticMod && userModerator != null) {
                 msgChannel.createMessage(
                         "Moderator: " + userModerator.asMember(game.server.getId()).block().getDisplayName());
-            } else if (!gameRuleAutomatic && userModerator == null) {
+            } else if (!game.gameRuleAutomaticMod && userModerator == null) {
                 msgChannel.createMessage("Moderator: wurde noch nicht bestimmt!");
             }
 
@@ -275,8 +274,8 @@ public class LobbyState extends GameState {
             var gamerule = parameters.get(0);
 
             if (gamerule.equalsIgnoreCase("Automatic")) {
-                if (!gameRuleAutomatic) {
-                    gameRuleAutomatic = true;
+                if (!game.gameRuleAutomaticMod) {
+                    game.gameRuleAutomaticMod = true;
                     Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf automatisch gestellt",
                             "In diesem Modus wird keine Person benötigt, da der Bot die vollständige Rolle des Moderators einnimmt.");
                 } else {
@@ -284,8 +283,8 @@ public class LobbyState extends GameState {
                 }
             }
             if (gamerule.equalsIgnoreCase("Manual")) {
-                if (gameRuleAutomatic) {
-                    gameRuleAutomatic = false;
+                if (game.gameRuleAutomaticMod) {
+                    game.gameRuleAutomaticMod = false;
                     Globals.createEmbed(msgChannel, Color.MAGENTA, "Der Moderator wurde auf manuell gestellt",
                             "In diesem Modus wird eine Person benötigt, welche die Rolle des Moderators einnimmt. Diese Person sollte dem Spiel nicht beitreten sondern den Befehl \"&MakeMeModerator\" aufrufen.");
                 } else {
@@ -353,7 +352,7 @@ public class LobbyState extends GameState {
                 bool = false;
             }
 
-            if (!gameRuleAutomatic && !bool) {
+            if (!game.gameRuleAutomaticMod && !bool) {
                 userModerator = event.getMessage().getAuthor().get();
                 Globals.createEmbed(msgChannel, Color.GREEN, " "
                         + event.getMessage().getAuthor().get().asMember(game.server.getId()).block().getDisplayName()
@@ -379,11 +378,11 @@ public class LobbyState extends GameState {
         // empty
         Command startGameCommand = (event, parameters, msgChannel) -> {
             var checkMod = false;
-            if (gameRuleAutomatic) {
+            if (game.gameRuleAutomaticMod) {
                 checkMod = true;
-            } else if (!gameRuleAutomatic && userModerator != null) {
+            } else if (!game.gameRuleAutomaticMod && userModerator != null) {
                 checkMod = true;
-            } else if (!gameRuleAutomatic && userModerator == null) {
+            } else if (!game.gameRuleAutomaticMod && userModerator == null) {
                 checkMod = false;
                 msgChannel.createMessage("How u gonna play with no Moderator?").block();
 
@@ -434,13 +433,12 @@ public class LobbyState extends GameState {
 
                     // saves values into the game
                     game.deck = deck;
-                    game.gameRuleAutomaticMod = gameRuleAutomatic;
                     game.userModerator = userModerator;
 
                     loadingMsg.delete().block();
                     msgChannel.createMessage("Game Created!").block();
                     // initializes the next game state
-                    if (gameRuleAutomatic) {
+                    if (game.gameRuleAutomaticMod) {
                         game.changeGameState(new AutoState(game));
                     } else {
                         game.changeGameState(new SemiState(game));

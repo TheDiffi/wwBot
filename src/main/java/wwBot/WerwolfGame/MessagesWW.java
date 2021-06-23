@@ -23,7 +23,7 @@ public class MessagesWW {
 	public static void newGameStartMessage(MessageChannel channel) {
 
 		Globals.createEmbed(channel, Color.GREEN, "Created New Game!", "");
-		Globals.createEmbed(channel, Color.LIGHT_GRAY, "",
+		Globals.createEmbed(channel, Color.GREEN, "",
 				"Ihr befindet euch nun in der Lobby Phase. \nHier habt ihr Zeit für ein wenig Small-Talk während alle Mitspieler mit **\""
 						+ prefix
 						+ "join\"** dem Spiel beitreten und das Kartendeck erstellt wird. Genießt diese Zeit denn sobald das Spiel mit **\""
@@ -36,7 +36,9 @@ public class MessagesWW {
 	public static void greetMod(Game game) {
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Willkommen Moderator!", "");
 		game.userModerator.getPrivateChannel().block().createMessage(
-				"Deine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst nun mit dem Command **\"Ready\"** die erste Nacht Starten.")
+				"Deine Aufgabe ist es das Spiel für beide Parteien so fair wie möglich zu machen! \nDu kannst diesen Textkanal für Notizen benutzen.\nDu kannst ebenfalls jederzeit hier nützliche Commands benutzen, welche unter **\""
+				+ prefix
+				+ "showModCommands\"** angeführt werden.\nDu kannst nun die erste Nacht Starten, indem du mir **\"Ready\"** schreibst.")
 				.block();
 	}
 
@@ -807,6 +809,7 @@ public class MessagesWW {
 		mssg += buildDescription("unMute <Player>", "Hebt eine Stummschaltung wieder auf");
 		mssg += buildDescription("muteAll", "Schaltet alle Spieler Stumm");
 		mssg += buildDescription("listVotes", "Hebt die Stummschaltung aller Spieler auf");
+		
 
 		mssg += "\n" + MessagesWW.getModCommandsFirstNight();
 		mssg += "\n" + MessagesWW.getModCommandsNight();
@@ -818,9 +821,9 @@ public class MessagesWW {
 
 	public static String getModCommandsFirstNight() {
 		var mssg = " ---- First Night ----";
-		mssg += "\n" + "`" + "Amor <Player1> <Player2>" + ":` " + "Verliebt zwei Spieler";
-		mssg += "\n" + "`" + "Doppelgängerin <Player1> " + ":` " + "Bindet die Doppelgängerin an diese Person";
-		mssg += "\n" + "`" + "endNight" + ":` " + "Beendet die erste Nacht";
+		mssg += buildDescription("Amor <Player1> <Player2>", "[Optional] Du kannst mir mitteilen welche zwei Spieler verliebt sind.");
+		mssg += buildDescription("Doppelgängerin <Player-Chosen-By-The-Doppelgängerin>", "Bindet die Doppelgängerin an diese Person (!WICHTIG!)");
+		mssg += buildDescription("endNight ", "Beendet die erste Nacht");
 
 		return mssg;
 	}

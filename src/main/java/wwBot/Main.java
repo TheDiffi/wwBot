@@ -39,35 +39,28 @@ public class Main {
                                 .createMessage(
                                         "avoided critical Exception, pls don't repeat what u did *laughs in pain*")
                                 .block();
+                        event.getMessage().getChannel().block().createMessage(ex.toString()).block();
                     }
                 });
 
-        client.getEventDispatcher().on(ReactionAddEvent.class).filter(message -> message.getUser().blockOptional()
-                .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
-                    try {
-                        ReactionHandler.reactionAdded(event);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        event.getChannel().block()
-                                .createMessage(
-                                        "Exception ReactionAdd")
-                                .block();
-                    }
-                });
-
-        client.getEventDispatcher().on(ReactionRemoveEvent.class).filter(message -> message.getUser().blockOptional()
-                .map(user -> !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(event -> {
-                    try {
-                        ReactionHandler.reactionRemoved(event);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        event.getChannel().block()
-                                .createMessage(
-                                        "Exception ReactionRemove")
-                                .block();
-                    }
-
-                });
+        // Reaction Event prototype
+        /*
+         * client.getEventDispatcher().on(ReactionAddEvent.class).filter(message ->
+         * message.getUser().blockOptional() .map(user ->
+         * !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(
+         * event -> { try { ReactionHandler.reactionAdded(event); } catch (Exception ex)
+         * { ex.printStackTrace(); event.getChannel().block() .createMessage(
+         * "Exception ReactionAdd") .block(); } });
+         * 
+         * client.getEventDispatcher().on(ReactionRemoveEvent.class).filter(message ->
+         * message.getUser().blockOptional() .map(user ->
+         * !user.getId().equals(client.getSelfId().get())).orElse(false)).subscribe(
+         * event -> { try { ReactionHandler.reactionRemoved(event); } catch (Exception
+         * ex) { ex.printStackTrace(); event.getChannel().block() .createMessage(
+         * "Exception ReactionRemove") .block(); }
+         * 
+         * });
+         */
 
         System.out.println("--- READY ---");
 

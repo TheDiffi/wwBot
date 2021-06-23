@@ -11,17 +11,20 @@ import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
 import wwBot.WerwolfGame.Player;
+import wwBot.WerwolfGame.GameStates.GameState;
 import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 
-public class DaySemi  {
+public class DaySemi {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     public Map<Player, Player> mapVotes = new HashMap<>();
     public Map<Player, Double> mapAmountVotes = new HashMap<>();
     Game game;
+    GameState gameState;
 
-    public DaySemi (Game getGame) {
+    public DaySemi(Game getGame) {
         game = getGame;
+        gameState = game.gameState;
 
         // loads all Commands into the mapCommands
         registerDayCommands();
@@ -43,17 +46,16 @@ public class DaySemi  {
 
         // help
         Command helpCommand = (event, parameters, msgChannel) -> {
-           // replies to the moderator
-			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-				MessagesWW.sendHelpDayMod(msgChannel);
-			} else {
-				MessagesWW.sendHelpDay(msgChannel, false);
-			}
+            // replies to the moderator
+            if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+                MessagesWW.sendHelpDayMod(msgChannel);
+            } else {
+                MessagesWW.sendHelpDay(msgChannel, false);
+            }
 
         };
         mapCommands.put("help", helpCommand);
         mapCommands.put("hilfe", helpCommand);
-
 
         // gibt ein Embed mit den Votes aus
         Command listVotesCommand = (event, parameters, msgChannel) -> {
@@ -269,11 +271,10 @@ public class DaySemi  {
 
     // --------------------- Other ------------------------
 
-
     private void endDay() {
 
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-        game.gameState.changeDayPhase(DayPhase.MORNING);
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Night");
+        game.gameState.changeDayPhase(DayPhase.NORMAL_NIGHT);
 
     }
 

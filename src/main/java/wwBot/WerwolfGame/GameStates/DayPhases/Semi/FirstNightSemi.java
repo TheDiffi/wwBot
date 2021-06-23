@@ -8,28 +8,48 @@ import java.util.TreeMap;
 
 import wwBot.Globals;
 import wwBot.Interfaces.Command;
+import wwBot.Interfaces.PrivateCommand;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
 import wwBot.WerwolfGame.Player;
 import wwBot.WerwolfGame.GameStates.GameState;
 import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
-import wwBot.WerwolfGame.cards.RoleDoppelgängerin;
 
-public class FirstNightSemi  {
-    GameState gameState;
-    Game game;
+public class FirstNightSemi {
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
     Map<String, List<Player>> mapExistingRoles = new TreeMap<String, List<Player>>(String.CASE_INSENSITIVE_ORDER);
-    
+    GameState gameState;
+    Game game;
 
-    public FirstNightSemi (Game getGame) {
+    public FirstNightSemi(Game getGame) {
         game = getGame;
         gameState = game.gameState;
         mapExistingRoles = game.gameState.mapExistingRoles;
 
         registerNightCommands();
-        initiateFirstNight();
-        
+
+        // sends the first messages
+        MessagesWW.onGameStartSemi(game);
+        greetMod(game);
+
+    }
+
+    // greets the mod and waits for the mod to start the first night
+    private void greetMod(Game game) {
+        MessagesWW.greetMod(game);
+        Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", true);
+
+        PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
+                initiateFirstNight();
+                return true;
+
+            } else {
+                return false;
+            }
+        };
+        game.addPrivateCommand(game.userModerator.getId(), readyCommand);
+
     }
 
     private void initiateFirstNight() {
@@ -61,77 +81,19 @@ public class FirstNightSemi  {
         // if there is a AMOR, the moderator gets access to a command, which sets the
         // "inLoveWith" variable of two players to eachother
         if (mapExistingRoles.get("Amor") != null) {
-
             MessagesWW.triggerAmor(game, null);
-            Command setLoveCommand = (event, parameters, msgChannel) -> {
-                if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                    if (parameters != null && parameters.size() == 2) {
-
-                        // finds the players
-                        var player1 = game.findPlayerByName(parameters.get(0));
-                        var player2 = game.findPlayerByName(parameters.get(1));
-
-                        // sets the "inLoveWith" variables
-                        if (player1 != null && player2 != null) {
-                            if (player1 != player2) {
-                                player1.role.inLoveWith = player2;
-                                player2.role.inLoveWith = player1;
-                                MessagesWW.amorSuccess(game, player1,
-                                        player2);
-
-                            } else {
-                                MessagesWW.errorPlayersIdentical(msgChannel);
-                            }
-                        } else {
-                            MessagesWW.errorPlayerNotFound(msgChannel);
-                        }
-                    } else {
-                        MessagesWW.errorWrongSyntax(msgChannel);
-                    }
-                } else {
-                    MessagesWW.errorModOnlyCommand(msgChannel);
-                }
-            };
-            mapCommands.put("inLove", setLoveCommand);
-            mapCommands.put("Love", setLoveCommand);
-            mapCommands.put("Amor", setLoveCommand);
+    
         }
 
         // Doppelgängerin
         if (mapExistingRoles.get("Doppelgängerin") != null) {
-
             MessagesWW.triggerDoppelgängerin(game, null);
-            Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
-                if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                    if (parameters != null && parameters.size() == 1) {
-                        // finds the players
-                        var foundPlayer = game.findPlayerByName(parameters.get(0));
-
-                        if (foundPlayer != null) {
-                            var dp = mapExistingRoles.get("Doppelgängerin").get(0);
-
-                            // sets the variable
-                            var dpRole = (RoleDoppelgängerin) dp.role;
-                            dpRole.boundTo = foundPlayer;
-                            MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
-
-                        } else {
-                            MessagesWW.errorPlayerNotFound(msgChannel);
-                        }
-                    } else {
-                        MessagesWW.errorWrongSyntax(msgChannel);
-                    }
-                } else {
-                    MessagesWW.errorModOnlyCommand(msgChannel);
-                }
-            };
-            mapCommands.put("clone", setDoppelgängerinCommand);
-            mapCommands.put("Doppelgängerin", setDoppelgängerinCommand);
-
+            
         }
 
     }
 
+    //assembles list of roles to act this night
     private ArrayList<Player> firstNightRoles() {
         var uniqueRolesInThisPhase = new ArrayList<String>();
         var list = new ArrayList<Player>();
@@ -193,12 +155,11 @@ public class FirstNightSemi  {
         };
         mapCommands.put("endNight", endNightCommand);
         mapCommands.put("next", endNightCommand);
-        mapCommands.put("end", endNightCommand);
 
     }
 
     private void endFirstNight() {
-
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Morning");
         // unmutes, deletes the WWChat and changes the DayPhase
         Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
         gameState.deleteWerwolfChat();

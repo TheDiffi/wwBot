@@ -332,7 +332,7 @@ public class Globals {
 					a.setMute(isMuted).setDeafen(false);
 				}).block();
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Could Not Mute");;
 			}
 		}
 	}

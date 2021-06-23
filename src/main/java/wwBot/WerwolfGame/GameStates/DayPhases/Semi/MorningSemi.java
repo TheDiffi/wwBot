@@ -8,16 +8,26 @@ import wwBot.Globals;
 import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
+import wwBot.WerwolfGame.GameStates.GameState;
 import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 
 public class MorningSemi  {
 
     public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
+    GameState gameState;
     Game game;
 
     public MorningSemi (Game getGame) {
         game = getGame;
+        gameState = game.gameState;
+
         registerMorningCommands();
+
+        if (game.gameRuleMutePlayersAtNight) {
+            Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
+        }
+        gameState.deleteWerwolfChat();
+
         MessagesWW.onMorningSemi(game);
 
     }
@@ -44,19 +54,25 @@ public class MorningSemi  {
         mapCommands.put("hilfe", helpCommand);
 
 
-        // ends the Morning and begins the Day
-        Command startVotingPhaseCommand = (event, parameters, msgChannel) -> {
-
+        // shows the moderator the list of players
+        Command endMorningCommand = (event, parameters, msgChannel) -> {
             // compares the Snowflake of the Author to the Snowflake of the Moderator
             if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
-                Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
-                game.gameState.changeDayPhase(DayPhase.DAY);
-
+                endMorning();
             } else {
                 MessagesWW.errorModOnlyCommand(msgChannel);
             }
         };
-        mapCommands.put("endMorning", startVotingPhaseCommand);
+        mapCommands.put("endNight", endMorningCommand);
+        mapCommands.put("next", endMorningCommand);
+
+    }
+
+    private void endMorning() {
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Day");
+        //changes the DayPhase
+        gameState.changeDayPhase(DayPhase.DAY);
+
     }
 
 }

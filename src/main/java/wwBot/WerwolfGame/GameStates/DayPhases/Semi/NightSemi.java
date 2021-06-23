@@ -10,18 +10,26 @@ import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
 import wwBot.WerwolfGame.Player;
+import wwBot.WerwolfGame.GameStates.GameState;
 import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 
 public class NightSemi {
 	public Map<String, Command> mapCommands = new TreeMap<String, Command>(String.CASE_INSENSITIVE_ORDER);
+	GameState gameState;
 	Game game;
 
 	public NightSemi (Game getGame) {
 		game = getGame;
+		gameState = game.gameState;
 		registerNightCommands();
 
-		initiateNight();
+		if (game.gameRuleMutePlayersAtNight) {
+			Globals.setMuteAllPlayers(game.livingPlayers, true, game.server.getId());
+		}
 
+		gameState.createWerwolfChat();
+
+		initiateNight();
 	}
 
 	private void initiateNight() {
@@ -85,7 +93,7 @@ public class NightSemi {
 
 
 	private void endNight() {
-		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "");
+		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Morning");
 		game.gameState.changeDayPhase(DayPhase.MORNING);
 
 	}
