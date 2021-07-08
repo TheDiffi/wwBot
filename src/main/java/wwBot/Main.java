@@ -25,7 +25,7 @@ public class Main {
         prefix = "&";
 
         // loads the Bot api
-        client = DiscordClientBuilder.create("NzA3NjUzNTk1NjQxOTM4MDMx.Xs1bLg.RLbvLwafgTDyhLYsQZl4pi0hluc").build();
+        client = DiscordClientBuilder.create("Bot Token Here").build();
 
         // looks at every message and calls "handleCommands"
         client.getEventDispatcher().on(MessageCreateEvent.class).filter(message -> message.getMessage().getAuthor()

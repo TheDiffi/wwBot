@@ -343,8 +343,10 @@ public class SemiState extends MainState {
 				if (foundModCommand != null) {
 					foundModCommand.execute(event, parameters, runningInChannel);
 					handeled = true;
+				}else{
+					handeled = false;
 				}
-				handeled = false;
+				
 			}
 
 			// if not mod and not command in dayphase look in gamestatecommands
