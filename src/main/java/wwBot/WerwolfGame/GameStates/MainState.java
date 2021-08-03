@@ -89,7 +89,7 @@ public class MainState extends GameState {
 			game.server.getChannelById(wwChat.getId()).block().delete().block();
 			wwChat = null;
 		} else {
-			game.mainChannel.createMessage("No Channel Found").block();
+			System.out.println("No Channel Found");
 		}
 	}
 
@@ -154,7 +154,7 @@ public class MainState extends GameState {
 			game.server.getChannelById(deathChat.getId()).block().delete().block();
 			deathChat = null;
 		} else {
-			game.mainChannel.createMessage("No Channel Found").block();
+			System.out.println("No Channel Found");
 		}
 	}
 

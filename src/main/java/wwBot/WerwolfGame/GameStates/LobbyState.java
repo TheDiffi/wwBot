@@ -96,7 +96,7 @@ public class LobbyState extends GameState {
 
         // leave entfernt den user von listJoinedUsers
         Command leaveCommand = (event, parameters, msgChannel) -> {
-
+            Globals.loadingMsg(game, msgChannel);
             User user = event.getMessage().getAuthor().get();
 
             // falls der user in der liste ist, wird er entfernt
@@ -405,7 +405,7 @@ public class LobbyState extends GameState {
                     // Game starts
                 } else if (deck.size() == listJoinedUsers.size()) {
 
-                    var loadingMsg = msgChannel.createMessage("Einen Moment Geduld...").block();
+                    Globals.loadingMsg(game, msgChannel);
                     // creates a temporary copy of the Deck
                     var tempDeck = new ArrayList<Role>(deck);
 
@@ -435,7 +435,6 @@ public class LobbyState extends GameState {
                     game.deck = deck;
                     game.userModerator = userModerator;
 
-                    loadingMsg.delete().block();
                     msgChannel.createMessage("Game Created!").block();
                     // initializes the next game state
                     if (game.gameRuleAutomaticMod) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import discord4j.core.object.entity.MessageChannel;
 import wwBot.Globals;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
@@ -28,29 +29,10 @@ public class FirstNightSemi {
 
         registerNightCommands();
 
-        // sends the first messages
-        MessagesWW.onGameStartSemi(game);
-        greetMod(game);
-
+        initiateFirstNight();
     }
 
-    // greets the mod and waits for the mod to start the first night
-    private void greetMod(Game game) {
-        MessagesWW.greetMod(game);
-        Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", true);
 
-        PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
-            if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
-                initiateFirstNight();
-                return true;
-
-            } else {
-                return false;
-            }
-        };
-        game.addPrivateCommand(game.userModerator.getId(), readyCommand);
-
-    }
 
     private void initiateFirstNight() {
         // sets mute and creates the WWchat

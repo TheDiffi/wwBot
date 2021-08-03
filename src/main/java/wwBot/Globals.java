@@ -359,4 +359,8 @@ public class Globals {
 		}
 	}
 
+	public static void loadingMsg(Game game, MessageChannel msgChannel) {
+        game.msgToDel.add(msgChannel.createMessage("Einen Moment...").block());
+    }
+
 }

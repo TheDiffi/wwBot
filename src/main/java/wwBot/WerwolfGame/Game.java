@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
@@ -31,6 +33,7 @@ public class Game {
     public List<Player> deadPlayers = new ArrayList<>();
     public HashMap<Snowflake, ArrayList<PrivateCommand>> mapPrivateCommands = new HashMap<>();
     public List<Role> deck = new ArrayList<>();
+    public List<Message> msgToDel = new ArrayList<>();
 
     public boolean gameRuleAutomaticMod = false;
     public boolean gameRulePrintCardOnDeath = false;
@@ -95,6 +98,12 @@ public class Game {
         if (!found) {
             MessagesWW.errorCommandNotFound(msgChannel);
         }
+
+        //deletes Messages registered to be deleted
+        for (Message message : msgToDel) {
+            message.delete().block();
+        }
+        msgToDel.clear();
     }
 
     //TODO: add admin Commands
@@ -159,11 +168,16 @@ public class Game {
         gameCommands.put("Manual", showManualCommand);
 
         Command reset = (event, parameters, msgChannel) ->{
-            var serverId = event.getGuildId().get();
-            CommandHandler.mapRunningGames.put(serverId, backupGame);
-            if(backupDayPhase != null){
-                CommandHandler.mapRunningGames.get(serverId).gameState.changeDayPhase(backupDayPhase);
+            if (msgChannel.getType() != Channel.Type.DM) {
+                var serverId = event.getGuildId().get();
+                CommandHandler.mapRunningGames.put(serverId, backupGame);
+                if(backupDayPhase != null){
+                    CommandHandler.mapRunningGames.get(serverId).gameState.changeDayPhase(backupDayPhase);
+                }
+            } else{
+                msgChannel.createMessage("Command can only be used in a Guild (server)").block();
             }
+            
 
         };
         gameCommands.put("reset4567", reset);

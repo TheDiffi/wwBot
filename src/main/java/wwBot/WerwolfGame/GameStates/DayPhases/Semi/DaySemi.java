@@ -220,12 +220,7 @@ public class DaySemi {
         // der Vote des Bürgermeisters zählt mehr
         var voteValue = voter.role.name.equalsIgnoreCase("Bürgermeister") ? 1.5d : 1d;
 
-        // if the voter already voted once, the old voteAmount gets removed
-        if (mapVotes != null && mapVotes.containsKey(voter)) {
-            var originalVictim = mapVotes.get(voter);
-            mapAmountVotes.put(originalVictim, mapAmountVotes.get(originalVictim) - voteValue);
-
-        }
+        deleteOldVote(voter, voteValue);
 
         // adds the Vote to the vote Amount
         var tempAmount = mapAmountVotes.get(votedFor);
@@ -244,6 +239,17 @@ public class DaySemi {
         } else {
             MessagesWW.votePlayer(game, voter, votedFor);
         }
+
+    }
+
+    public void deleteOldVote(Player voter, double voteValue) {
+        // if the voter already voted once, the old voteAmount gets removed
+        if (mapVotes != null && mapVotes.containsKey(voter)) {
+            var originalVictim = mapVotes.get(voter);
+            mapAmountVotes.put(originalVictim, mapAmountVotes.get(originalVictim) - voteValue);
+
+        }
+        mapVotes.remove(voter);
 
     }
 

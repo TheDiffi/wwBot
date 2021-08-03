@@ -63,7 +63,7 @@ public class MorningSemi  {
                 MessagesWW.errorModOnlyCommand(msgChannel);
             }
         };
-        mapCommands.put("endNight", endMorningCommand);
+        mapCommands.put("endMorning", endMorningCommand);
         mapCommands.put("next", endMorningCommand);
 
     }

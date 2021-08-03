@@ -116,10 +116,10 @@ public class MessagesWW {
 				"In dieser Phase des Spieles erwachen Spezialkarten und die Werwölfe einigen sich auf ein Opfer.");
 		// Nachricht an Moderator
 		Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.decode("#191970"), "Nacht",
-				"```Nachts erwachen die Werwölfe und einigen Sich auf ein Opfer. Dazu steht ihnen sein geheimer Text-Kanal auf dem Server zur verfügung, auf den auch du Zugriff hast. \nEbenfalls erwachen in dieser Phase einige Spezialkarten.``` \nEs folgt eine Liste mit den Rollen und die von ihnen zu befolgende Reihenfolge.");
+				"```Nachts erwachen die Werwölfe und einigen Sich auf ein Opfer. Dazu steht ihnen sein geheimer Text-Kanal auf dem Server zur verfügung, auf den auch du Zugriff hast. \nEbenfalls erwachen in dieser Phase einige Spezialkarten.``` \nEs folgt eine Liste von Rollen welche in jener Reihenfolge aufgerufen werden sollten.");
 		var mssg = "```\n";
 		for (int i = 0; i < sortedRoles.size(); i++) {
-			mssg += Integer.toString(i) + ") " + sortedRoles.get(i).name + ": ist " + sortedRoles.get(i).role.name
+			mssg += Integer.toString(i+1) + ") " + sortedRoles.get(i).name + ": ist " + sortedRoles.get(i).role.name
 					+ "\n";
 		}
 		mssg += "```\nTipp: benutz &showCard <NameDerKarte> um dir die Details der Karte nochmals anzusehen";
@@ -811,6 +811,7 @@ public class MessagesWW {
 		mssg += buildDescription("unMute <Player>", "Hebt eine Stummschaltung wieder auf");
 		mssg += buildDescription("muteAll", "Schaltet alle Spieler Stumm");
 		mssg += buildDescription("listVotes", "Hebt die Stummschaltung aller Spieler auf");
+		mssg += buildDescription("phase <DayPhase>", "Wechselt zur gewünschten Tageszeit");
 		
 
 		mssg += "\n" + MessagesWW.getModCommandsFirstNight();

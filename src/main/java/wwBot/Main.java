@@ -35,11 +35,18 @@ public class Main {
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        event.getMessage().getChannel().block()
-                                .createMessage(
-                                        "avoided critical Exception, pls don't repeat what u did *laughs in pain*")
-                                .block();
-                        event.getMessage().getChannel().block().createMessage(ex.toString()).block();
+                        //this IOException sometimes pops up and but seems to work if you try again(?)
+                        if (ex.toString().equals(
+                                "reactor.core.Exceptions$ReactiveException: java.io.IOException: Eine vorhandene Verbindung wurde vom Remotehost geschlossen")) {
+                            event.getMessage().getChannel().block()
+                                    .createMessage("Somtimes I am stupid. Please try again.").block();
+                        } else {
+                            event.getMessage().getChannel().block()
+                                    .createMessage(
+                                            "avoided critical Exception, pls don't repeat what u did *laughs in pain*")
+                                    .block();
+                            event.getMessage().getChannel().block().createMessage(ex.toString()).block();
+                        }
                     }
                 });
 

@@ -45,9 +45,30 @@ public class SemiState extends MainState {
 		registerStateCommands();
 		createDeathChat();
 		updateGameLists();
-		changeDayPhase(DayPhase.FIRST_NIGHT);
+		// sends the first messages
+        MessagesWW.onGameStartSemi(game);
+        greetMod(game);
 
 	}
+
+	// greets the mod and waits for the mod to start the first night
+    private void greetMod(Game game) {
+        MessagesWW.greetMod(game);
+        Globals.printPlayersMap(game.userModerator.getPrivateChannel().block(), game.mapPlayers, "Alle Spieler", true);
+
+        PrivateCommand readyCommand = (event, parameters, msgChannel) -> {
+            if (parameters != null && parameters.get(0).equalsIgnoreCase("Ready")) {
+                Globals.loadingMsg(game, msgChannel);
+				changeDayPhase(DayPhase.FIRST_NIGHT);
+                return true;
+
+            } else {
+                return false;
+            }
+        };
+        game.addPrivateCommand(game.userModerator.getId(), readyCommand);
+
+    }
 
 	// -------------------- Kill System --------------------------
 	// CheckIfDies --> überprüft in dieser Reihenfolge: ob der Player nicht bereits
@@ -123,6 +144,8 @@ public class SemiState extends MainState {
 		updateGameLists();
 		updateDeathChat();
 
+		deleteCurrentVotes(unluckyPlayer);
+
 		Globals.tryMutePlayer(unluckyPlayer, game.server.getId());
 
 		// reveals the players death and identity
@@ -136,6 +159,14 @@ public class SemiState extends MainState {
 		}
 
 		return true;
+	}
+
+	private void deleteCurrentVotes(Player unluckyPlayer) {
+		// deletes currents votes by this player
+		if (dayPhase.equals(DayPhase.DAY)) {
+			var voteValue = unluckyPlayer.role.name.equalsIgnoreCase("Bürgermeister") ? 1.5d : 1d;
+			day.deleteOldVote(unluckyPlayer, voteValue);
+		}
 	}
 
 	private void checkConsequences(Player unluckyPlayer, String causedByRole) {
@@ -500,7 +531,7 @@ public class SemiState extends MainState {
 			// only the moderator can use this command
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				if (parameters.size() == 2 || parameters.size() == 1) {
-					var delMessg = event.getMessage().getChannel().block().createMessage("einen Moment...").block();
+					Globals.loadingMsg(game, msgChannel);
 
 					// finds the requested Player
 					var unluckyPlayer = game.findPlayerByNameLiving(parameters.get(0));
@@ -525,7 +556,6 @@ public class SemiState extends MainState {
 					} else {
 						MessagesWW.errorWrongSyntaxOnKill(event);
 					}
-					delMessg.delete().block();
 				} else {
 					MessagesWW.errorWrongSyntaxOnKill(event);
 				}
@@ -534,6 +564,57 @@ public class SemiState extends MainState {
 			}
 		};
 		modCommands.put("kill", killCommand);
+
+		// TODO: to test
+		// lets the moderator kill a person and checks the consequences
+		Command dayPhaseSwitchCommand = (event, parameters, msgChannel) -> {
+			// only the moderator can use this command
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+
+				Globals.loadingMsg(game, msgChannel);
+				switch (parameters.get(0).toLowerCase()) {
+					case "first":
+					case "erste":
+						changeDayPhase(DayPhase.FIRST_NIGHT);
+						break;
+					case "morning":
+					case "morgen":
+						changeDayPhase(DayPhase.MORNING);
+						break;
+					case "day":
+					case "tag":
+						changeDayPhase(DayPhase.DAY);
+						break;
+					case "night":
+					case "nacht":
+						changeDayPhase(DayPhase.NORMAL_NIGHT);
+						break;
+					default:
+						MessagesWW.errorWrongSyntaxOnKill(event);
+				}
+
+			} else {
+				MessagesWW.errorModOnlyCommand(msgChannel);
+			}
+		};
+		modCommands.put("phase", dayPhaseSwitchCommand);
+
+		Command endGameCommand = (event, parameters, msgChannel) -> {
+			// only the moderator can use this command
+			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
+				if (parameters.size() == 1 && Integer.parseInt(parameters.get(0)) >= 0
+						&& Integer.parseInt(parameters.get(0)) <= 3) {
+					endMainGame(Integer.parseInt(parameters.get(0)));
+
+				} else {
+					MessagesWW.errorWrongSyntaxOnKill(event);
+				}
+
+			} else {
+				MessagesWW.errorModOnlyCommand(msgChannel);
+			}
+		};
+		modCommands.put("endGame", endGameCommand);
 
 		// used by the mod to make 2 ppl fall in love (amor effect)
 		Command setLoveCommand = (event, parameters, msgChannel) -> {
@@ -573,17 +654,22 @@ public class SemiState extends MainState {
 				if (parameters != null && parameters.size() == 1) {
 					// finds the players
 					var foundPlayer = game.findPlayerByName(parameters.get(0));
+					// finds th dp
+					var dp = mapExistingRoles.get("Doppelgängerin").get(0);
+					if (dp != null) {
+						if (foundPlayer != null) {
 
-					if (foundPlayer != null) {
-						var dp = mapExistingRoles.get("Doppelgängerin").get(0);
+							// sets the variable
+							var dpRole = (RoleDoppelgängerin) dp.role;
+							dpRole.boundTo = foundPlayer;
+							MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
 
-						// sets the variable
-						var dpRole = (RoleDoppelgängerin) dp.role;
-						dpRole.boundTo = foundPlayer;
-						MessagesWW.doppelgängerinSuccess(game, dp, foundPlayer);
-
+						} else {
+							MessagesWW.errorPlayerNotFound(msgChannel);
+						}
 					} else {
-						MessagesWW.errorPlayerNotFound(msgChannel);
+						msgChannel.createMessage("```diff\n-E: There is no doubleganger in your current game!\n```")
+								.block();
 					}
 				} else {
 					MessagesWW.errorWrongSyntax(msgChannel);
