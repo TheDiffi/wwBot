@@ -14,11 +14,13 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import wwBot.CommandHandler;
 import wwBot.Globals;
 import wwBot.Interfaces.Command;
 import wwBot.Interfaces.PrivateCommand;
 import wwBot.WerwolfGame.GameStates.GameState;
 import wwBot.WerwolfGame.GameStates.LobbyState;
+import wwBot.WerwolfGame.GameStates.MainState;
 import wwBot.WerwolfGame.cards.Card;
 import wwBot.WerwolfGame.cards.Role;
 
@@ -34,7 +36,8 @@ public class Game {
     public boolean gameRulePrintCardOnDeath = false;
     public boolean gameRuleMutePlayersAtNight = false;
 
-
+    public Game backupGame = this;
+    public MainState.DayPhase backupDayPhase = null;
 
     public Guild server;
     public MessageChannel mainChannel;
@@ -155,6 +158,15 @@ public class Game {
         gameCommands.put("Handbuch", showManualCommand);
         gameCommands.put("Manual", showManualCommand);
 
+        Command reset = (event, parameters, msgChannel) ->{
+            var serverId = event.getGuildId().get();
+            CommandHandler.mapRunningGames.put(serverId, backupGame);
+            if(backupDayPhase != null){
+                CommandHandler.mapRunningGames.get(serverId).gameState.changeDayPhase(backupDayPhase);
+            }
+
+        };
+        gameCommands.put("reset4567", reset);
         
 
     }

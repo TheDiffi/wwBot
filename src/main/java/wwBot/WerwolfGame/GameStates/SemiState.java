@@ -120,21 +120,20 @@ public class SemiState extends MainState {
 		// kills player
 		unluckyPlayer.role.deathDetails.alive = false;
 		game.deadPlayers.add(unluckyPlayer);
-
 		updateGameLists();
 		updateDeathChat();
 
-		try {
-			unluckyPlayer.user.asMember(game.server.getId()).block().edit(a -> a.setMute(true)).block();
-		} catch (Exception e) {
-			System.out.println("Failed to mute " + unluckyPlayer.user.toString());
-		}
+		Globals.tryMutePlayer(unluckyPlayer, game.server.getId());
 
 		// reveals the players death and identity
 		checkDeathMessages(unluckyPlayer, causedByRole);
 
 		// calculates the consequences
 		checkConsequences(unluckyPlayer, causedByRole);
+
+		if (calculateGameEnd() != 0) {
+			MessagesWW.notifyModGameEnd(game.userModerator.getPrivateChannel().block(), calculateGameEnd());
+		}
 
 		return true;
 	}
@@ -216,19 +215,26 @@ public class SemiState extends MainState {
 
 	private void checkDeathMessages(Player player, String cause) {
 
-		switch (cause) {
-			case "Werwolf":
+		switch (cause.replaceAll("\\s+", "").toLowerCase()) {
+			case "werwolf":
+			case "werwölfe":
 				MessagesWW.deathByWW(game, player);
-			case "Hexe":
+				break;
+			case "hexe":
 				MessagesWW.deathByMagic(game, player);
-			case "Magier":
+				break;
+			case "magier":
 				MessagesWW.deathByMagic(game, player);
-			case "Amor":
+				break;
+			case "amor":
 				MessagesWW.deathByLove(game, player);
-			case "Jäger":
+				break;
+			case "jäger":
 				MessagesWW.deathByGunshot(game, player);
-			case "Dorfbewohner":
+				break;
+			case "dorfbewohner":
 				MessagesWW.deathByLynchen(game, player);
+				break;
 			default:
 				MessagesWW.deathByDefault(game, player);
 		}
@@ -241,34 +247,40 @@ public class SemiState extends MainState {
 
 	@Override
 	public void changeDayPhase(DayPhase nextPhase) {
+		updateGameBackup(nextPhase);
 		updateGameLists();
-		// transitions to Night
-		if (nextPhase == DayPhase.NORMAL_NIGHT) {
-			checkIfGameEnds();
+		if (!checkIfGameEnds()) {
+			// transitions to Night
+			if (nextPhase == DayPhase.NORMAL_NIGHT) {
 
-			night = new NightSemi(game);
-			dayPhase = DayPhase.NORMAL_NIGHT;
+				night = new NightSemi(game);
+				dayPhase = DayPhase.NORMAL_NIGHT;
 
-			// transitions to Morning
-		} else if (nextPhase == DayPhase.MORNING) {
+				// transitions to Morning
+			} else if (nextPhase == DayPhase.MORNING) {
 
-			morning = new MorningSemi(game);
-			dayPhase = DayPhase.MORNING;
+				morning = new MorningSemi(game);
+				dayPhase = DayPhase.MORNING;
 
-			// transitions to Day
-		} else if (nextPhase == DayPhase.DAY) {
-			checkIfGameEnds();
+				// transitions to Day
+			} else if (nextPhase == DayPhase.DAY) {
 
-			day = new DaySemi(game);
-			dayPhase = DayPhase.DAY;
+				day = new DaySemi(game);
+				dayPhase = DayPhase.DAY;
 
-			// transitions to 1st Night
-		} else if (nextPhase == DayPhase.FIRST_NIGHT) {
+				// transitions to 1st Night
+			} else if (nextPhase == DayPhase.FIRST_NIGHT) {
 
-			firstNight = new FirstNightSemi(game);
-			dayPhase = DayPhase.FIRST_NIGHT;
+				firstNight = new FirstNightSemi(game);
+				dayPhase = DayPhase.FIRST_NIGHT;
+			}
 		}
 
+	}
+
+	private void updateGameBackup(DayPhase nextPhase) {
+		game.backupGame = game;
+		game.backupDayPhase = nextPhase;
 	}
 
 	@Override
@@ -343,10 +355,10 @@ public class SemiState extends MainState {
 				if (foundModCommand != null) {
 					foundModCommand.execute(event, parameters, runningInChannel);
 					handeled = true;
-				}else{
+				} else {
 					handeled = false;
 				}
-				
+
 			}
 
 			// if not mod and not command in dayphase look in gamestatecommands
@@ -488,6 +500,7 @@ public class SemiState extends MainState {
 			// only the moderator can use this command
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				if (parameters.size() == 2 || parameters.size() == 1) {
+					var delMessg = event.getMessage().getChannel().block().createMessage("einen Moment...").block();
 
 					// finds the requested Player
 					var unluckyPlayer = game.findPlayerByNameLiving(parameters.get(0));
@@ -512,6 +525,7 @@ public class SemiState extends MainState {
 					} else {
 						MessagesWW.errorWrongSyntaxOnKill(event);
 					}
+					delMessg.delete().block();
 				} else {
 					MessagesWW.errorWrongSyntaxOnKill(event);
 				}
@@ -553,7 +567,7 @@ public class SemiState extends MainState {
 		modCommands.put("inLove", setLoveCommand);
 		modCommands.put("Amor", setLoveCommand);
 
-		//set the doublegangers secret identity
+		// set the doublegangers secret identity
 		Command setDoppelgängerinCommand = (event, parameters, msgChannel) -> {
 			if (event.getMessage().getAuthor().get().getId().equals(game.userModerator.getId())) {
 				if (parameters != null && parameters.size() == 1) {
@@ -580,7 +594,6 @@ public class SemiState extends MainState {
 		};
 		modCommands.put("clone", setDoppelgängerinCommand);
 		modCommands.put("Doppelgängerin", setDoppelgängerinCommand);
-
 
 		// ---------------------- OTHER COMMANDS ----------------------------------
 

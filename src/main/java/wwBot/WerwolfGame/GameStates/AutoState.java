@@ -52,8 +52,8 @@ public class AutoState extends MainState {
 
     @Override
     public void changeDayPhase(DayPhase nextPhase) {
+        updateGameBackup(nextPhase);
         updateGameLists();
-
         if (!checkIfGameEnds()) {
 
             // transitions to Night
@@ -83,8 +83,6 @@ public class AutoState extends MainState {
 
                 dayPhase = new Morning(game);
 
-                changeDayPhase(DayPhase.DAY);
-
                 // transitions to Day
             } else if (nextPhase == DayPhase.DAY) {
                 resetStuff();
@@ -108,6 +106,11 @@ public class AutoState extends MainState {
         }
 
     }
+
+    private void updateGameBackup(DayPhase nextPhase) {
+		game.backupGame = game;
+		game.backupDayPhase = nextPhase;
+	}
 
     private void resetStuff() {
         wwEnraged = false;
@@ -390,7 +393,7 @@ public class AutoState extends MainState {
 
     }
 
-    //TODO: when killed and sved by priest it still wants to save a mssg?
+    //TODO: when killed and sved by priest it still wants to send a mssg?
     private void sendDeathMessage(Player player, String cause) {
         if(cause == null){
             cause = "";

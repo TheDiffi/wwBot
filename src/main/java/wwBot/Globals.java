@@ -349,4 +349,14 @@ public class Globals {
 		return listUsers;
 	}
 
+	public static boolean tryMutePlayer(Player unluckyPlayer, Snowflake serverID) {
+		try {
+			unluckyPlayer.user.asMember(serverID).block().edit(a -> a.setMute(true)).block();
+			return true;
+		} catch (Exception e) {
+			System.out.println("Failed to mute " + unluckyPlayer.user.toString());
+			return false;
+		}
+	}
+
 }

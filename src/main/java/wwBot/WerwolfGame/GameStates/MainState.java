@@ -39,44 +39,45 @@ public class MainState extends GameState {
 				.get();
 		var tempList = new ArrayList<Player>();
 
-		//adds Wolfsjunges
-		if(mapExistingRoles.containsKey("Wolfsjunges")){tempList.add(mapExistingRoles.get("wolfsjunges").get(0));}
+		// adds Wolfsjunges
+		if (mapExistingRoles.containsKey("Wolfsjunges")) {
+			tempList.add(mapExistingRoles.get("wolfsjunges").get(0));
+		}
 
-		//adds the WW
+		// adds the WW
 		for (var player : mapExistingRoles.get("Werwolf")) {
 			if (player.role.deathDetails.alive) {
 				tempList.add(player);
 			}
 		}
-		
+
 		wwChat = game.server.createTextChannel(spec -> {
 			var overrides = new HashSet<PermissionOverwrite>();
 
-			//@everyone can't see this channel
+			// @everyone can't see this channel
 			overrides.add(PermissionOverwrite.forRole(defaultRole.getId(), PermissionSet.none(),
 					PermissionSet.of(Permission.VIEW_CHANNEL)));
 
-			//these members can see the channel
+			// these members can see the channel
 			for (var player : tempList) {
-				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(), PermissionSet.of(Permission.VIEW_CHANNEL),
-						PermissionSet.none()));
+				overrides.add(PermissionOverwrite.forMember(player.user.asMember(game.server.getId()).block().getId(),
+						PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
 			}
-			//adds the mod
+			// adds the mod
 			if (!game.gameRuleAutomaticMod) {
 				overrides.add(
 						PermissionOverwrite.forMember(game.userModerator.asMember(game.server.getId()).block().getId(),
 								PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.none()));
 			}
 
-			//sets the permissions
+			// sets the permissions
 			spec.setPermissionOverwrites(overrides);
 			spec.setName("Privater Werwolf-Chat");
 		}).block();
 
 		// Sends the first messages, explaining this Chat
 		MessagesWW.wwChatGreeting(wwChat);
-		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "",
-				Globals.playerListToList(tempList, "Werwölfe Sind", true));
+		Globals.createEmbed(wwChat, Color.LIGHT_GRAY, "", Globals.playerListToList(tempList, "Werwölfe Sind", true));
 
 	}
 
@@ -202,8 +203,7 @@ public class MainState extends GameState {
 
 	// collects every "good" and every "bad" role in a list and compares the size.
 	// If the are equaly or less "good" than "bad" roles, the ww won
-	@Override
-	public boolean checkIfGameEnds() {
+	public int calculateGameEnd() {
 		var amountGoodPlayers = 0;
 		var amountWW = 0;
 
@@ -216,26 +216,38 @@ public class MainState extends GameState {
 			}
 		}
 
-		// endMainGame: @param1 int winner: 1 = Dorfbewohner, 2 = Werwölfe, 3 = Ausgleich
-		if(livingPlayers.size() == 0){
-			endMainGame(3);
-			return true;
+		if (livingPlayers.size() == 0) {
+			return 3;
 
 		}
 		if (amountWW < 1) {
-			endMainGame(1);
-			return true;
+			return 1;
 
 		} else if (amountWW >= amountGoodPlayers) {
-			endMainGame(2);
-			return true;
+			return 2;
 
 		} else {
-			return false;
+			return 0;
 		}
 	}
 
-	public void endMainGame(int winner) {
+	@Override
+	public boolean checkIfGameEnds() {
+		return endMainGame(calculateGameEnd());
+	}
+
+	/**
+	 * Ends the Game based on an EndCode
+	 * 
+	 * @param winner winner: 1 = Dorfbewohner, 2 = Werwölfe, 3 = Ausgleich
+	 */
+
+	public boolean endMainGame(int winner) {
+		if (winner == 0) {
+			// 0 means the game is still going
+			return false;
+		}
+
 		// unmutes all players
 		Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
 		// deletes deathChat
@@ -245,11 +257,12 @@ public class MainState extends GameState {
 			Globals.createEmbed(game.mainChannel, Color.GREEN, "GAME END: DIE DORFBEWOHNER GEWINNEN!", "");
 		} else if (winner == 2) {
 			Globals.createEmbed(game.mainChannel, Color.RED, "GAME END: DIE WERWÖLFE GEWINNEN!", "");
-		} else if (winner == 3){
+		} else if (winner == 3) {
 			Globals.createEmbed(game.mainChannel, Color.GRAY, "GAME END: UNENTSCHIEDEN!", "");
 		}
 		// changes gamestate
 		game.changeGameState(new PostGameState(game, winner));
+		return true;
 	}
 
 	public enum DayPhase {

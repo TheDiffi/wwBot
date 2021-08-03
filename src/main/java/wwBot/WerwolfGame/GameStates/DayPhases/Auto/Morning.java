@@ -10,6 +10,7 @@ import wwBot.Interfaces.Command;
 import wwBot.WerwolfGame.Game;
 import wwBot.WerwolfGame.MessagesWW;
 import wwBot.WerwolfGame.Player;
+import wwBot.WerwolfGame.GameStates.MainState.DayPhase;
 import wwBot.WerwolfGame.GameStates.MainState.DeathState;
 import wwBot.WerwolfGame.cards.RoleSäufer;
 
@@ -29,6 +30,8 @@ public class Morning extends AutoDayPhase {
         calculateEndangeredPlayers();
 
         killEndangeredPlayers();
+
+        game.gameState.changeDayPhase(DayPhase.DAY);
 
     }
 

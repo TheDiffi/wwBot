@@ -175,7 +175,7 @@ public class LobbyState extends GameState {
 
             // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
             // und informiert den User über die Differenz
-            var figureDifference = deck.size() - listJoinedUsers.size();
+            int figureDifference = deck.size() - listJoinedUsers.size();
             if (figureDifference < 0) {
                 msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + " Karten zu wenig").block();
             } else if (figureDifference > 0) {
@@ -214,7 +214,7 @@ public class LobbyState extends GameState {
 
                 // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                 // und informiert den User über die Differenz
-                var figureDifference = deck.size() - listJoinedUsers.size();
+                int figureDifference = deck.size() - listJoinedUsers.size();
                 if (figureDifference < 0) {
                     msgChannel.createMessage("Es gibt " + figureDifference + "Karten zu wenig").block();
                 } else if (figureDifference > 0) {
@@ -244,7 +244,7 @@ public class LobbyState extends GameState {
 
                     // überprüft ob die Anzahl der Karten mit der Anzahl der Spieler übereinstimmt
                     // und informiert den User über die Differenz
-                    var figureDifference = deck.size() - listJoinedUsers.size();
+                    int figureDifference = deck.size() - listJoinedUsers.size();
                     if (figureDifference < 0) {
                         msgChannel.createMessage("Es gibt " + Math.abs(figureDifference) + " Karten zu wenig").block();
                     } else if (figureDifference > 0) {

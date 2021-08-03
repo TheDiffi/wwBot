@@ -54,7 +54,7 @@ public class CommandHandler {
 
                     } else if (mapRunningGames.containsKey(serverId)) {
                         event.getMessage().getChannel().block().createMessage("use **" + WWprefix
-                                + "DeleteGame** to delete the current game before starting a new one").block();
+                                + "DeleteGame** to delete the current game before starting a new one (One per Server)").block();
                     }
 
                 }
@@ -145,7 +145,9 @@ public class CommandHandler {
                     // falls der spieler in einem Spiel ist
                 } else if (game != null && isInGame == 1) {
                     if (messageContent.startsWith(WWprefix)) {
+                        //------------ DM COMMANDS ----------------------------------
                         game.handleCommands(event, event.getMessage().getChannel().block());
+                        //------------------------------------------------------------
 
                     } else {
                         // überprüft, ob in der map dieser User ist, d.h. ob das programm auf eine

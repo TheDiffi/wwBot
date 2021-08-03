@@ -159,7 +159,7 @@ public class FirstNightSemi {
     }
 
     private void endFirstNight() {
-        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Morning");
+        Globals.createEmbed(game.userModerator.getPrivateChannel().block(), Color.GREEN, "Confirmed!", "Switching to Day");
         // unmutes, deletes the WWChat and changes the DayPhase
         Globals.setMuteAllPlayers(game.livingPlayers, false, game.server.getId());
         gameState.deleteWerwolfChat();

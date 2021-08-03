@@ -735,6 +735,8 @@ public class MessagesWW {
 		mssg += buildDescription("join", "Tritt dem Spiel bei");
 		mssg += buildDescription("leave", "Verlasse ein beigetretenes Spiel");
 		mssg += buildDescription("makeMeMod", "Werde zum Moderator");
+		mssg += buildDescription("gamerule automatic", "Aktiviert den automatischen Moderator");
+		mssg += buildDescription("gamerule manual", "Aktiviert den semiautomatischen Moderator");
 		mssg += buildDescription("joinedPlayers", "Listet alle beigetretenen Spieler auf");
 		mssg += buildDescription("buildDeck", "Kreiert ein ausgewogenes Kartendeck");
 		mssg += buildDescription("addCard <Karte>", "Fügt eine Karte dem Deck hinzu");
@@ -947,6 +949,10 @@ public class MessagesWW {
 	public static void voteResultNobody(Game game) {
 		Globals.createMessage(game.mainChannel, "Die Dorfbewohner beschließen, dass heute niemand sterben soll.",
 				false);
+	}
+
+	public static void notifyModGameEnd(PrivateChannel privateChannel, int a) {
+		privateChannel.createMessage("**ATTENTION**\n the game has been won by *Winnercode: " + a + "*\n Winnercodes: winner: 1 = Dorfbewohner, 2 = Werwölfe, 3 = Ausgleich\nIf you want to confirm the Game end please use **"+prefix+"endGame <Winnercode>** or use the Command to get to the next DayPhase.").block();
 	}
 
 }
